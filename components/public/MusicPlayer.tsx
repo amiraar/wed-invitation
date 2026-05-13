@@ -35,12 +35,16 @@ export default function MusicPlayer({ src, autoplay }: Props) {
     <div className="fixed bottom-6 right-6 z-50">
       <button
         onClick={toggle}
-        className={`flex h-12 w-12 items-center justify-center rounded-full border border-border bg-bg-card shadow-lg ${
-          playing ? 'animate-spin-slow text-accent' : 'text-text-secondary'
-        }`}
+        className={`flex h-11 w-11 items-center justify-center rounded-full border text-xs uppercase tracking-widest transition-all duration-300 ${playing ? 'animate-spin-slow' : ''}`}
+        style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          color: playing ? 'var(--accent)' : 'var(--text-muted)',
+          boxShadow: 'var(--shadow)'
+        }}
         aria-label="Toggle music"
       >
-        M
+        <span style={{ fontSize: '14px' }}>♫</span>
       </button>
       <audio ref={audioRef} src={src} loop />
     </div>

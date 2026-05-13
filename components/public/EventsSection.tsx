@@ -29,6 +29,9 @@ function formatCountdown(target: Date): Countdown {
   };
 }
 
+const romanNumerals = ['I', 'II', 'III'];
+const unitLabels = { days: 'Hari', hours: 'Jam', minutes: 'Menit' } as const;
+
 export default function EventsSection({ events }: Props) {
   const activeEvents = useMemo(() => events.filter((event) => event.is_active), [events]);
   const [ticks, setTicks] = useState(0);
@@ -61,9 +64,12 @@ export default function EventsSection({ events }: Props) {
                 <motion.div
                   key={event.id}
                   variants={fadeUpVariant}
-                  className="rounded-3xl border border-border bg-bg-card p-6 shadow-lg"
+                  className="group relative overflow-hidden rounded-2xl p-8 transition-all duration-500 hover:border-[var(--border-hover)]"
+                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                 >
-                  <div className="text-xs uppercase tracking-[0.3em] text-text-muted">{index + 1}</div>
+                  <span className="font-display text-5xl italic opacity-10" style={{ color: 'var(--accent)' }}>
+                    {romanNumerals[index] ?? index + 1}
+                  </span>
                   <h3 className="mt-3 font-display text-2xl italic">{event.type}</h3>
                   <p className="mt-4 text-sm text-text-secondary">
                     {event.event_date || 'Tanggal belum diatur'}
@@ -79,7 +85,11 @@ export default function EventsSection({ events }: Props) {
 
                   <div className="mt-6 flex gap-4 text-center">
                     {(['days', 'hours', 'minutes'] as const).map((unit) => (
-                      <div key={unit} className="flex-1 rounded-2xl border border-border bg-bg-secondary p-3">
+                      <div
+                        key={unit}
+                        className="flex-1 rounded-2xl p-3"
+                        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
+                      >
                         <AnimatePresence mode="popLayout">
                           <motion.div
                             key={`${unit}-${countdown[unit]}-${ticks}`}
@@ -92,8 +102,8 @@ export default function EventsSection({ events }: Props) {
                             {countdown[unit]}
                           </motion.div>
                         </AnimatePresence>
-                        <div className="text-[10px] uppercase tracking-[0.3em] text-text-muted">
-                          {unit}
+                        <div className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>
+                          {unitLabels[unit]}
                         </div>
                       </div>
                     ))}

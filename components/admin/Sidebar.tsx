@@ -24,7 +24,7 @@ export default function Sidebar() {
             key={item.href}
             href={item.href}
             className={`block rounded-xl px-3 py-2 text-sm ${
-              pathname === item.href ? 'bg-amber-100 text-amber-700' : 'text-gray-600'
+              pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href)) ? 'bg-amber-100 text-amber-700' : 'text-gray-600'
             }`}
           >
             {item.label}

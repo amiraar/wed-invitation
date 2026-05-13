@@ -1,11 +1,13 @@
 import 'dotenv/config';
-import { runMigrations } from '../lib/migrate.ts';
-import { hashPassword } from '../lib/hash.ts';
-import { sql } from '../lib/db.ts';
+import { runMigrations } from '../lib/migrate';
+import { hashPassword } from '../lib/hash';
+import { sql } from '../lib/db';
 
 async function setup(): Promise<void> {
+  console.log('Menjalankan migrasi...');
   await runMigrations();
 
+  console.log('Membuat admin user...');
   const passwordHash = await hashPassword('admin123');
 
   await sql`
@@ -20,7 +22,10 @@ async function setup(): Promise<void> {
     WHERE id = 'main'
   `;
 
-  console.log('Setup selesai. Login ke /admin dengan admin/admin123. Segera ganti password.');
+  console.log('');
+  console.log('✓ Setup selesai.');
+  console.log('✓ Login ke /admin/login dengan: admin / admin123');
+  console.log('✓ Segera ganti password setelah login pertama.');
 }
 
 setup().catch((error) => {

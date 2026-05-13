@@ -65,7 +65,8 @@ export default function RSVPSection({ events }: Props) {
             <div>
               <input
                 {...register('name')}
-                className="w-full rounded-2xl border border-border bg-transparent px-4 py-3"
+                className="w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 placeholder="Nama lengkap"
               />
               {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>}
@@ -73,7 +74,8 @@ export default function RSVPSection({ events }: Props) {
             <div>
               <input
                 {...register('phone')}
-                className="w-full rounded-2xl border border-border bg-transparent px-4 py-3"
+                className="w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 placeholder="Nomor HP"
               />
               {errors.phone && <p className="mt-1 text-xs text-red-400">{errors.phone.message}</p>}
@@ -84,7 +86,8 @@ export default function RSVPSection({ events }: Props) {
                 min={1}
                 max={10}
                 {...register('guest_count', { valueAsNumber: true })}
-                className="w-full rounded-2xl border border-border bg-transparent px-4 py-3"
+                className="w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 placeholder="Jumlah tamu"
               />
               {errors.guest_count && (
@@ -116,17 +119,22 @@ export default function RSVPSection({ events }: Props) {
             <div>
               <textarea
                 {...register('message')}
-                className="h-28 w-full rounded-2xl border border-border bg-transparent px-4 py-3"
+                className="h-28 w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 placeholder="Pesan"
               />
             </div>
 
             <button
               type="submit"
-              className="mt-2 rounded-full border border-accent px-6 py-3 text-sm uppercase tracking-[0.3em] text-accent hover:bg-accent hover:text-bg-primary"
+              className="group relative w-full overflow-hidden rounded-full border py-4 text-xs uppercase tracking-[0.35em] transition-all duration-500"
+              style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Mengirim...' : 'Kirim RSVP'}
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-[var(--bg-primary)]">
+                {isSubmitting ? 'Mengirim...' : 'Kirim RSVP'}
+              </span>
+              <span className="absolute inset-0 -translate-x-full bg-[var(--accent)] transition-transform duration-500 group-hover:translate-x-0" />
             </button>
 
             {status !== 'idle' && (
