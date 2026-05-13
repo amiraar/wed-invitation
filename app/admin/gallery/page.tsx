@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GalleryUpload from '@/components/admin/GalleryUpload';
@@ -68,10 +69,12 @@ export default function GalleryPage() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleDragEnd = async (event: { active: { id: string }; over: { id: string } | null }) => {
-    if (!event.over || event.active.id === event.over.id) return;
-    const oldIndex = items.findIndex((item) => item.id === event.active.id);
-    const newIndex = items.findIndex((item) => item.id === event.over?.id);
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const activeId = String(event.active.id);
+    const overId = event.over ? String(event.over.id) : null;
+    if (!overId || activeId === overId) return;
+    const oldIndex = items.findIndex((item) => item.id === activeId);
+    const newIndex = items.findIndex((item) => item.id === overId);
     const reordered = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
       ...item,
       order_index: index
