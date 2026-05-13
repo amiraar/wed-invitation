@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #1A1410;
+  --bg-secondary: #2A1F14;
+  --bg-card: #231A10;
+  --text-primary: #FAF7F2;
+  --text-secondary: #B5A99A;
+  --text-muted: #7A6A58;
+  --accent: #B8965A;
+  --accent-light: #D4B483;
+  --border: rgba(184, 150, 90, 0.2);
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Jost', sans-serif;
+}
+
+.theme-light {
+  --bg-primary: #FAF7F2;
+  --bg-secondary: #F3EDE3;
+  --bg-card: #FFFFFF;
+  --text-primary: #2A1F14;
+  --text-secondary: #5C4A35;
+  --text-muted: #9A8A78;
+  --accent: #9E7340;
+  --accent-light: #C49A5A;
+  --border: rgba(158, 115, 64, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+.animate-spin-slow {
+  animation: spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.noise-bg {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+.section-anchor {
+  scroll-margin-top: 120px;
+}
