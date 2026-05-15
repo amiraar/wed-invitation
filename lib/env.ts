@@ -19,9 +19,9 @@ export function getEnv(): AppEnv {
   }
 
   return {
-    DATABASE_URL,
-    JWT_SECRET,
-    NEXT_PUBLIC_APP_URL,
-    NODE_ENV
+    DATABASE_URL: DATABASE_URL!,
+    JWT_SECRET: JWT_SECRET!,
+    NEXT_PUBLIC_APP_URL: NEXT_PUBLIC_APP_URL!,
+    NODE_ENV: NODE_ENV!
   };
 }

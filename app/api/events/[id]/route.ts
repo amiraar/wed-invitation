@@ -8,10 +8,11 @@ import { EventSchema } from '@/lib/validations';
 import { sanitizeText } from '@/lib/sanitize';
 import type { EventItem } from '@/lib/types';
 
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const auth = verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
+  const { id } = await context.params;
   const body = await request.json().catch(() => null);
   const parsed = EventSchema.safeParse(body);
   if (!parsed.success) return jsonError('Data tidak valid.', 400);
@@ -36,7 +37,7 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
         dress_code = ${sanitizeText(payload.dress_code ?? '')},
         order_index = ${payload.order_index},
         updated_at = NOW()
-    WHERE id = ${context.params.id}
+    WHERE id = ${id}
     RETURNING *
   `;
 
@@ -47,12 +48,13 @@ export async function PUT(request: NextRequest, context: { params: { id: string 
   return jsonSuccess(data);
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const auth = verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
+  const { id } = await context.params;
   const rows = await sql<EventItem>`
-    DELETE FROM events WHERE id = ${context.params.id} RETURNING *
+    DELETE FROM events WHERE id = ${id} RETURNING *
   `;
 
   const data = rows[0];

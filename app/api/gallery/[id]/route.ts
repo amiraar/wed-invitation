@@ -11,10 +11,11 @@ const ReorderSchema = z.object({
   order_index: z.number().int().min(0).max(100)
 });
 
-export async function PATCH(request: NextRequest, context: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const auth = verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
+  const { id } = await context.params;
   const body = await request.json().catch(() => null);
   const parsed = ReorderSchema.safeParse(body);
   if (!parsed.success) return jsonError('Data tidak valid.', 400);
@@ -22,7 +23,7 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
   const rows = await sql<GalleryItem>`
     UPDATE gallery
     SET order_index = ${parsed.data.order_index}
-    WHERE id = ${context.params.id}
+    WHERE id = ${id}
     RETURNING *
   `;
 
@@ -33,12 +34,13 @@ export async function PATCH(request: NextRequest, context: { params: { id: strin
   return jsonSuccess(data);
 }
 
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const auth = verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
+  const { id } = await context.params;
   const rows = await sql<GalleryItem>`
-    DELETE FROM gallery WHERE id = ${context.params.id} RETURNING *
+    DELETE FROM gallery WHERE id = ${id} RETURNING *
   `;
 
   const data = rows[0];
