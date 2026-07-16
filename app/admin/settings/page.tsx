@@ -2,23 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Toggle from '@/components/ui/Toggle';
+import { defaultSettings } from '@/lib/defaults';
 import type { AppSettings } from '@/lib/types';
 
-const emptySettings: AppSettings = {
-  id: 'main',
-  theme: 'dark',
-  cover_title: 'Kami Menikah',
-  cover_subtitle: 'Buka undangan untuk melihat detail',
-  show_lamaran: true,
-  show_akad: true,
-  show_resepsi: true,
-  show_gallery: true,
-  show_envelope: true,
-  updated_at: ''
-};
-
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<AppSettings>(emptySettings);
+  const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [musicAutoplay, setMusicAutoplay] = useState(false);
   const [status, setStatus] = useState('');
   const [confirmReset, setConfirmReset] = useState(false);

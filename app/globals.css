@@ -51,8 +51,23 @@
     background: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-body);
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
+  }
+
+  input[type='checkbox'] {
+    accent-color: var(--accent);
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--bg-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 }
 

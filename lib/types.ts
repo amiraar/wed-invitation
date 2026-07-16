@@ -1,3 +1,9 @@
+export type BankAccount = {
+  bank: string;
+  account_number: string;
+  account_name: string;
+};
+
 export type WeddingConfig = {
   id: string;
   groom_name: string;
@@ -10,6 +16,7 @@ export type WeddingConfig = {
   music_url: string;
   music_autoplay: boolean;
   opening_quote: string;
+  bank_accounts: BankAccount[];
   updated_at: string;
 };
 

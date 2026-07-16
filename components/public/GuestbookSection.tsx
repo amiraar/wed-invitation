@@ -3,17 +3,29 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
 import { GuestbookSchema } from '@/lib/validations';
+import { formatDateShortID } from '@/lib/format';
 import { z } from 'zod';
+import SectionHeading from './SectionHeading';
+import FancyButton from './FancyButton';
 import type { GuestbookItem } from '@/lib/types';
 
-const formSchema = GuestbookSchema;
-
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof GuestbookSchema>;
 
 type Props = {
   messages: GuestbookItem[];
 };
+
+const inputStyle = {
+  background: 'var(--bg-elevated)',
+  border: '1px solid var(--border)',
+  color: 'var(--text-primary)'
+} as const;
+
+const inputClass =
+  'w-full rounded-xl px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
 
 export default function GuestbookSection({ messages }: Props) {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -24,7 +36,7 @@ export default function GuestbookSection({ messages }: Props) {
     formState: { errors, isSubmitting },
     reset
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(GuestbookSchema),
     defaultValues: { name: '', message: '' }
   });
 
@@ -39,71 +51,115 @@ export default function GuestbookSection({ messages }: Props) {
     const data = await response.json().catch(() => null);
     if (data?.success) {
       setStatus('success');
-      setMessage('Ucapan sedang menunggu persetujuan.');
+      setMessage('Terima kasih! Ucapan Anda akan tampil setelah disetujui.');
       reset();
     } else {
       setStatus('error');
-      setMessage(data?.error || 'Terjadi kesalahan.');
+      setMessage(data?.error || 'Terjadi kesalahan. Silakan coba lagi.');
     }
   };
 
   return (
-    <section id="guestbook" className="section-anchor py-20">
+    <section id="guestbook" className="section-anchor bg-bg-secondary py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
-        <h2 className="font-display text-3xl italic">Ucapan</h2>
-        <p className="mt-2 text-text-secondary">Kirimkan doa dan ucapan terbaik.</p>
+        <motion.div
+          variants={staggerContainerVariant}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          <SectionHeading
+            align="center"
+            eyebrow="Buku Tamu"
+            title="Doa & Ucapan"
+            description="Kirimkan doa dan ucapan terbaik untuk kedua mempelai."
+          />
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
-          <div className="space-y-4">
-            {messages.map((item) => (
-              <div key={item.id} className="rounded-2xl border border-border bg-bg-card p-4">
-                <p className="text-sm text-text-secondary">{item.message}</p>
-                <p className="mt-3 text-xs uppercase tracking-[0.3em] text-text-muted">{item.name}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-3xl border border-border bg-bg-card p-6">
-            <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-              <div>
-                <input
-                  {...register('name')}
-                  className="w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
-                  style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  placeholder="Nama"
-                />
-                {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>}
-              </div>
-              <div>
-                <textarea
-                  {...register('message')}
-                  className="h-28 w-full rounded-xl px-5 py-3.5 text-sm outline-none transition-all duration-300 focus:ring-1"
-                  style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
-                  placeholder="Tulis ucapan"
-                />
-                {errors.message && (
-                  <p className="mt-1 text-xs text-red-400">{errors.message.message}</p>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="group relative w-full overflow-hidden rounded-full border py-4 text-xs uppercase tracking-[0.35em] transition-all duration-500"
-                style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
-                disabled={isSubmitting}
-              >
-                <span className="relative z-10 transition-colors duration-300 group-hover:text-[var(--bg-primary)]">
+          <div className="mt-10 grid gap-6 md:grid-cols-5">
+            <motion.div
+              variants={fadeUpVariant}
+              className="h-fit rounded-3xl p-6 md:col-span-2"
+              style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+            >
+              <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+                <div>
+                  <input
+                    {...register('name')}
+                    className={inputClass}
+                    style={inputStyle}
+                    placeholder="Nama Anda"
+                    aria-label="Nama"
+                    autoComplete="name"
+                  />
+                  {errors.name && <p className="mt-1.5 text-xs text-red-400">Nama minimal 2 karakter.</p>}
+                </div>
+                <div>
+                  <textarea
+                    {...register('message')}
+                    className={`${inputClass} h-32 resize-none`}
+                    style={inputStyle}
+                    placeholder="Tulis doa dan ucapan"
+                    aria-label="Ucapan"
+                  />
+                  {errors.message && (
+                    <p className="mt-1.5 text-xs text-red-400">Ucapan minimal 5 karakter.</p>
+                  )}
+                </div>
+                <FancyButton type="submit" className="w-full py-4" disabled={isSubmitting}>
                   {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
-                </span>
-                <span className="absolute inset-0 -translate-x-full bg-[var(--accent)] transition-transform duration-500 group-hover:translate-x-0" />
-              </button>
-              {status !== 'idle' && (
-                <p className={`text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-                  {message}
-                </p>
+                </FancyButton>
+                {status !== 'idle' && (
+                  <p
+                    role="status"
+                    className={`text-center text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}
+                  >
+                    {message}
+                  </p>
+                )}
+              </form>
+            </motion.div>
+
+            <motion.div variants={fadeUpVariant} className="md:col-span-3">
+              {messages.length === 0 ? (
+                <div
+                  className="flex h-full min-h-[10rem] items-center justify-center rounded-3xl p-8 text-center text-sm"
+                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                >
+                  Belum ada ucapan. Jadilah yang pertama mengirim doa!
+                </div>
+              ) : (
+                <div className="max-h-[32rem] space-y-4 overflow-y-auto pr-1">
+                  {messages.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded-2xl p-5"
+                      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+                    >
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p
+                          className="text-xs font-medium uppercase tracking-[0.25em]"
+                          style={{ color: 'var(--accent)' }}
+                        >
+                          {item.name}
+                        </p>
+                        <p
+                          className="shrink-0 text-[11px]"
+                          style={{ color: 'var(--text-muted)' }}
+                          suppressHydrationWarning
+                        >
+                          {formatDateShortID(item.created_at)}
+                        </p>
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        {item.message}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               )}
-            </form>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

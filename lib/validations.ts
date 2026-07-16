@@ -24,6 +24,12 @@ export const LoginSchema = z.object({
   password: z.string().min(8).max(100)
 });
 
+export const BankAccountSchema = z.object({
+  bank: z.string().min(1).max(100),
+  account_number: z.string().min(3).max(50),
+  account_name: z.string().min(1).max(150)
+});
+
 export const WeddingConfigSchema = z.object({
   groom_name: z.string().max(100),
   bride_name: z.string().max(100),
@@ -34,7 +40,8 @@ export const WeddingConfigSchema = z.object({
   cover_image_url: z.string().max(500).optional().or(z.literal('')),
   music_url: z.string().max(500).optional().or(z.literal('')),
   music_autoplay: z.boolean(),
-  opening_quote: z.string().max(500).optional().or(z.literal(''))
+  opening_quote: z.string().max(500).optional().or(z.literal('')),
+  bank_accounts: z.array(BankAccountSchema).max(6).optional()
 });
 
 export const EventSchema = z.object({

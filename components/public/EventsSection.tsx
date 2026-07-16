@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { digitVariant, fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
+import { eventTargetDate, eventTypeLabel, formatDateID, formatTimeRange } from '@/lib/format';
+import SectionHeading from './SectionHeading';
 import type { EventItem } from '@/lib/types';
 
 type Props = {
@@ -13,112 +15,173 @@ type Countdown = {
   days: string;
   hours: string;
   minutes: string;
+  seconds: string;
 };
 
-function formatCountdown(target: Date): Countdown {
-  const diff = target.getTime() - Date.now();
-  if (diff <= 0) return { days: '00', hours: '00', minutes: '00' };
-  const totalMinutes = Math.floor(diff / 60000);
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
+const romanNumerals = ['I', 'II', 'III'];
+const unitLabels = { days: 'Hari', hours: 'Jam', minutes: 'Menit', seconds: 'Detik' } as const;
+
+function formatCountdown(target: Date, now: number): Countdown | null {
+  const diff = target.getTime() - now;
+  if (diff <= 0) return null;
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
   return {
     days: days.toString().padStart(2, '0'),
     hours: hours.toString().padStart(2, '0'),
-    minutes: minutes.toString().padStart(2, '0')
+    minutes: minutes.toString().padStart(2, '0'),
+    seconds: seconds.toString().padStart(2, '0')
   };
 }
 
-const romanNumerals = ['I', 'II', 'III'];
-const unitLabels = { days: 'Hari', hours: 'Jam', minutes: 'Menit' } as const;
-
-export default function EventsSection({ events }: Props) {
-  const activeEvents = useMemo(() => events.filter((event) => event.is_active), [events]);
-  const [ticks, setTicks] = useState(0);
-
+// Returns null until mounted so the server-rendered HTML never contains a
+// clock value that would mismatch on hydration.
+function useNow(): number | null {
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
-    const timer = setInterval(() => setTicks((prev) => prev + 1), 60000);
+    setNow(Date.now());
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
+  return now;
+}
+
+export default function EventsSection({ events }: Props) {
+  const now = useNow();
+
+  const gridClass =
+    events.length >= 3
+      ? 'md:grid-cols-3'
+      : events.length === 2
+        ? 'mx-auto max-w-4xl md:grid-cols-2'
+        : 'mx-auto max-w-md';
 
   return (
-    <section id="events" className="section-anchor bg-bg-secondary py-20">
+    <section id="events" className="section-anchor py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           variants={staggerContainerVariant}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
+          viewport={{ once: true, margin: '-60px' }}
         >
-          <motion.p variants={fadeUpVariant} className="text-xs uppercase tracking-[0.4em] text-text-muted">
-            Rangkaian Acara
-          </motion.p>
-          <motion.h2 variants={fadeUpVariant} className="mt-3 font-display text-3xl italic">
-            Jadwal dan Lokasi
-          </motion.h2>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {activeEvents.map((event, index) => {
-              const targetDate = event.event_date ? new Date(event.event_date) : new Date();
-              const countdown = formatCountdown(targetDate);
+          <SectionHeading
+            align="center"
+            eyebrow="Rangkaian Acara"
+            title="Jadwal dan Lokasi"
+            description="Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir."
+          />
+
+          <div className={`mt-12 grid gap-6 ${gridClass}`}>
+            {events.map((event, index) => {
+              const target = eventTargetDate(event);
+              const countdown = target && now !== null ? formatCountdown(target, now) : null;
+              const hasPassed = target !== null && now !== null && target.getTime() <= now;
+
               return (
                 <motion.div
                   key={event.id}
                   variants={fadeUpVariant}
-                  className="group relative overflow-hidden rounded-2xl p-8 transition-all duration-500 hover:border-[var(--border-hover)]"
+                  className="relative flex flex-col overflow-hidden rounded-2xl p-6 transition-all duration-500 hover:border-[var(--border-hover)] sm:p-8"
                   style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
                 >
-                  <span className="font-display text-5xl italic opacity-10" style={{ color: 'var(--accent)' }}>
+                  <span
+                    className="absolute right-6 top-4 font-display text-6xl italic opacity-10"
+                    style={{ color: 'var(--accent)' }}
+                    aria-hidden
+                  >
                     {romanNumerals[index] ?? index + 1}
                   </span>
-                  <h3 className="mt-3 font-display text-2xl italic">{event.type}</h3>
-                  <p className="mt-4 text-sm text-text-secondary">
-                    {event.event_date || 'Tanggal belum diatur'}
-                  </p>
-                  <p className="text-sm text-text-secondary">
-                    {event.time_start || '--'} - {event.time_end || '--'}
-                  </p>
-                  <p className="mt-3 text-sm text-text-secondary">{event.venue_name || 'Lokasi TBD'}</p>
-                  <p className="text-xs text-text-muted">{event.address || ''}</p>
-                  <p className="mt-3 text-xs uppercase tracking-[0.3em] text-text-muted">
-                    Dress Code: {event.dress_code || '-'}
-                  </p>
 
-                  <div className="mt-6 flex gap-4 text-center">
-                    {(['days', 'hours', 'minutes'] as const).map((unit) => (
-                      <div
-                        key={unit}
-                        className="flex-1 rounded-2xl p-3"
-                        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
-                      >
-                        <AnimatePresence mode="popLayout">
-                          <motion.div
-                            key={`${unit}-${countdown[unit]}-${ticks}`}
-                            variants={digitVariant}
-                            initial="enter"
-                            animate="center"
-                            exit="exit"
-                            className="text-lg font-semibold"
-                          >
-                            {countdown[unit]}
-                          </motion.div>
-                        </AnimatePresence>
-                        <div className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>
-                          {unitLabels[unit]}
-                        </div>
-                      </div>
-                    ))}
+                  <h3 className="font-display text-2xl italic" style={{ color: 'var(--text-primary)' }}>
+                    {eventTypeLabel(event.type)}
+                  </h3>
+
+                  <div className="mt-4 space-y-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <p>{formatDateID(event.event_date) || 'Tanggal segera diumumkan'}</p>
+                    {formatTimeRange(event.time_start, event.time_end) && (
+                      <p>Pukul {formatTimeRange(event.time_start, event.time_end)}</p>
+                    )}
                   </div>
 
-                  {event.maps_url && (
-                    <a
-                      href={event.maps_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-6 inline-flex items-center text-sm text-accent"
-                    >
-                      Lihat Lokasi
-                    </a>
+                  {(event.venue_name || event.address) && (
+                    <div className="mt-4">
+                      {event.venue_name && (
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                          {event.venue_name}
+                        </p>
+                      )}
+                      {event.address && (
+                        <p className="mt-1 text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                          {event.address}
+                        </p>
+                      )}
+                    </div>
                   )}
+
+                  {event.dress_code && (
+                    <p className="mt-4 text-xs uppercase tracking-[0.3em]" style={{ color: 'var(--text-muted)' }}>
+                      Dress Code: {event.dress_code}
+                    </p>
+                  )}
+
+                  <div className="mt-auto pt-6">
+                    {hasPassed ? (
+                      <p
+                        className="rounded-2xl p-3 text-center text-xs uppercase tracking-[0.3em]"
+                        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                      >
+                        Acara telah berlangsung
+                      </p>
+                    ) : (
+                      target && (
+                        <div className="grid grid-cols-4 gap-2 text-center">
+                          {(['days', 'hours', 'minutes', 'seconds'] as const).map((unit) => (
+                            <div
+                              key={unit}
+                              className="rounded-2xl px-1 py-3"
+                              style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
+                            >
+                              <div className="h-7 overflow-hidden">
+                                <AnimatePresence mode="popLayout" initial={false}>
+                                  <motion.div
+                                    key={countdown ? countdown[unit] : '--'}
+                                    variants={digitVariant}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    className="text-lg font-semibold"
+                                    style={{ color: 'var(--text-primary)' }}
+                                  >
+                                    {countdown ? countdown[unit] : '--'}
+                                  </motion.div>
+                                </AnimatePresence>
+                              </div>
+                              <div className="text-[10px] uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>
+                                {unitLabels[unit]}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+
+                    {event.maps_url && (
+                      <a
+                        href={event.maps_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-6 inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs uppercase tracking-[0.25em] transition-colors duration-300 hover:bg-[var(--accent-dim)]"
+                        style={{ borderColor: 'var(--border-hover)', color: 'var(--accent)' }}
+                      >
+                        Lihat Lokasi
+                        <span aria-hidden>↗</span>
+                      </a>
+                    )}
+                  </div>
                 </motion.div>
               );
             })}

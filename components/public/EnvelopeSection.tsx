@@ -1,52 +1,83 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
+import SectionHeading from './SectionHeading';
+import type { BankAccount } from '@/lib/types';
 
 type Props = {
-  accounts: { bank: string; number: string; name: string }[];
+  accounts: BankAccount[];
 };
 
 export default function EnvelopeSection({ accounts }: Props) {
-  return (
-    <section id="envelope" className="section-anchor bg-bg-secondary py-20">
-      <div className="mx-auto max-w-4xl px-6">
-        <h2 className="font-display text-3xl italic">Amplop Digital</h2>
-        <p className="mt-2 text-text-secondary">Informasi rekening akan ditampilkan di sini.</p>
+  if (accounts.length === 0) return null;
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2">
-          {accounts.length === 0 && (
-            <div className="rounded-2xl border border-border bg-bg-card p-6 text-sm text-text-muted">
-              Belum ada rekening yang diatur.
-            </div>
-          )}
-          {accounts.map((account, index) => (
-            <EnvelopeCard key={`${account.bank}-${index}`} {...account} />
-          ))}
-        </div>
+  return (
+    <section id="envelope" className="section-anchor py-20 md:py-28">
+      <div className="mx-auto max-w-4xl px-6">
+        <motion.div
+          variants={staggerContainerVariant}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          <SectionHeading
+            align="center"
+            eyebrow="Amplop Digital"
+            title="Tanda Kasih"
+            description="Bagi Bapak/Ibu/Saudara/i yang ingin memberikan tanda kasih, dapat melalui rekening berikut."
+          />
+
+          <div className={`mt-10 grid gap-5 ${accounts.length > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-md'}`}>
+            {accounts.map((account, index) => (
+              <motion.div key={`${account.bank}-${index}`} variants={fadeUpVariant}>
+                <EnvelopeCard account={account} />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-function EnvelopeCard({ bank, number, name }: { bank: string; number: string; name: string }) {
+function EnvelopeCard({ account }: { account: BankAccount }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(number);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(account.account_number);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable (e.g. insecure context); the number stays visible.
+    }
   };
 
   return (
-    <div className="rounded-3xl border border-border bg-bg-card p-6">
-      <div className="text-xs uppercase tracking-[0.3em] text-text-muted">{bank}</div>
-      <div className="mt-3 text-2xl font-semibold">{number}</div>
-      <div className="mt-2 text-sm text-text-secondary">{name}</div>
+    <div
+      className="rounded-3xl p-6 text-center sm:p-8"
+      style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+    >
+      <div className="text-xs uppercase tracking-[0.35em]" style={{ color: 'var(--accent)' }}>
+        {account.bank}
+      </div>
+      <div
+        className="mt-4 font-display text-2xl font-medium tracking-wider sm:text-3xl"
+        style={{ color: 'var(--text-primary)' }}
+      >
+        {account.account_number}
+      </div>
+      <div className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+        a.n. {account.account_name}
+      </div>
       <button
         onClick={handleCopy}
-        className="mt-4 rounded-full border border-accent px-4 py-2 text-xs uppercase tracking-[0.3em] text-accent"
+        className="mt-5 rounded-full border px-6 py-2.5 text-xs uppercase tracking-[0.3em] transition-colors duration-300 hover:bg-[var(--accent-dim)]"
+        style={{ borderColor: 'var(--border-hover)', color: 'var(--accent)' }}
       >
-        {copied ? 'Tersalin' : 'Salin'}
+        {copied ? 'Tersalin ✓' : 'Salin Nomor'}
       </button>
     </div>
   );

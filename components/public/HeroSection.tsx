@@ -2,102 +2,120 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
 
 type Props = {
   groomName: string;
   brideName: string;
   openingQuote: string;
   coverImageUrl: string;
+  dateLabel: string;
+  started: boolean;
 };
 
-export default function HeroSection({ groomName, brideName, openingQuote, coverImageUrl }: Props) {
+// `started` gates the intro animation so it plays after the cover opens,
+// not hidden behind it.
+export default function HeroSection({
+  groomName,
+  brideName,
+  openingQuote,
+  coverImageUrl,
+  dateLabel,
+  started
+}: Props) {
   return (
     <section
       id="hero"
-      className="section-anchor relative flex min-h-screen items-end pb-24 overflow-hidden"
+      className="section-anchor relative flex min-h-dvh items-end overflow-hidden pb-20 sm:pb-24"
     >
-      {/* Background image or gradient */}
-      <div className="absolute inset-0">
+      {/* Background image (slow settle-in zoom) or gradient */}
+      <motion.div
+        className="absolute inset-0"
+        initial={false}
+        animate={started ? { scale: 1 } : { scale: 1.12 }}
+        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+      >
         {coverImageUrl ? (
-          <Image src={coverImageUrl} alt="Couple" fill className="object-cover object-center" priority />
+          <Image
+            src={coverImageUrl}
+            alt={`${groomName} & ${brideName}`}
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            priority
+          />
         ) : (
           <div
+            className="h-full w-full"
             style={{
               background: 'linear-gradient(160deg, var(--bg-elevated) 0%, var(--bg-primary) 60%)'
             }}
-            className="h-full w-full"
           />
         )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(to top, var(--bg-primary) 0%, rgba(14,12,10,0.5) 40%, transparent 70%)'
-          }}
-        />
-      </div>
+      </motion.div>
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to top, var(--bg-primary) 0%, rgba(14,12,10,0.5) 40%, transparent 70%)'
+        }}
+      />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-8">
-        {/* Label */}
+      <motion.div
+        className="relative z-10 mx-auto w-full max-w-5xl px-6 sm:px-8"
+        variants={staggerContainerVariant}
+        initial="hidden"
+        animate={started ? 'visible' : 'hidden'}
+      >
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.3 }}
+          variants={fadeUpVariant}
           className="mb-6 text-xs uppercase tracking-[0.45em]"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           The Wedding of
         </motion.p>
 
-        {/* Names */}
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        <motion.h1
+          variants={fadeUpVariant}
+          className="font-display font-light italic"
+          style={{ fontSize: 'clamp(2.75rem, 9vw, 6rem)', lineHeight: 1.1, color: 'var(--text-primary)' }}
         >
-          <h1
-            className="font-display font-light italic"
-            style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', lineHeight: 1.05, color: 'var(--text-primary)' }}
+          <span className="block sm:inline">{groomName || 'Nama Pria'}</span>
+          <span className="not-italic sm:mx-4" style={{ color: 'var(--accent)' }}>
+            &amp;
+          </span>
+          <span className="block sm:inline">{brideName || 'Nama Wanita'}</span>
+        </motion.h1>
+
+        {dateLabel && (
+          <motion.p
+            variants={fadeUpVariant}
+            className="mt-6 text-sm uppercase tracking-[0.3em]"
+            style={{ color: 'var(--accent)' }}
           >
-            {groomName || 'Nama Pria'}
-            <span className="mx-4 not-italic" style={{ color: 'var(--accent)' }}>&amp;</span>
-            {brideName || 'Nama Wanita'}
-          </h1>
-        </motion.div>
+            {dateLabel}
+          </motion.p>
+        )}
 
-        {/* Gold divider */}
-        <motion.div
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1.2, delay: 0.9, ease: 'easeInOut' }}
-          className="my-8 gold-divider w-64"
-        />
+        <motion.div variants={fadeUpVariant} className="gold-divider my-8 w-40 sm:w-64" />
 
-        {/* Quote */}
         {openingQuote && (
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.1 }}
-            className="max-w-xl font-display text-xl italic"
+            variants={fadeUpVariant}
+            className="max-w-xl font-display text-lg italic sm:text-xl"
             style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}
           >
             &ldquo;{openingQuote}&rdquo;
           </motion.p>
         )}
 
-        {/* Scroll cue */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.8 }}
-          className="mt-12 flex items-center gap-4"
-        >
+        <motion.div variants={fadeUpVariant} className="mt-12 flex items-center gap-4">
           <div className="gold-divider w-12" />
-          <p className="text-xs uppercase tracking-[0.35em]" style={{ color: 'var(--text-muted)' }}>
+          <p className="animate-float text-xs uppercase tracking-[0.35em]" style={{ color: 'var(--text-muted)' }}>
             Scroll
           </p>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

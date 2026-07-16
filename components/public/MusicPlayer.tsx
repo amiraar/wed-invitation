@@ -1,52 +1,70 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+
+export type MusicPlayerHandle = {
+  play: () => void;
+  pause: () => void;
+};
 
 type Props = {
   src: string;
-  autoplay: boolean;
 };
 
-export default function MusicPlayer({ src, autoplay }: Props) {
+// Playback is started by the parent (via the imperative handle) inside the
+// "open invitation" tap, so mobile autoplay policies are satisfied.
+const MusicPlayer = forwardRef<MusicPlayerHandle, Props>(function MusicPlayer({ src }, ref) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
-  useEffect(() => {
-    if (!autoplay || !src) return;
-    const onFirstInteraction = () => {
-      audioRef.current?.play().then(() => setPlaying(true)).catch(() => undefined);
-      window.removeEventListener('click', onFirstInteraction);
-    };
-    window.addEventListener('click', onFirstInteraction);
-    return () => window.removeEventListener('click', onFirstInteraction);
-  }, [autoplay, src]);
-
-  const toggle = () => {
-    if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.pause();
-      setPlaying(false);
-    } else {
-      audioRef.current.play().then(() => setPlaying(true)).catch(() => undefined);
-    }
+  const play = () => {
+    audioRef.current?.play().catch(() => undefined);
   };
 
+  const pause = () => {
+    audioRef.current?.pause();
+  };
+
+  useImperativeHandle(ref, () => ({ play, pause }));
+
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div
+      className="fixed right-5 z-50"
+      style={{ bottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}
+    >
       <button
-        onClick={toggle}
-        className={`flex h-11 w-11 items-center justify-center rounded-full border text-xs uppercase tracking-widest transition-all duration-300 ${playing ? 'animate-spin-slow' : ''}`}
+        onClick={playing ? pause : play}
+        className="relative flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-300"
         style={{
           background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
+          borderColor: playing ? 'var(--accent)' : 'var(--border)',
           color: playing ? 'var(--accent)' : 'var(--text-muted)',
           boxShadow: 'var(--shadow)'
         }}
-        aria-label="Toggle music"
+        aria-label={playing ? 'Jeda musik' : 'Putar musik'}
+        aria-pressed={playing}
       >
-        <span style={{ fontSize: '14px' }}>♫</span>
+        <span className={`text-base ${playing ? 'animate-spin-slow' : ''}`} aria-hidden>
+          ♫
+        </span>
+        {!playing && (
+          <span
+            aria-hidden
+            className="absolute h-px w-6 -rotate-45"
+            style={{ background: 'currentColor' }}
+          />
+        )}
       </button>
-      <audio ref={audioRef} src={src} loop />
+      <audio
+        ref={audioRef}
+        src={src}
+        loop
+        preload="auto"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+      />
     </div>
   );
-}
+});
+
+export default MusicPlayer;
