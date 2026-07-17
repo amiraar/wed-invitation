@@ -16,10 +16,12 @@ async function setup(): Promise<void> {
     ON CONFLICT (username) DO NOTHING
   `;
 
+  // Only seed placeholder names on first run — never overwrite names an
+  // admin has already set (this script is safe to re-run at any time).
   await sql`
     UPDATE wedding_config
     SET groom_name = 'Groom', bride_name = 'Bride'
-    WHERE id = 'main'
+    WHERE id = 'main' AND groom_name = '' AND bride_name = ''
   `;
 
   console.log('');
