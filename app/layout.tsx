@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Jost } from 'next/font/google';
 
 const cormorant = Cormorant_Garamond({
@@ -16,8 +16,15 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: 'Wedding Invitation',
-  description: 'Wedding invitation web app'
+  title: 'Undangan Pernikahan',
+  description: 'Undangan pernikahan digital'
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#0E0C0A'
 };
 
 export default function RootLayout({
@@ -26,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${jost.variable} theme-dark`}>
+    <html lang="id" className={`${cormorant.variable} ${jost.variable} theme-dark`}>
       <body className="antialiased">{children}</body>
     </html>
   );

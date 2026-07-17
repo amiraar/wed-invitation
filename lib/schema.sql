@@ -23,11 +23,15 @@ CREATE TABLE IF NOT EXISTS wedding_config (
   music_url TEXT DEFAULT '',
   music_autoplay BOOLEAN DEFAULT FALSE,
   opening_quote TEXT DEFAULT '',
+  bank_accounts JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Insert default config row
 INSERT INTO wedding_config (id) VALUES ('main') ON CONFLICT DO NOTHING;
+
+-- Backfill for databases created before bank_accounts existed
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS bank_accounts JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 -- Events (max 3: lamaran, akad, resepsi)
 CREATE TABLE IF NOT EXISTS events (

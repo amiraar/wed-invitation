@@ -1,34 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 
-const sections = [
-  { id: 'hero', label: 'Beranda' },
-  { id: 'events', label: 'Acara' },
-  { id: 'gallery', label: 'Galeri' },
-  { id: 'rsvp', label: 'RSVP' },
-  { id: 'guestbook', label: 'Ucapan' },
-  { id: 'envelope', label: 'Amplop' }
-];
+export type NavSection = { id: string; label: string };
 
-export default function Navbar() {
-  const [active, setActive] = useState('hero');
+type Props = {
+  brand: string;
+  sections: NavSection[];
+  visible: boolean;
+};
+
+export default function Navbar({ brand, sections, visible }: Props) {
+  const [active, setActive] = useState(sections[0]?.id ?? 'hero');
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 80);
     handler();
-    window.addEventListener('scroll', handler);
+    window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
   useEffect(() => {
-    if (pathname !== '/invitation') return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -44,44 +38,29 @@ export default function Navbar() {
     });
 
     return () => observer.disconnect();
-  }, [pathname]);
-
-  useEffect(() => {
-    if (pathname !== '/invitation') return;
-    const hash = window.location.hash.replace('#', '');
-    if (!hash) return;
-    const el = document.getElementById(hash);
-    if (el) {
-      setTimeout(() => {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }, [pathname]);
+  }, [sections]);
 
   const handleNav = (id: string) => {
     setOpen(false);
-    if (pathname === '/invitation') {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      router.push(`/invitation#${id}`);
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-700 ${
+        visible ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-4 opacity-0'
+      } ${
         scrolled
-          ? 'border-b border-[var(--border)] bg-[var(--bg-primary)]/90 backdrop-blur-md shadow-lg shadow-black/20'
+          ? 'border-b border-[var(--border)] bg-[var(--bg-primary)]/90 shadow-lg shadow-black/20 backdrop-blur-md'
           : 'bg-transparent'
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-6">
         <button
-          onClick={() => handleNav('hero')}
+          onClick={() => handleNav(sections[0]?.id ?? 'hero')}
           className="font-display text-xl italic text-[var(--text-primary)] transition hover:text-[var(--accent)]"
         >
-          Undangan
+          {brand}
         </button>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -104,23 +83,22 @@ export default function Navbar() {
         </div>
 
         <button
-          className="flex flex-col gap-1.5 md:hidden"
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
           onClick={() => setOpen((prev) => !prev)}
-          aria-label="Toggle menu"
+          aria-label="Buka menu"
+          aria-expanded={open}
         >
           <span
             className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${
-              open ? 'translate-y-2.5 rotate-45' : ''
+              open ? 'translate-y-[6.5px] rotate-45' : ''
             }`}
           />
           <span
-            className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${
-              open ? 'opacity-0' : ''
-            }`}
+            className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${open ? 'opacity-0' : ''}`}
           />
           <span
             className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${
-              open ? '-translate-y-2.5 -rotate-45' : ''
+              open ? '-translate-y-[6.5px] -rotate-45' : ''
             }`}
           />
         </button>
@@ -128,7 +106,7 @@ export default function Navbar() {
 
       <div
         className={`overflow-hidden transition-all duration-300 md:hidden ${
-          open ? 'max-h-96' : 'max-h-0'
+          open ? 'max-h-[28rem]' : 'max-h-0'
         }`}
       >
         <div className="space-y-1 border-t border-[var(--border)] bg-[var(--bg-primary)]/95 px-6 py-4 backdrop-blur-md">

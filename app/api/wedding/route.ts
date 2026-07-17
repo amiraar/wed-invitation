@@ -45,7 +45,12 @@ export async function PUT(request: NextRequest) {
     cover_image_url: sanitizeText(payload.cover_image_url ?? ''),
     music_url: sanitizeText(payload.music_url ?? ''),
     music_autoplay: payload.music_autoplay,
-    opening_quote: sanitizeText(payload.opening_quote ?? '')
+    opening_quote: sanitizeText(payload.opening_quote ?? ''),
+    bank_accounts: (payload.bank_accounts ?? []).map((account) => ({
+      bank: sanitizeText(account.bank),
+      account_number: sanitizeText(account.account_number),
+      account_name: sanitizeText(account.account_name)
+    }))
   };
 
   const rows = await sql<WeddingRow>`
@@ -60,6 +65,7 @@ export async function PUT(request: NextRequest) {
         music_url = ${updated.music_url},
         music_autoplay = ${updated.music_autoplay},
         opening_quote = ${updated.opening_quote},
+        bank_accounts = ${JSON.stringify(updated.bank_accounts)}::jsonb,
         updated_at = NOW()
     WHERE id = 'main'
     RETURNING *
