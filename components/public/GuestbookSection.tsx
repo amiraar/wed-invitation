@@ -18,14 +18,15 @@ type Props = {
   messages: GuestbookItem[];
 };
 
+// Border color must come from classes, not inline style, or the
+// focus: border utility can never override it.
 const inputStyle = {
   background: 'var(--bg-elevated)',
-  border: '1px solid var(--border)',
   color: 'var(--text-primary)'
 } as const;
 
 const inputClass =
-  'w-full rounded-xl px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
+  'w-full rounded-xl border border-border px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
 
 export default function GuestbookSection({ messages }: Props) {
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');

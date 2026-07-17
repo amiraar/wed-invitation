@@ -24,14 +24,15 @@ const attendanceFieldByType = {
   resepsi: 'attending_resepsi'
 } as const;
 
+// Border color must come from classes, not inline style, or the
+// focus:/hover: border utilities can never override it.
 const inputStyle = {
   background: 'var(--bg-elevated)',
-  border: '1px solid var(--border)',
   color: 'var(--text-primary)'
 } as const;
 
 const inputClass =
-  'w-full rounded-xl px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
+  'w-full rounded-xl border border-border px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: string }) {
   return (
@@ -161,7 +162,7 @@ export default function RSVPSection({ events }: Props) {
                     {events.map((event) => (
                       <label
                         key={event.id}
-                        className="flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3.5 text-sm transition-colors duration-300 hover:border-[var(--border-hover)]"
+                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-border px-4 py-3.5 text-sm transition-colors duration-300 hover:border-[var(--border-hover)]"
                         style={inputStyle}
                       >
                         <input

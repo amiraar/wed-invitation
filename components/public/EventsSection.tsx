@@ -85,8 +85,8 @@ export default function EventsSection({ events }: Props) {
                 <motion.div
                   key={event.id}
                   variants={fadeUpVariant}
-                  className="relative flex flex-col overflow-hidden rounded-2xl p-6 transition-all duration-500 hover:border-[var(--border-hover)] sm:p-8"
-                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+                  className="relative flex flex-col overflow-hidden rounded-2xl border border-border p-6 transition-all duration-500 hover:border-[var(--border-hover)] sm:p-8"
+                  style={{ background: 'var(--bg-card)' }}
                 >
                   <span
                     className="absolute right-6 top-4 font-display text-6xl italic opacity-10"
