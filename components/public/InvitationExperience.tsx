@@ -4,9 +4,10 @@ import { useEffect, useRef } from 'react';
 import { MotionConfig } from 'framer-motion';
 import Navbar, { type NavSection } from './Navbar';
 import HeroSection from './HeroSection';
+import CountdownSection from './CountdownSection';
 import StorySection from './StorySection';
 import CoupleSection from './CoupleSection';
-import EventsSection from './EventsSection';
+import ScheduleSection from './ScheduleSection';
 import VenueSection from './VenueSection';
 import DressCodeSection from './DressCodeSection';
 import GallerySection from './GallerySection';
@@ -16,7 +17,7 @@ import FAQSection from './FAQSection';
 import GuestbookSection from './GuestbookSection';
 import FooterPublic from './FooterPublic';
 import MusicPlayer, { type MusicPlayerHandle } from './MusicPlayer';
-import { formatDateID } from '@/lib/format';
+import { eventTargetDate, formatDateID } from '@/lib/format';
 import type { InvitationData } from '@/lib/queries';
 
 type Props = {
@@ -49,16 +50,18 @@ export default function InvitationExperience({ data }: Props) {
   const showGallery = settings.show_gallery && gallery.length > 0;
   const showRegistry = settings.show_envelope && (wedding.bank_accounts.length > 0 || wedding.wishlist_note);
   const hasStory = Boolean(wedding.opening_quote || wedding.story_body);
+  const hasSchedule = wedding.schedule_items.length > 0;
   const hasVenue = Boolean(mainEvent?.venue_name || mainEvent?.address);
   const hasDressCode = Boolean(
     wedding.dress_code_title || wedding.dress_code_note || wedding.dress_code_swatches.length > 0
   );
   const hasFaqs = faqs.length > 0;
+  const mainEventTarget = mainEvent ? eventTargetDate(mainEvent) : null;
 
   const navSections: NavSection[] = [
     { id: 'hero', label: 'Home' },
     ...(hasStory ? [{ id: 'story', label: 'Story' }] : []),
-    ...(activeEvents.length > 0 ? [{ id: 'schedule', label: 'Schedule' }] : []),
+    ...(hasSchedule ? [{ id: 'schedule', label: 'Schedule' }] : []),
     ...(hasVenue ? [{ id: 'venue', label: 'Venue' }] : []),
     ...(showGallery ? [{ id: 'gallery', label: 'Gallery' }] : []),
     { id: 'rsvp', label: 'RSVP' },
@@ -90,9 +93,10 @@ export default function InvitationExperience({ data }: Props) {
           dateLabel={mainEvent ? formatDateID(mainEvent.event_date) : ''}
           venueLine={mainEvent?.venue_name ?? ''}
         />
+        <CountdownSection targetDate={mainEventTarget} dateLabel={mainEvent ? formatDateID(mainEvent.event_date) : ''} />
         {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
         {hasCouple && <CoupleSection wedding={wedding} />}
-        {activeEvents.length > 0 && <EventsSection events={activeEvents} />}
+        {hasSchedule && <ScheduleSection items={wedding.schedule_items} />}
         {hasVenue && mainEvent && <VenueSection event={mainEvent} imageUrl={wedding.venue_image_url} />}
         {hasDressCode && (
           <DressCodeSection

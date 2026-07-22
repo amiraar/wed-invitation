@@ -35,6 +35,12 @@ export const DressCodeSwatchSchema = z.object({
   label: z.string().min(1).max(50)
 });
 
+export const ScheduleItemSchema = z.object({
+  time: z.string().max(50),
+  title: z.string().max(150),
+  subtitle: z.string().max(200)
+});
+
 export const WeddingConfigSchema = z.object({
   groom_name: z.string().max(100),
   bride_name: z.string().max(100),
@@ -54,7 +60,8 @@ export const WeddingConfigSchema = z.object({
   dress_code_avoid_note: z.string().max(500).optional().or(z.literal('')),
   dress_code_swatches: z.array(DressCodeSwatchSchema).max(10).optional(),
   wishlist_title: z.string().max(200).optional().or(z.literal('')),
-  wishlist_note: z.string().max(1000).optional().or(z.literal(''))
+  wishlist_note: z.string().max(1000).optional().or(z.literal('')),
+  schedule_items: z.array(ScheduleItemSchema).max(20).optional()
 });
 
 export const EventSchema = z.object({

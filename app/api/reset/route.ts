@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
         dress_code_swatches = '[]'::jsonb,
         wishlist_title = '',
         wishlist_note = '',
+        schedule_items = '[]'::jsonb,
         updated_at = NOW()
     WHERE id = 'main'
   `;

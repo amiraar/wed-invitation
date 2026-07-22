@@ -60,7 +60,8 @@ export const getInvitationData = cache(async (): Promise<InvitationData> => {
       wedding: {
         ...weddingRow,
         bank_accounts: Array.isArray(weddingRow.bank_accounts) ? weddingRow.bank_accounts : [],
-        dress_code_swatches: Array.isArray(weddingRow.dress_code_swatches) ? weddingRow.dress_code_swatches : []
+        dress_code_swatches: Array.isArray(weddingRow.dress_code_swatches) ? weddingRow.dress_code_swatches : [],
+        schedule_items: Array.isArray(weddingRow.schedule_items) ? weddingRow.schedule_items : []
       },
       events: eventRows.map((row) => ({
         ...normalizeRow<EventItem>(row),

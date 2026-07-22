@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS wedding_config (
   dress_code_swatches JSONB NOT NULL DEFAULT '[]'::jsonb,
   wishlist_title TEXT DEFAULT '',
   wishlist_note TEXT DEFAULT '',
+  schedule_items JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -50,6 +51,7 @@ ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_avoid_note TEXT D
 ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_swatches JSONB NOT NULL DEFAULT '[]'::jsonb;
 ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS wishlist_title TEXT DEFAULT '';
 ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS wishlist_note TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS schedule_items JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 -- Events (max 3: lamaran, akad, resepsi)
 CREATE TABLE IF NOT EXISTS events (
@@ -70,12 +72,11 @@ CREATE TABLE IF NOT EXISTS events (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Insert default 3 events
-INSERT INTO events (type, order_index) VALUES
-  ('lamaran', 1),
-  ('akad', 2),
-  ('resepsi', 3)
-ON CONFLICT DO NOTHING;
+-- Insert default 3 events (idempotent: only inserts a type that doesn't exist yet,
+-- since `id` is a fresh UUID every run and can never trigger ON CONFLICT DO NOTHING)
+INSERT INTO events (type, order_index)
+SELECT v.type, v.order_index FROM (VALUES ('lamaran', 1), ('akad', 2), ('resepsi', 3)) AS v(type, order_index)
+WHERE NOT EXISTS (SELECT 1 FROM events e WHERE e.type = v.type);
 
 -- Gallery
 CREATE TABLE IF NOT EXISTS gallery (

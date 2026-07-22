@@ -9,6 +9,12 @@ export type DressCodeSwatch = {
   label: string;
 };
 
+export type ScheduleItem = {
+  time: string;
+  title: string;
+  subtitle: string;
+};
+
 export type WeddingConfig = {
   id: string;
   groom_name: string;
@@ -30,6 +36,7 @@ export type WeddingConfig = {
   dress_code_swatches: DressCodeSwatch[];
   wishlist_title: string;
   wishlist_note: string;
+  schedule_items: ScheduleItem[];
   updated_at: string;
 };
 

@@ -32,5 +32,6 @@ export const defaultWedding: WeddingConfig = {
   dress_code_swatches: [],
   wishlist_title: '',
   wishlist_note: '',
+  schedule_items: [],
   updated_at: ''
 };

@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { defaultWedding } from '@/lib/defaults';
-import type { BankAccount, DressCodeSwatch, WeddingConfig } from '@/lib/types';
+import type { BankAccount, DressCodeSwatch, ScheduleItem, WeddingConfig } from '@/lib/types';
 
 const MAX_ACCOUNTS = 6;
 const MAX_SWATCHES = 10;
+const MAX_SCHEDULE_ITEMS = 20;
 
 const emptyAccount: BankAccount = { bank: '', account_number: '', account_name: '' };
 const emptySwatch: DressCodeSwatch = { color: '#7A9E7A', label: '' };
+const emptyScheduleItem: ScheduleItem = { time: '', title: '', subtitle: '' };
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -36,7 +38,8 @@ export default function WeddingPage() {
           setForm({
             ...data.data,
             bank_accounts: data.data.bank_accounts ?? [],
-            dress_code_swatches: data.data.dress_code_swatches ?? []
+            dress_code_swatches: data.data.dress_code_swatches ?? [],
+            schedule_items: data.data.schedule_items ?? []
           });
         }
       })
@@ -92,6 +95,28 @@ export default function WeddingPage() {
     setForm((prev) => ({
       ...prev,
       dress_code_swatches: prev.dress_code_swatches.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleScheduleItemChange = (index: number, key: keyof ScheduleItem, value: string) => {
+    setForm((prev) => {
+      const items = prev.schedule_items.map((item, i) => (i === index ? { ...item, [key]: value } : item));
+      return { ...prev, schedule_items: items };
+    });
+  };
+
+  const addScheduleItem = () => {
+    setForm((prev) =>
+      prev.schedule_items.length >= MAX_SCHEDULE_ITEMS
+        ? prev
+        : { ...prev, schedule_items: [...prev.schedule_items, { ...emptyScheduleItem }] }
+    );
+  };
+
+  const removeScheduleItem = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      schedule_items: prev.schedule_items.filter((_, i) => i !== index)
     }));
   };
 
@@ -189,6 +214,48 @@ export default function WeddingPage() {
               className="admin-input h-28 w-full"
             />
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Schedule" description="The 'Order of Events' timeline shown on the invitation.">
+        <div className="mb-3 flex items-center justify-end">
+          <button onClick={addScheduleItem} disabled={form.schedule_items.length >= MAX_SCHEDULE_ITEMS} className="admin-btn-outline disabled:opacity-50">
+            + Add Item
+          </button>
+        </div>
+
+        {form.schedule_items.length === 0 && (
+          <p className="rounded-lg border border-dashed p-4 text-sm" style={{ borderColor: 'var(--adm-border-strong)', color: 'var(--adm-text-muted)' }}>
+            No schedule items yet. The Schedule section stays hidden until at least one item is added.
+          </p>
+        )}
+
+        <div className="space-y-3">
+          {form.schedule_items.map((item, index) => (
+            <div key={index} className="grid gap-3 rounded-lg p-4 md:grid-cols-[120px_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+              <input
+                value={item.time}
+                onChange={(event) => handleScheduleItemChange(index, 'time', event.target.value)}
+                placeholder="09:00 AM"
+                className="admin-input"
+              />
+              <input
+                value={item.title}
+                onChange={(event) => handleScheduleItemChange(index, 'title', event.target.value)}
+                placeholder="Akad Nikah"
+                className="admin-input"
+              />
+              <input
+                value={item.subtitle}
+                onChange={(event) => handleScheduleItemChange(index, 'subtitle', event.target.value)}
+                placeholder="Sacred marriage ceremony"
+                className="admin-input"
+              />
+              <button onClick={() => removeScheduleItem(index)} className="admin-btn-danger">
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
       </SectionCard>
 

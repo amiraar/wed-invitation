@@ -61,7 +61,12 @@ export async function PUT(request: NextRequest) {
       label: sanitizeText(swatch.label)
     })),
     wishlist_title: sanitizeText(payload.wishlist_title ?? ''),
-    wishlist_note: sanitizeText(payload.wishlist_note ?? '')
+    wishlist_note: sanitizeText(payload.wishlist_note ?? ''),
+    schedule_items: (payload.schedule_items ?? []).map((item) => ({
+      time: sanitizeText(item.time),
+      title: sanitizeText(item.title),
+      subtitle: sanitizeText(item.subtitle)
+    }))
   };
 
   const rows = await sql<WeddingRow>`
@@ -85,6 +90,7 @@ export async function PUT(request: NextRequest) {
         dress_code_swatches = ${JSON.stringify(updated.dress_code_swatches)}::jsonb,
         wishlist_title = ${updated.wishlist_title},
         wishlist_note = ${updated.wishlist_note},
+        schedule_items = ${JSON.stringify(updated.schedule_items)}::jsonb,
         updated_at = NOW()
     WHERE id = 'main'
     RETURNING *
