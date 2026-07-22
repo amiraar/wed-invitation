@@ -22,7 +22,7 @@ export default function EventsPage() {
   };
 
   const handleSave = async (event: EventItem) => {
-    setStatus('Menyimpan...');
+    setStatus('Saving...');
     const payload = {
       ...event,
       event_date: event.event_date ?? '',
@@ -35,7 +35,7 @@ export default function EventsPage() {
       body: JSON.stringify(payload)
     });
     const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Tersimpan' : data?.error || 'Gagal menyimpan');
+    setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
   };
 
   return (
@@ -44,16 +44,13 @@ export default function EventsPage() {
         {events.map((event) => (
           <div key={event.id} className="space-y-3">
             <EventForm event={event} onSave={handleUpdate} />
-            <button
-              onClick={() => handleSave(event)}
-              className="w-full rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-sm text-white"
-            >
-              Simpan {event.type}
+            <button onClick={() => handleSave(event)} className="admin-btn-primary w-full">
+              Save {event.type}
             </button>
           </div>
         ))}
       </div>
-      {status && <p className="text-sm text-gray-500">{status}</p>}
+      {status && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>}
     </div>
   );
 }

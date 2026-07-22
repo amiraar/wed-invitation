@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
   const limit = limiter(ip);
   if (!limit.success) {
-    return jsonError('Terlalu banyak percobaan login. Coba lagi nanti.', 429);
+    return jsonError('Too many login attempts. Please try again later.', 429);
   }
 
   const body = await request.json().catch(() => null);
   const parsed = LoginSchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError('Data login tidak valid.', 400);
+    return jsonError('Invalid login data.', 400);
   }
 
   const { username, password } = parsed.data;
@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
 
   const user = rows[0];
   if (!user) {
-    return jsonError('Username atau password salah.', 401);
+    return jsonError('Incorrect username or password.', 401);
   }
 
   const match = await verifyPassword(password, user.password_hash);
   if (!match) {
-    return jsonError('Username atau password salah.', 401);
+    return jsonError('Incorrect username or password.', 401);
   }
 
   await sql`

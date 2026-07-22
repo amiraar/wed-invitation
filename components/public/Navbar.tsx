@@ -7,10 +7,9 @@ export type NavSection = { id: string; label: string };
 type Props = {
   brand: string;
   sections: NavSection[];
-  visible: boolean;
 };
 
-export default function Navbar({ brand, sections, visible }: Props) {
+export default function Navbar({ brand, sections }: Props) {
   const [active, setActive] = useState(sections[0]?.id ?? 'hero');
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -45,20 +44,22 @@ export default function Navbar({ brand, sections, visible }: Props) {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const linkColor = scrolled ? 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]' : 'text-[var(--hero-text)]/75 hover:text-[var(--hero-text)]';
+
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-700 ${
-        visible ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-4 opacity-0'
-      } ${
+      className={`fixed top-0 z-50 w-full transition-all duration-500 ${
         scrolled
-          ? 'border-b border-[var(--border)] bg-[var(--bg-primary)]/90 shadow-lg shadow-black/20 backdrop-blur-md'
+          ? 'border-b border-[var(--border)] bg-[var(--bg-primary)]/95 shadow-lg shadow-black/5 backdrop-blur-md'
           : 'bg-transparent'
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-6">
         <button
           onClick={() => handleNav(sections[0]?.id ?? 'hero')}
-          className="font-display text-xl italic text-[var(--text-primary)] transition hover:text-[var(--accent)]"
+          className={`font-display text-xl italic transition hover:text-[var(--accent)] ${
+            scrolled ? 'text-[var(--text-primary)]' : 'text-[var(--hero-text)]'
+          }`}
         >
           {brand}
         </button>
@@ -69,9 +70,7 @@ export default function Navbar({ brand, sections, visible }: Props) {
               key={section.id}
               onClick={() => handleNav(section.id)}
               className={`relative text-xs uppercase tracking-[0.25em] transition-colors duration-300 ${
-                active === section.id
-                  ? 'text-[var(--accent)]'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                active === section.id ? 'text-[var(--accent)]' : linkColor
               }`}
             >
               {section.label}
@@ -85,19 +84,19 @@ export default function Navbar({ brand, sections, visible }: Props) {
         <button
           className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
           onClick={() => setOpen((prev) => !prev)}
-          aria-label="Buka menu"
+          aria-label="Open menu"
           aria-expanded={open}
         >
           <span
-            className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${
+            className={`block h-px w-6 transition-all ${scrolled ? 'bg-[var(--text-primary)]' : 'bg-[var(--hero-text)]'} ${
               open ? 'translate-y-[6.5px] rotate-45' : ''
             }`}
           />
           <span
-            className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${open ? 'opacity-0' : ''}`}
+            className={`block h-px w-6 transition-all ${scrolled ? 'bg-[var(--text-primary)]' : 'bg-[var(--hero-text)]'} ${open ? 'opacity-0' : ''}`}
           />
           <span
-            className={`block h-px w-6 bg-[var(--text-primary)] transition-all ${
+            className={`block h-px w-6 transition-all ${scrolled ? 'bg-[var(--text-primary)]' : 'bg-[var(--hero-text)]'} ${
               open ? '-translate-y-[6.5px] -rotate-45' : ''
             }`}
           />

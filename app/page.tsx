@@ -4,20 +4,16 @@ import { getInvitationData } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
 
-type PageProps = {
-  searchParams: Promise<{ to?: string | string[] }>;
-};
-
 export async function generateMetadata(): Promise<Metadata> {
   const { wedding } = await getInvitationData();
   const couple =
     wedding.groom_name && wedding.bride_name
       ? `${wedding.groom_name} & ${wedding.bride_name}`
       : '';
-  const title = couple ? `Undangan Pernikahan ${couple}` : 'Undangan Pernikahan';
+  const title = couple ? `The Wedding of ${couple}` : 'Wedding Invitation';
   const description = couple
-    ? `Dengan hormat mengundang Bapak/Ibu/Saudara/i pada pernikahan ${couple}.`
-    : 'Undangan pernikahan digital.';
+    ? `You're warmly invited to celebrate the wedding of ${couple}.`
+    : 'A digital wedding invitation.';
 
   return {
     title,
@@ -30,9 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Page({ searchParams }: PageProps) {
-  const [{ to }, data] = await Promise.all([searchParams, getInvitationData()]);
-  const guestName = typeof to === 'string' ? to.slice(0, 100) : '';
-
-  return <InvitationExperience data={data} guestName={guestName} />;
+export default async function Page() {
+  const data = await getInvitationData();
+  return <InvitationExperience data={data} />;
 }

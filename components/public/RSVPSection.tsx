@@ -78,11 +78,11 @@ export default function RSVPSection({ events }: Props) {
     const data = await response.json().catch(() => null);
     if (data?.success) {
       setStatus('success');
-      setMessage('Terima kasih! Konfirmasi kehadiran Anda berhasil dikirim.');
+      setMessage("Thank you! Your RSVP has been received.");
       reset();
     } else {
       setStatus('error');
-      setMessage(data?.error || 'Terjadi kesalahan. Silakan coba lagi.');
+      setMessage(data?.error || 'Something went wrong. Please try again.');
     }
   };
 
@@ -97,9 +97,9 @@ export default function RSVPSection({ events }: Props) {
         >
           <SectionHeading
             align="center"
-            eyebrow="RSVP"
-            title="Konfirmasi Kehadiran"
-            description="Mohon konfirmasi kehadiran Anda untuk membantu kami mempersiapkan acara."
+            eyebrow="Join Us"
+            title="RSVP"
+            description="Kindly confirm your attendance to help us prepare for the celebration."
           />
 
           <motion.div
@@ -109,21 +109,21 @@ export default function RSVPSection({ events }: Props) {
           >
             <form className="grid gap-5" onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <FieldLabel htmlFor="rsvp-name">Nama Lengkap</FieldLabel>
+                <FieldLabel htmlFor="rsvp-name">Full Name</FieldLabel>
                 <input
                   id="rsvp-name"
                   {...register('name')}
                   className={inputClass}
                   style={inputStyle}
-                  placeholder="Nama Anda"
+                  placeholder="Your full name"
                   autoComplete="name"
                 />
-                {errors.name && <p className="mt-1.5 text-xs text-red-400">Nama minimal 2 karakter.</p>}
+                {errors.name && <p className="mt-1.5 text-xs text-red-400">Name must be at least 2 characters.</p>}
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
-                  <FieldLabel htmlFor="rsvp-phone">Nomor HP</FieldLabel>
+                  <FieldLabel htmlFor="rsvp-phone">Phone Number</FieldLabel>
                   <input
                     id="rsvp-phone"
                     {...register('phone')}
@@ -133,10 +133,10 @@ export default function RSVPSection({ events }: Props) {
                     inputMode="tel"
                     autoComplete="tel"
                   />
-                  {errors.phone && <p className="mt-1.5 text-xs text-red-400">Format nomor HP tidak valid.</p>}
+                  {errors.phone && <p className="mt-1.5 text-xs text-red-400">Invalid phone number format.</p>}
                 </div>
                 <div>
-                  <FieldLabel htmlFor="rsvp-guests">Jumlah Tamu</FieldLabel>
+                  <FieldLabel htmlFor="rsvp-guests">Number of Guests</FieldLabel>
                   <input
                     id="rsvp-guests"
                     type="number"
@@ -146,7 +146,7 @@ export default function RSVPSection({ events }: Props) {
                     className={inputClass}
                     style={inputStyle}
                   />
-                  {errors.guest_count && <p className="mt-1.5 text-xs text-red-400">Antara 1 sampai 10 tamu.</p>}
+                  {errors.guest_count && <p className="mt-1.5 text-xs text-red-400">Between 1 and 10 guests.</p>}
                 </div>
               </div>
 
@@ -156,7 +156,7 @@ export default function RSVPSection({ events }: Props) {
                     className="mb-2 block text-[11px] uppercase tracking-[0.25em]"
                     style={{ color: 'var(--text-muted)' }}
                   >
-                    Saya Akan Hadir Di
+                    Will You Attend
                   </legend>
                   <div className="grid gap-2">
                     {events.map((event) => (
@@ -178,18 +178,18 @@ export default function RSVPSection({ events }: Props) {
               )}
 
               <div>
-                <FieldLabel htmlFor="rsvp-message">Pesan (Opsional)</FieldLabel>
+                <FieldLabel htmlFor="rsvp-message">A Note for the Couple (Optional)</FieldLabel>
                 <textarea
                   id="rsvp-message"
                   {...register('message')}
                   className={`${inputClass} h-28 resize-none`}
                   style={inputStyle}
-                  placeholder="Tulis pesan untuk kami"
+                  placeholder="Your wishes and message..."
                 />
               </div>
 
               <FancyButton type="submit" className="w-full py-4" disabled={isSubmitting}>
-                {isSubmitting ? 'Mengirim...' : 'Kirim RSVP'}
+                {isSubmitting ? 'Sending...' : 'Send RSVP'}
               </FancyButton>
 
               {status !== 'idle' && (

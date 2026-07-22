@@ -4,33 +4,36 @@ import type { RSVPItem } from '@/lib/types';
 
 export default function RSVPTable({ rows }: { rows: RSVPItem[] }) {
   return (
-    <div className="overflow-auto rounded-2xl border border-gray-200 bg-white">
+    <div className="admin-card overflow-auto">
       <table className="min-w-full text-sm">
-        <thead className="bg-gray-50 text-left text-xs uppercase tracking-[0.2em] text-gray-400">
+        <thead
+          className="text-left text-[10px] uppercase tracking-[0.2em]"
+          style={{ background: 'var(--adm-bg-topbar)', color: 'var(--adm-text-faint)' }}
+        >
           <tr>
-            <th className="px-4 py-3">Nama</th>
-            <th className="px-4 py-3">HP</th>
-            <th className="px-4 py-3">Tamu</th>
+            <th className="px-4 py-3">Name</th>
+            <th className="px-4 py-3">Phone</th>
+            <th className="px-4 py-3">Guests</th>
             <th className="px-4 py-3">Event</th>
-            <th className="px-4 py-3">Tanggal</th>
+            <th className="px-4 py-3">Date</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="border-t border-gray-100">
-              <td className="px-4 py-3 text-gray-800">{row.name}</td>
-              <td className="px-4 py-3 text-gray-600">{row.phone ?? '-'}</td>
-              <td className="px-4 py-3 text-gray-600">{row.guest_count}</td>
-              <td className="px-4 py-3 text-gray-600">
+            <tr key={row.id} style={{ borderTop: '1px solid var(--adm-border)' }}>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>{row.name}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.phone ?? '-'}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.guest_count}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>
                 {[
-                  row.attending_lamaran && 'Lamaran',
+                  row.attending_lamaran && 'Engagement',
                   row.attending_akad && 'Akad',
-                  row.attending_resepsi && 'Resepsi'
+                  row.attending_resepsi && 'Reception'
                 ]
                   .filter(Boolean)
                   .join(', ') || '-'}
               </td>
-              <td className="px-4 py-3 text-gray-500">{row.created_at}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{row.created_at}</td>
             </tr>
           ))}
         </tbody>

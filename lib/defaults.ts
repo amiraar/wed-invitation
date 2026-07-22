@@ -2,9 +2,7 @@ import type { AppSettings, WeddingConfig } from './types';
 
 export const defaultSettings: AppSettings = {
   id: 'main',
-  theme: 'dark',
-  cover_title: 'Kami Menikah',
-  cover_subtitle: 'Buka Undangan',
+  theme: 'light',
   show_lamaran: true,
   show_akad: true,
   show_resepsi: true,
@@ -26,5 +24,13 @@ export const defaultWedding: WeddingConfig = {
   music_autoplay: false,
   opening_quote: '',
   bank_accounts: [],
+  story_body: '',
+  venue_image_url: '',
+  dress_code_title: '',
+  dress_code_note: '',
+  dress_code_avoid_note: '',
+  dress_code_swatches: [],
+  wishlist_title: '',
+  wishlist_note: '',
   updated_at: ''
 };

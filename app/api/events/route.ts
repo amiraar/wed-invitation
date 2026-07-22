@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   const parsed = EventSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const payload = parsed.data;
   const eventDate = payload.event_date && payload.event_date.length > 0 ? payload.event_date : null;

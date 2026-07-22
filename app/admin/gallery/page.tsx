@@ -17,25 +17,18 @@ function SortableItem({ item, onDelete }: { item: GalleryItem; onDelete: (id: st
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-3"
-    >
-      <div {...attributes} {...listeners} className="cursor-grab text-gray-400">
+    <div ref={setNodeRef} style={style} className="admin-card flex items-center gap-4 p-3">
+      <div {...attributes} {...listeners} className="cursor-grab" style={{ color: 'var(--adm-text-faint)' }}>
         ⋮⋮
       </div>
       <div className="relative h-16 w-24 overflow-hidden rounded-xl">
         <Image src={item.url} alt={item.caption || 'Gallery'} fill className="object-cover" />
       </div>
       <div className="flex-1">
-        <p className="text-sm text-gray-800">{item.caption || 'Tanpa caption'}</p>
+        <p className="text-sm" style={{ color: 'var(--adm-text)' }}>{item.caption || 'No caption'}</p>
       </div>
-      <button
-        onClick={() => onDelete(item.id)}
-        className="rounded-full border border-red-300 px-3 py-1 text-xs text-red-500"
-      >
-        Hapus
+      <button onClick={() => onDelete(item.id)} className="admin-btn-danger">
+        Delete
       </button>
     </div>
   );

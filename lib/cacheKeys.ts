@@ -3,5 +3,6 @@ export const CACHE_KEYS = {
   EVENTS: 'events',
   SETTINGS: 'app_settings',
   GALLERY: 'gallery',
-  GUESTBOOK_PUBLIC: 'guestbook_public'
+  GUESTBOOK_PUBLIC: 'guestbook_public',
+  FAQS: 'faqs'
 } as const;

@@ -1,9 +1,9 @@
 import type { EventItem } from './types';
 
 const EVENT_TYPE_LABELS: Record<EventItem['type'], string> = {
-  lamaran: 'Lamaran',
+  lamaran: 'Engagement',
   akad: 'Akad Nikah',
-  resepsi: 'Resepsi'
+  resepsi: 'Reception'
 };
 
 export function eventTypeLabel(type: EventItem['type']): string {
@@ -14,7 +14,7 @@ export function formatDateID(value: string | null): string {
   if (!value) return '';
   const date = new Date(`${value.slice(0, 10)}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat('id-ID', {
+  return new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -26,7 +26,7 @@ export function formatDateShortID(value: string | null): string {
   if (!value) return '';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat('id-ID', {
+  return new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric'
@@ -37,14 +37,14 @@ export function formatTime(value: string | null): string {
   if (!value) return '';
   const [hours, minutes] = value.split(':');
   if (hours === undefined || minutes === undefined) return value;
-  return `${hours}.${minutes}`;
+  return `${hours}:${minutes}`;
 }
 
 export function formatTimeRange(start: string | null, end: string | null): string {
   const from = formatTime(start);
   const to = formatTime(end);
   if (from && to) return `${from} – ${to}`;
-  if (from) return `${from} – selesai`;
+  if (from) return `${from} onwards`;
   return '';
 }
 

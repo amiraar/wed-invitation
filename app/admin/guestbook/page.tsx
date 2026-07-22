@@ -57,20 +57,20 @@ export default function GuestbookPage() {
           <button
             key={item}
             onClick={() => setTab(item)}
-            className={`rounded-full border px-4 py-2 text-xs uppercase tracking-[0.3em] ${
-              tab === item ? 'border-amber-400 bg-amber-100 text-amber-700' : 'border-gray-200'
-            }`}
+            className="rounded-full px-4 py-2 text-xs uppercase tracking-[0.3em] transition-all"
+            style={
+              tab === item
+                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
+            }
           >
             {item}
           </button>
         ))}
       </div>
       {tab === 'pending' && (
-        <button
-          onClick={handleBulkApprove}
-          className="w-fit rounded-full border border-amber-400 bg-amber-400 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white"
-        >
-          Approve Semua Pending
+        <button onClick={handleBulkApprove} className="admin-btn-primary w-fit">
+          Approve All Pending
         </button>
       )}
       <GuestbookTable rows={filtered} onAction={handleAction} />

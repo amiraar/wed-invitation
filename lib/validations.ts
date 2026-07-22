@@ -30,6 +30,11 @@ export const BankAccountSchema = z.object({
   account_name: z.string().min(1).max(150)
 });
 
+export const DressCodeSwatchSchema = z.object({
+  color: z.string().min(1).max(20),
+  label: z.string().min(1).max(50)
+});
+
 export const WeddingConfigSchema = z.object({
   groom_name: z.string().max(100),
   bride_name: z.string().max(100),
@@ -41,7 +46,15 @@ export const WeddingConfigSchema = z.object({
   music_url: z.string().max(500).optional().or(z.literal('')),
   music_autoplay: z.boolean(),
   opening_quote: z.string().max(500).optional().or(z.literal('')),
-  bank_accounts: z.array(BankAccountSchema).max(6).optional()
+  bank_accounts: z.array(BankAccountSchema).max(6).optional(),
+  story_body: z.string().max(2000).optional().or(z.literal('')),
+  venue_image_url: z.string().max(500).optional().or(z.literal('')),
+  dress_code_title: z.string().max(200).optional().or(z.literal('')),
+  dress_code_note: z.string().max(1000).optional().or(z.literal('')),
+  dress_code_avoid_note: z.string().max(500).optional().or(z.literal('')),
+  dress_code_swatches: z.array(DressCodeSwatchSchema).max(10).optional(),
+  wishlist_title: z.string().max(200).optional().or(z.literal('')),
+  wishlist_note: z.string().max(1000).optional().or(z.literal(''))
 });
 
 export const EventSchema = z.object({
@@ -61,12 +74,16 @@ export const EventSchema = z.object({
 
 export const SettingsSchema = z.object({
   theme: z.enum(['dark', 'light']),
-  cover_title: z.string().max(200),
-  cover_subtitle: z.string().max(200),
   show_lamaran: z.boolean(),
   show_akad: z.boolean(),
   show_resepsi: z.boolean(),
   show_gallery: z.boolean(),
   show_envelope: z.boolean(),
   music_autoplay: z.boolean()
+});
+
+export const FaqSchema = z.object({
+  question: z.string().min(1).max(300),
+  answer: z.string().min(1).max(1000),
+  order_index: z.number().int().min(0).max(50)
 });

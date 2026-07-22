@@ -19,11 +19,8 @@ export default function RSVPPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Daftar RSVP</h2>
-        <a
-          href="/api/rsvp/export"
-          className="rounded-full border border-amber-400 bg-amber-400 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white"
-        >
+        <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>RSVP List</h2>
+        <a href="/api/rsvp/export" className="admin-btn-primary">
           Export CSV
         </a>
       </div>

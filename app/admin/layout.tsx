@@ -30,15 +30,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname]);
 
   if (!ready) {
-    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    return (
+      <div className="admin-shell flex min-h-screen items-center justify-center text-sm" style={{ color: 'var(--adm-text-muted)' }}>
+        Loading...
+      </div>
+    );
   }
 
   if (pathname.startsWith('/admin/login')) {
-    return <>{children}</>;
+    return <div className="admin-shell">{children}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="admin-shell">
       <div className="flex">
         <Sidebar />
         <div className="flex-1">

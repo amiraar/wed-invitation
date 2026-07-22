@@ -4,10 +4,10 @@ import { hashPassword } from '../lib/hash';
 import { sql } from '../lib/db';
 
 async function setup(): Promise<void> {
-  console.log('Menjalankan migrasi...');
+  console.log('Running migrations...');
   await runMigrations();
 
-  console.log('Membuat admin user...');
+  console.log('Creating admin user...');
   const passwordHash = await hashPassword('admin123');
 
   await sql`
@@ -25,12 +25,12 @@ async function setup(): Promise<void> {
   `;
 
   console.log('');
-  console.log('✓ Setup selesai.');
-  console.log('✓ Login ke /admin/login dengan: admin / admin123');
-  console.log('✓ Segera ganti password setelah login pertama.');
+  console.log('✓ Setup complete.');
+  console.log('✓ Log in at /admin/login with: admin / admin123');
+  console.log('✓ Change the password right after your first login.');
 }
 
 setup().catch((error) => {
-  console.error('Setup gagal:', error);
+  console.error('Setup failed:', error);
   process.exit(1);
 });

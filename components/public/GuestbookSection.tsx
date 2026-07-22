@@ -52,11 +52,11 @@ export default function GuestbookSection({ messages }: Props) {
     const data = await response.json().catch(() => null);
     if (data?.success) {
       setStatus('success');
-      setMessage('Terima kasih! Ucapan Anda akan tampil setelah disetujui.');
+      setMessage('Thank you! Your message will appear once approved.');
       reset();
     } else {
       setStatus('error');
-      setMessage(data?.error || 'Terjadi kesalahan. Silakan coba lagi.');
+      setMessage(data?.error || 'Something went wrong. Please try again.');
     }
   };
 
@@ -71,9 +71,9 @@ export default function GuestbookSection({ messages }: Props) {
         >
           <SectionHeading
             align="center"
-            eyebrow="Buku Tamu"
-            title="Doa & Ucapan"
-            description="Kirimkan doa dan ucapan terbaik untuk kedua mempelai."
+            eyebrow="Guestbook"
+            title="Wishes & Blessings"
+            description="Send your best wishes and blessings to the couple."
           />
 
           <div className="mt-10 grid gap-6 md:grid-cols-5">
@@ -88,26 +88,26 @@ export default function GuestbookSection({ messages }: Props) {
                     {...register('name')}
                     className={inputClass}
                     style={inputStyle}
-                    placeholder="Nama Anda"
-                    aria-label="Nama"
+                    placeholder="Your name"
+                    aria-label="Name"
                     autoComplete="name"
                   />
-                  {errors.name && <p className="mt-1.5 text-xs text-red-400">Nama minimal 2 karakter.</p>}
+                  {errors.name && <p className="mt-1.5 text-xs text-red-400">Name must be at least 2 characters.</p>}
                 </div>
                 <div>
                   <textarea
                     {...register('message')}
                     className={`${inputClass} h-32 resize-none`}
                     style={inputStyle}
-                    placeholder="Tulis doa dan ucapan"
-                    aria-label="Ucapan"
+                    placeholder="Write your wishes and blessings"
+                    aria-label="Message"
                   />
                   {errors.message && (
-                    <p className="mt-1.5 text-xs text-red-400">Ucapan minimal 5 karakter.</p>
+                    <p className="mt-1.5 text-xs text-red-400">Message must be at least 5 characters.</p>
                   )}
                 </div>
                 <FancyButton type="submit" className="w-full py-4" disabled={isSubmitting}>
-                  {isSubmitting ? 'Mengirim...' : 'Kirim Ucapan'}
+                  {isSubmitting ? 'Sending...' : 'Send Wishes'}
                 </FancyButton>
                 {status !== 'idle' && (
                   <p
@@ -126,7 +126,7 @@ export default function GuestbookSection({ messages }: Props) {
                   className="flex h-full min-h-[10rem] items-center justify-center rounded-3xl p-8 text-center text-sm"
                   style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                 >
-                  Belum ada ucapan. Jadilah yang pertama mengirim doa!
+                  No messages yet. Be the first to send your wishes!
                 </div>
               ) : (
                 <div className="max-h-[32rem] space-y-4 overflow-y-auto pr-1">

@@ -12,14 +12,14 @@ type Props = {
 export default function CoupleSection({ wedding }: Props) {
   const people = [
     {
-      role: 'Mempelai Pria',
-      parentsPrefix: 'Putra dari',
+      role: 'The Groom',
+      parentsPrefix: 'Son of',
       name: wedding.groom_full_name || wedding.groom_name,
       parents: wedding.groom_parents
     },
     {
-      role: 'Mempelai Wanita',
-      parentsPrefix: 'Putri dari',
+      role: 'The Bride',
+      parentsPrefix: 'Daughter of',
       name: wedding.bride_full_name || wedding.bride_name,
       parents: wedding.bride_parents
     }
@@ -36,7 +36,7 @@ export default function CoupleSection({ wedding }: Props) {
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
         >
-          <SectionHeading align="center" eyebrow="Undangan Pernikahan" title="Kedua Mempelai" />
+          <SectionHeading align="center" eyebrow="Wedding Invitation" title="The Couple" />
 
           <div className="mt-12 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-6">
             {people.map((person, index) => (
@@ -67,7 +67,7 @@ export default function CoupleSection({ wedding }: Props) {
                   </h3>
                   {person.parents && (
                     <>
-                      <div className="gold-divider mx-auto my-4 w-16" />
+                      <div className="accent-divider mx-auto my-4 w-16" />
                       <p className="text-xs uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>
                         {person.parentsPrefix}
                       </p>

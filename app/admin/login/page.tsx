@@ -25,37 +25,33 @@ export default function AdminLoginPage() {
       return;
     }
 
-    setError(data?.error || 'Login gagal.');
+    setError(data?.error || 'Login failed.');
     setLoading(false);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-md rounded-3xl border border-gray-200 bg-white p-8 shadow">
-        <h1 className="text-2xl font-semibold text-gray-800">Admin Login</h1>
-        <p className="mt-2 text-sm text-gray-500">Masuk untuk mengelola undangan.</p>
+    <div className="flex min-h-screen items-center justify-center px-6" style={{ background: 'var(--adm-bg)' }}>
+      <div className="admin-card w-full max-w-md p-8">
+        <h1 className="font-display text-2xl italic" style={{ color: '#C8DEC8' }}>Admin Login</h1>
+        <p className="mt-2 text-sm" style={{ color: 'var(--adm-text-muted)' }}>Sign in to manage the invitation.</p>
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <input
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             placeholder="Username"
-            className="rounded-xl border border-gray-200 px-4 py-2"
+            className="admin-input"
           />
           <input
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Password"
-            className="rounded-xl border border-gray-200 px-4 py-2"
+            className="admin-input"
           />
-          <button
-            type="submit"
-            className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-sm text-white"
-            disabled={loading}
-          >
+          <button type="submit" className="admin-btn-primary" disabled={loading}>
             {loading ? 'Loading...' : 'Login'}
           </button>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm" style={{ color: 'var(--adm-danger)' }}>{error}</p>}
         </form>
       </div>
     </div>

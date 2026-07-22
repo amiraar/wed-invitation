@@ -5,6 +5,15 @@ import Toggle from '@/components/ui/Toggle';
 import { defaultSettings } from '@/lib/defaults';
 import type { AppSettings } from '@/lib/types';
 
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="admin-card p-6">
+      <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>{title}</h2>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [musicAutoplay, setMusicAutoplay] = useState(false);
@@ -28,141 +37,121 @@ export default function SettingsPage() {
   }, []);
 
   const handleSave = async () => {
-    setStatus('Menyimpan...');
+    setStatus('Saving...');
     const response = await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...settings, music_autoplay: musicAutoplay })
     });
     const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Tersimpan' : data?.error || 'Gagal menyimpan');
+    setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
   };
 
   const handleReset = async () => {
     if (!confirmReset) {
       setConfirmReset(true);
-      setStatus('Klik sekali lagi untuk konfirmasi reset.');
+      setStatus('Click once more to confirm reset.');
       setTimeout(() => setConfirmReset(false), 5000);
       return;
     }
 
-    setStatus('Mereset data...');
+    setStatus('Resetting data...');
     const response = await fetch('/api/reset', { method: 'POST' });
     const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Data berhasil direset.' : data?.error || 'Reset gagal');
+    setStatus(data?.success ? 'Data reset successfully.' : data?.error || 'Reset failed');
     setConfirmReset(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold">Tema</h2>
-        <div className="mt-4 flex items-center gap-4">
-          <button
-            onClick={() => setSettings((prev) => ({ ...prev, theme: 'dark' }))}
-            className={`rounded-xl border px-4 py-2 text-sm ${
-              settings.theme === 'dark' ? 'border-amber-400 bg-amber-100' : 'border-gray-200'
-            }`}
-          >
-            Dark
-          </button>
+      <SectionCard title="Theme">
+        <div className="flex items-center gap-4">
           <button
             onClick={() => setSettings((prev) => ({ ...prev, theme: 'light' }))}
-            className={`rounded-xl border px-4 py-2 text-sm ${
-              settings.theme === 'light' ? 'border-amber-400 bg-amber-100' : 'border-gray-200'
-            }`}
+            className="rounded-lg px-4 py-2 text-sm transition-all"
+            style={
+              settings.theme === 'light'
+                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
+            }
           >
             Light
           </button>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold">Cover Page</h2>
-        <div className="mt-4 grid gap-4">
-          <input
-            value={settings.cover_title}
-            onChange={(event) => setSettings((prev) => ({ ...prev, cover_title: event.target.value }))}
-            placeholder="Judul cover"
-            className="rounded-xl border border-gray-200 px-3 py-2"
-          />
-          <input
-            value={settings.cover_subtitle}
-            onChange={(event) =>
-              setSettings((prev) => ({ ...prev, cover_subtitle: event.target.value }))
+          <button
+            onClick={() => setSettings((prev) => ({ ...prev, theme: 'dark' }))}
+            className="rounded-lg px-4 py-2 text-sm transition-all"
+            style={
+              settings.theme === 'dark'
+                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
             }
-            placeholder="Subjudul cover"
-            className="rounded-xl border border-gray-200 px-3 py-2"
-          />
+          >
+            Dark
+          </button>
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold">Section Visibility</h2>
-        <div className="mt-4 grid gap-4">
+      <SectionCard title="Section Visibility">
+        <div className="grid gap-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Lamaran</span>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Engagement</span>
             <Toggle
               checked={settings.show_lamaran}
               onChange={(value) => setSettings((prev) => ({ ...prev, show_lamaran: value }))}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Akad</span>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Akad</span>
             <Toggle
               checked={settings.show_akad}
               onChange={(value) => setSettings((prev) => ({ ...prev, show_akad: value }))}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Resepsi</span>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Reception</span>
             <Toggle
               checked={settings.show_resepsi}
               onChange={(value) => setSettings((prev) => ({ ...prev, show_resepsi: value }))}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Galeri</span>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Gallery</span>
             <Toggle
               checked={settings.show_gallery}
               onChange={(value) => setSettings((prev) => ({ ...prev, show_gallery: value }))}
             />
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Amplop</span>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Registry</span>
             <Toggle
               checked={settings.show_envelope}
               onChange={(value) => setSettings((prev) => ({ ...prev, show_envelope: value }))}
             />
           </div>
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold">Music Autoplay</h2>
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-gray-600">Aktifkan autoplay</span>
+      <SectionCard title="Music Autoplay">
+        <div className="flex items-center justify-between">
+          <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Enable autoplay</span>
           <Toggle checked={musicAutoplay} onChange={setMusicAutoplay} />
         </div>
-      </div>
+      </SectionCard>
 
-      <button
-        onClick={handleSave}
-        className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-sm text-white"
-      >
-        Simpan Pengaturan
+      <button onClick={handleSave} className="admin-btn-primary">
+        Save Settings
       </button>
-      <div className="rounded-2xl border border-red-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-red-600">Danger Zone</h2>
-        <p className="mt-2 text-sm text-gray-600">Reset semua data RSVP, ucapan, galeri, dan pengaturan.</p>
-        <button
-          onClick={handleReset}
-          className="mt-4 rounded-xl border border-red-400 bg-red-400 px-4 py-2 text-sm text-white"
-        >
-          {confirmReset ? 'Konfirmasi Reset' : 'Reset Semua Data'}
+
+      <div className="admin-card p-6" style={{ borderColor: 'var(--adm-danger-border)' }}>
+        <h2 className="text-lg" style={{ color: 'var(--adm-danger)' }}>Danger Zone</h2>
+        <p className="mt-2 text-sm" style={{ color: 'var(--adm-text-muted)' }}>
+          Reset all RSVP, guestbook, gallery, and settings data.
+        </p>
+        <button onClick={handleReset} className="admin-btn-danger mt-4">
+          {confirmReset ? 'Confirm Reset' : 'Reset All Data'}
         </button>
       </div>
-      {status && <p className="text-sm text-gray-500">{status}</p>}
+      {status && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>}
     </div>
   );
 }

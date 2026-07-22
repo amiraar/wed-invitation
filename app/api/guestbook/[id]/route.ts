@@ -18,7 +18,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const { id } = await context.params;
   const body = await request.json().catch(() => null);
   const parsed = ActionSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const isApproved = parsed.data.action === 'approve';
   const rows = await sql<GuestbookItem>`
@@ -29,7 +29,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   `;
 
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.GUESTBOOK_PUBLIC]);
   return jsonSuccess(data);
@@ -47,7 +47,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   `;
 
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.GUESTBOOK_PUBLIC]);
   return jsonSuccess({ deleted: true });

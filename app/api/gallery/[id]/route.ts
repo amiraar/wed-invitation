@@ -18,7 +18,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const { id } = await context.params;
   const body = await request.json().catch(() => null);
   const parsed = ReorderSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const rows = await sql<GalleryItem>`
     UPDATE gallery
@@ -28,7 +28,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   `;
 
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.GALLERY]);
   return jsonSuccess(data);
@@ -44,7 +44,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   `;
 
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.GALLERY]);
   return jsonSuccess({ deleted: true });

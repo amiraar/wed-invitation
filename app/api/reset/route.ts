@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
   await sql`TRUNCATE rsvp`;
   await sql`TRUNCATE guestbook`;
   await sql`TRUNCATE gallery`;
+  await sql`TRUNCATE faqs`;
 
   await sql`
     UPDATE events
@@ -40,15 +41,22 @@ export async function POST(request: NextRequest) {
         music_url = '',
         music_autoplay = FALSE,
         opening_quote = '',
+        bank_accounts = '[]'::jsonb,
+        story_body = '',
+        venue_image_url = '',
+        dress_code_title = '',
+        dress_code_note = '',
+        dress_code_avoid_note = '',
+        dress_code_swatches = '[]'::jsonb,
+        wishlist_title = '',
+        wishlist_note = '',
         updated_at = NOW()
     WHERE id = 'main'
   `;
 
   await sql`
     UPDATE app_settings
-    SET theme = 'dark',
-        cover_title = 'Kami Menikah',
-        cover_subtitle = 'Buka undangan untuk melihat detail',
+    SET theme = 'light',
         show_lamaran = TRUE,
         show_akad = TRUE,
         show_resepsi = TRUE,
@@ -63,7 +71,8 @@ export async function POST(request: NextRequest) {
     CACHE_KEYS.SETTINGS,
     CACHE_KEYS.EVENTS,
     CACHE_KEYS.GALLERY,
-    CACHE_KEYS.GUESTBOOK_PUBLIC
+    CACHE_KEYS.GUESTBOOK_PUBLIC,
+    CACHE_KEYS.FAQS
   ]);
 
   return jsonSuccess({ reset: true });

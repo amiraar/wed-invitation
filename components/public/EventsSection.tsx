@@ -19,7 +19,7 @@ type Countdown = {
 };
 
 const romanNumerals = ['I', 'II', 'III'];
-const unitLabels = { days: 'Hari', hours: 'Jam', minutes: 'Menit', seconds: 'Detik' } as const;
+const unitLabels = { days: 'Days', hours: 'Hours', minutes: 'Minutes', seconds: 'Seconds' } as const;
 
 function formatCountdown(target: Date, now: number): Countdown | null {
   const diff = target.getTime() - now;
@@ -60,7 +60,7 @@ export default function EventsSection({ events }: Props) {
         : 'mx-auto max-w-md';
 
   return (
-    <section id="events" className="section-anchor py-20 md:py-28">
+    <section id="schedule" className="section-anchor py-20 md:py-28" style={{ background: 'var(--bg-secondary)' }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           variants={staggerContainerVariant}
@@ -70,9 +70,9 @@ export default function EventsSection({ events }: Props) {
         >
           <SectionHeading
             align="center"
-            eyebrow="Rangkaian Acara"
-            title="Jadwal dan Lokasi"
-            description="Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir."
+            eyebrow="The Day"
+            title="Order of Events"
+            description="It would be our greatest honor to have you join us."
           />
 
           <div className={`mt-12 grid gap-6 ${gridClass}`}>
@@ -101,9 +101,9 @@ export default function EventsSection({ events }: Props) {
                   </h3>
 
                   <div className="mt-4 space-y-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    <p>{formatDateID(event.event_date) || 'Tanggal segera diumumkan'}</p>
+                    <p>{formatDateID(event.event_date) || 'Date to be announced'}</p>
                     {formatTimeRange(event.time_start, event.time_end) && (
-                      <p>Pukul {formatTimeRange(event.time_start, event.time_end)}</p>
+                      <p>At {formatTimeRange(event.time_start, event.time_end)}</p>
                     )}
                   </div>
 
@@ -134,7 +134,7 @@ export default function EventsSection({ events }: Props) {
                         className="rounded-2xl p-3 text-center text-xs uppercase tracking-[0.3em]"
                         style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
                       >
-                        Acara telah berlangsung
+                        This event has passed
                       </p>
                     ) : (
                       target && (
@@ -177,7 +177,7 @@ export default function EventsSection({ events }: Props) {
                         className="mt-6 inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-xs uppercase tracking-[0.25em] transition-colors duration-300 hover:bg-[var(--accent-dim)]"
                         style={{ borderColor: 'var(--border-hover)', color: 'var(--accent)' }}
                       >
-                        Lihat Lokasi
+                        View Location
                         <span aria-hidden>↗</span>
                       </a>
                     )}

@@ -5,7 +5,6 @@ import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import { SettingsSchema } from '@/lib/validations';
-import { sanitizeText } from '@/lib/sanitize';
 import type { AppSettings } from '@/lib/types';
 
 const TTL_MS = 60 * 1000;
@@ -19,7 +18,7 @@ export async function GET() {
   `;
 
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   setCache(CACHE_KEYS.SETTINGS, data, TTL_MS);
   return jsonSuccess(data);
@@ -31,15 +30,13 @@ export async function PUT(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   const parsed = SettingsSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const payload = parsed.data;
 
   const rows = await sql<AppSettings>`
     UPDATE app_settings
     SET theme = ${payload.theme},
-        cover_title = ${sanitizeText(payload.cover_title)},
-        cover_subtitle = ${sanitizeText(payload.cover_subtitle)},
         show_lamaran = ${payload.show_lamaran},
         show_akad = ${payload.show_akad},
         show_resepsi = ${payload.show_resepsi},

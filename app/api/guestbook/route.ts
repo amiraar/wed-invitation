@@ -41,12 +41,12 @@ export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
   const limit = limiter(ip);
   if (!limit.success) {
-    return jsonError('Batas pengiriman ucapan tercapai. Coba lagi nanti.', 429);
+    return jsonError('Message submission limit reached. Please try again later.', 429);
   }
 
   const body = await request.json().catch(() => null);
   const parsed = GuestbookSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const payload = parsed.data;
   await sql`

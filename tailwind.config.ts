@@ -22,7 +22,11 @@ const config: Config = {
           DEFAULT: 'var(--accent)',
           light: 'var(--accent-light)'
         },
-        border: 'var(--border)'
+        border: 'var(--border)',
+        hero: {
+          bg: 'var(--hero-bg)',
+          text: 'var(--hero-text)'
+        }
       },
       fontFamily: {
         display: ['var(--font-display)'],

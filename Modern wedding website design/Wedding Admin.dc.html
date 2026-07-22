@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: #1A2A1A; color: #E8F0E8; font-family: 'Jost', sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(120,160,120,0.4); border-radius: 2px; }
+    input, textarea, select { font-family: 'Jost', sans-serif; }
+    ::placeholder { color: rgba(180,210,180,0.35); }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #7A9E7A !important; }
+    button { cursor: pointer; font-family: 'Jost', sans-serif; }
+    .field-label { font-family: 'Jost', sans-serif; font-weight: 200; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #7A9E7A; display: block; margin-bottom: 7px; }
+    .field-input { width: 100%; padding: 10px 13px; background: rgba(255,255,255,0.06); border: 1px solid rgba(120,160,120,0.25); color: #E8F0E8; font-weight: 300; font-size: 13px; border-radius: 2px; transition: border-color 0.2s; }
+    .field-textarea { width: 100%; padding: 10px 13px; background: rgba(255,255,255,0.06); border: 1px solid rgba(120,160,120,0.25); color: #E8F0E8; font-weight: 300; font-size: 13px; border-radius: 2px; resize: vertical; transition: border-color 0.2s; line-height: 1.6; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-weight: 300; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(200,220,200,0.55); cursor: pointer; border-left: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-right: none; border-bottom: none; text-align: left; width: 100%; }
+    .nav-item:hover { color: #C8DEC8; background: rgba(255,255,255,0.04); }
+    .nav-item.active { color: #C8DEC8; border-left-color: #7A9E7A; background: rgba(120,160,120,0.1); }
+    .save-btn { width: 100%; padding: 13px; background: #4A7A4A; color: #F0F5F0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; border: none; font-weight: 300; transition: background 0.2s; border-radius: 2px; }
+    .save-btn:hover { background: #5A8F5A; }
+    .add-btn { padding: 8px 16px; background: rgba(120,160,120,0.15); border: 1px solid rgba(120,160,120,0.3); color: #7A9E7A; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; border-radius: 2px; transition: all 0.2s; }
+    .add-btn:hover { background: rgba(120,160,120,0.25); }
+    .remove-btn { padding: 5px 10px; background: rgba(180,80,80,0.12); border: 1px solid rgba(180,80,80,0.2); color: rgba(220,140,140,0.7); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; border-radius: 2px; transition: all 0.2s; }
+    .remove-btn:hover { background: rgba(180,80,80,0.22); color: rgba(220,140,140,1); }
+    .badge { display: inline-block; padding: 2px 8px; background: rgba(120,160,120,0.15); color: #7A9E7A; font-size: 10px; letter-spacing: 1.5px; border-radius: 10px; }
+    @keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
+    .guest-input { width:100%; padding:8px 10px; background:transparent; border:none; color:#E8F0E8; font-size:13px; font-weight:300; font-family:'Jost',sans-serif; }
+    .guest-input:focus { background:rgba(120,160,120,0.06); border-radius:2px; outline:none; }
+    .guest-select { width:100%; padding:6px 8px; background:rgba(15,26,15,0.95); border:1px solid rgba(120,160,120,0.2); color:#E8F0E8; font-size:12px; font-weight:300; font-family:'Jost',sans-serif; border-radius:2px; cursor:pointer; }
+    .guest-select:focus { border-color:#7A9E7A; outline:none; }
+    .music-range { -webkit-appearance:none; appearance:none; width:100%; height:5px; background:rgba(120,160,120,0.25); border-radius:3px; outline:none; }
+    .music-range::-webkit-slider-thumb { -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background:#7A9E7A; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+    .music-range::-moz-range-thumb { width:17px; height:17px; border:none; border-radius:50%; background:#7A9E7A; cursor:pointer; }
+    .mu-toggle { flex:1; display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border:1px solid rgba(120,160,120,0.15); border-radius:3px; cursor:pointer; }
+  </style>
+</helmet>
+
+<!-- TOP BAR -->
+<div style="height:52px;background:#0F1A0F;border-bottom:1px solid rgba(120,160,120,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;position:relative;z-index:50">
+  <div style="display:flex;align-items:center;gap:16px">
+    <span style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:#C8DEC8;letter-spacing:1px">A & N</span>
+    <div style="width:1px;height:18px;background:rgba(120,160,120,0.25)"></div>
+    <span style="font-size:11px;font-weight:200;letter-spacing:3px;text-transform:uppercase;color:rgba(200,220,200,0.45)">Wedding CMS</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:11px;font-weight:200;color:rgba(200,220,200,0.35);letter-spacing:1px">{{ savedStatus }}</span>
+    <a href="./Wedding.dc.html" target="_blank" style="padding:7px 16px;border:1px solid rgba(120,160,120,0.3);color:#7A9E7A;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:300;transition:all 0.2s">OPEN SITE ↗</a>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div style="display:flex;height:calc(100vh - 52px)">
+
+  <!-- SIDEBAR NAV -->
+  <div style="width:200px;flex-shrink:0;background:#0F1A0F;border-right:1px solid rgba(120,160,120,0.12);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:20px 20px 12px">
+      <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.45);margin:0 0 12px;font-weight:200">CONTENT</p>
+    </div>
+    <sc-for list="{{ navSections }}" as="sec" hint-placeholder-count="8">
+      <button class="nav-item {{ sec.activeClass }}" onClick="{{ sec.onClick }}">
+        <span style="font-size:14px">{{ sec.icon }}</span>
+        {{ sec.label }}
+      </button>
+    </sc-for>
+    <div style="flex:1"></div>
+    <div style="padding:16px;border-top:1px solid rgba(120,160,120,0.12)">
+      <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.35);margin:0 0 6px;font-weight:200">GUESTS</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:24px;color:#C8DEC8;margin:0;line-height:1">{{ guestCount }}</p>
+      <p style="font-size:10px;color:rgba(200,220,200,0.4);margin:4px 0 12px;font-weight:200">on the list</p>
+      <div style="height:1px;background:rgba(120,160,120,0.1);margin-bottom:12px"></div>
+      <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.35);margin:0 0 6px;font-weight:200">RSVP</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:24px;color:#C8DEC8;margin:0;line-height:1">{{ rsvpCount }}</p>
+      <p style="font-size:10px;color:rgba(200,220,200,0.4);margin:4px 0 0;font-weight:200">responses</p>
+    </div>
+  </div>
+
+  <!-- EDIT PANEL -->
+  <div style="flex:1;overflow-y:auto;background:#1A2A1A">
+
+    <!-- GENERAL INFO -->
+    <sc-if value="{{ sectionIs_general }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">General Info</h2>
+        <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0 0 32px;font-weight:200">Core details that appear throughout the site</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div>
+            <label class="field-label">Partner 1 Name</label>
+            <input class="field-input" type="text" value="{{ f.name1 }}" onChange="{{ f.setName1 }}" placeholder="Amirul">
+          </div>
+          <div>
+            <label class="field-label">Partner 2 Name</label>
+            <input class="field-input" type="text" value="{{ f.name2 }}" onChange="{{ f.setName2 }}" placeholder="Nisrina">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div>
+            <label class="field-label">Date Display</label>
+            <input class="field-input" type="text" value="{{ f.dateDisplay }}" onChange="{{ f.setDateDisplay }}" placeholder="10 · JULY · 2026">
+          </div>
+          <div>
+            <label class="field-label">Date ISO (for countdown)</label>
+            <input class="field-input" type="text" value="{{ f.dateISO }}" onChange="{{ f.setDateISO }}" placeholder="2026-07-10T09:00:00+07:00">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div>
+            <label class="field-label">Ceremony Time</label>
+            <input class="field-input" type="text" value="{{ f.ceremonyTime }}" onChange="{{ f.setCeremonyTime }}" placeholder="9:00 AM">
+          </div>
+          <div>
+            <label class="field-label">RSVP Deadline</label>
+            <input class="field-input" type="text" value="{{ f.rsvpDeadline }}" onChange="{{ f.setRsvpDeadline }}" placeholder="June 25, 2026">
+          </div>
+        </div>
+
+        <div style="height:1px;background:rgba(120,160,120,0.12);margin:28px 0"></div>
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.5);margin:0 0 20px;font-weight:200">VENUE</p>
+        <div style="margin-bottom:16px">
+          <label class="field-label">Venue Name</label>
+          <input class="field-input" type="text" value="{{ f.venueName }}" onChange="{{ f.setVenueName }}" placeholder="Hotel, Yogyakarta">
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="field-label">Venue Address (line breaks with \n)</label>
+          <textarea class="field-textarea" rows="3" value="{{ f.venueAddress }}" onChange="{{ f.setVenueAddress }}" placeholder="Yogyakarta, D.I. Yogyakarta..."></textarea>
+        </div>
+        <div style="margin-bottom:28px">
+          <label class="field-label">Google Maps URL</label>
+          <input class="field-input" type="text" value="{{ f.venueMapUrl }}" onChange="{{ f.setVenueMapUrl }}" placeholder="https://maps.google.com/...">
+        </div>
+
+        <div style="height:1px;background:rgba(120,160,120,0.12);margin:0 0 28px"></div>
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.5);margin:0 0 20px;font-weight:200">OUR STORY</p>
+        <div style="margin-bottom:16px">
+          <label class="field-label">Pull Quote</label>
+          <textarea class="field-textarea" rows="2" value="{{ f.storyQuote }}" onChange="{{ f.setStoryQuote }}" placeholder="We met in a beautiful place..."></textarea>
+        </div>
+        <div style="margin-bottom:28px">
+          <label class="field-label">Story Body Text</label>
+          <textarea class="field-textarea" rows="4" value="{{ f.storyBody }}" onChange="{{ f.setStoryBody }}" placeholder="Every great love story..."></textarea>
+        </div>
+
+        <button class="save-btn" onClick="{{ saveAll }}">SAVE CHANGES</button>
+      </div>
+    </sc-if>
+
+    <!-- SCHEDULE -->
+    <sc-if value="{{ sectionIs_schedule }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">Schedule</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">Order of events on the day</p>
+          </div>
+          <button class="add-btn" onClick="{{ addScheduleItem }}">+ ADD EVENT</button>
+        </div>
+        <sc-for list="{{ scheduleItems }}" as="ev" hint-placeholder-count="5">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(120,160,120,0.12);padding:20px;margin-bottom:12px;border-radius:3px">
+            <div style="display:grid;grid-template-columns:140px 1fr 1fr auto;gap:12px;align-items:start">
+              <div>
+                <label class="field-label">Time</label>
+                <input class="field-input" type="text" value="{{ ev.time }}" onChange="{{ ev.setTime }}" placeholder="09:00 AM">
+              </div>
+              <div>
+                <label class="field-label">Event Name</label>
+                <input class="field-input" type="text" value="{{ ev.title }}" onChange="{{ ev.setTitle }}" placeholder="Akad Nikah">
+              </div>
+              <div>
+                <label class="field-label">Subtitle</label>
+                <input class="field-input" type="text" value="{{ ev.subtitle }}" onChange="{{ ev.setSubtitle }}" placeholder="Sacred ceremony">
+              </div>
+              <div style="padding-top:20px">
+                <button class="remove-btn" onClick="{{ ev.remove }}">✕</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <div style="margin-top:24px">
+          <button class="save-btn" onClick="{{ saveAll }}">SAVE CHANGES</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- DRESS CODE -->
+    <sc-if value="{{ sectionIs_dresscode }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">Dress Code</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">Attire guidance for guests</p>
+          </div>
+          <button class="add-btn" onClick="{{ addDressCode }}">+ ADD SWATCH</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <div>
+            <label class="field-label">Dress Code Title</label>
+            <input class="field-input" type="text" value="{{ f.dressCodeTitle }}" onChange="{{ f.setDressCodeTitle }}" placeholder="Formal Attire">
+          </div>
+          <div>
+            <label class="field-label">Avoidance Note</label>
+            <input class="field-input" type="text" value="{{ f.dressCodeAvoid }}" onChange="{{ f.setDressCodeAvoid }}" placeholder="Please avoid white or black">
+          </div>
+        </div>
+        <div style="margin-bottom:28px">
+          <label class="field-label">Description</label>
+          <textarea class="field-textarea" rows="2" value="{{ f.dressCodeNote }}" onChange="{{ f.setDressCodeNote }}"></textarea>
+        </div>
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.5);margin:0 0 16px;font-weight:200">COLOR SWATCHES</p>
+        <sc-for list="{{ dressCodes }}" as="sw" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(120,160,120,0.12);padding:14px 16px;border-radius:3px">
+            <input type="color" value="{{ sw.color }}" onChange="{{ sw.setColor }}" style="width:40px;height:40px;border:none;background:none;cursor:pointer;border-radius:50%;overflow:hidden">
+            <div style="flex:1">
+              <label class="field-label" style="margin-bottom:5px">Label</label>
+              <input class="field-input" type="text" value="{{ sw.label }}" onChange="{{ sw.setLabel }}" placeholder="Sage">
+            </div>
+            <button class="remove-btn" onClick="{{ sw.remove }}">✕</button>
+          </div>
+        </sc-for>
+        <div style="margin-top:24px">
+          <button class="save-btn" onClick="{{ saveAll }}">SAVE CHANGES</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- REGISTRY -->
+    <sc-if value="{{ sectionIs_registry }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">Registry & Gifts</h2>
+        <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0 0 32px;font-weight:200">Bank transfer and wishlist details</p>
+
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.5);margin:0 0 16px;font-weight:200">BANK TRANSFER</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div>
+            <label class="field-label">Bank Name</label>
+            <input class="field-input" type="text" value="{{ f.bankName }}" onChange="{{ f.setBankName }}" placeholder="Bank BCA">
+          </div>
+          <div>
+            <label class="field-label">Account Number</label>
+            <input class="field-input" type="text" value="{{ f.bankAccount }}" onChange="{{ f.setBankAccount }}" placeholder="1234 5678 90">
+          </div>
+        </div>
+        <div style="margin-bottom:32px">
+          <label class="field-label">Account Holder</label>
+          <input class="field-input" type="text" value="{{ f.bankHolder }}" onChange="{{ f.setBankHolder }}" placeholder="Amirul / Nisrina">
+        </div>
+
+        <div style="height:1px;background:rgba(120,160,120,0.12);margin-bottom:28px"></div>
+        <p style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(120,160,120,0.5);margin:0 0 16px;font-weight:200">WISHLIST</p>
+        <div style="margin-bottom:16px">
+          <label class="field-label">Wishlist Title</label>
+          <input class="field-input" type="text" value="{{ f.wishlistTitle }}" onChange="{{ f.setWishlistTitle }}" placeholder="Home & Living">
+        </div>
+        <div style="margin-bottom:28px">
+          <label class="field-label">Wishlist Note</label>
+          <textarea class="field-textarea" rows="3" value="{{ f.wishlistNote }}" onChange="{{ f.setWishlistNote }}"></textarea>
+        </div>
+
+        <button class="save-btn" onClick="{{ saveAll }}">SAVE CHANGES</button>
+      </div>
+    </sc-if>
+
+    <!-- FAQs -->
+    <sc-if value="{{ sectionIs_faqs }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">FAQs</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">Common guest questions</p>
+          </div>
+          <button class="add-btn" onClick="{{ addFaq }}">+ ADD FAQ</button>
+        </div>
+        <sc-for list="{{ faqItems }}" as="faq" hint-placeholder-count="5">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(120,160,120,0.12);padding:20px;margin-bottom:12px;border-radius:3px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5)">FAQ {{ faq.num }}</span>
+              <button class="remove-btn" onClick="{{ faq.remove }}">✕ REMOVE</button>
+            </div>
+            <div style="margin-bottom:12px">
+              <label class="field-label">Question</label>
+              <input class="field-input" type="text" value="{{ faq.q }}" onChange="{{ faq.setQ }}" placeholder="When should I arrive?">
+            </div>
+            <div>
+              <label class="field-label">Answer</label>
+              <textarea class="field-textarea" rows="2" value="{{ faq.a }}" onChange="{{ faq.setA }}" placeholder="We recommend arriving..."></textarea>
+            </div>
+          </div>
+        </sc-for>
+        <div style="margin-top:24px">
+          <button class="save-btn" onClick="{{ saveAll }}">SAVE CHANGES</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- MUSIC -->
+    <sc-if value="{{ sectionIs_music }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;max-width:700px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">Background Music</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">A song that plays softly on the invitation site</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer">
+            <span style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(200,220,200,0.5)">{{ mu.enabledLabel }}</span>
+            <span style="position:relative;width:46px;height:24px;border-radius:12px;background:{{ mu.enabledTrack }};transition:background 0.2s;display:inline-block;flex-shrink:0">
+              <input type="checkbox" checked="{{ mu.enabled }}" onChange="{{ mu.setEnabled }}" style="opacity:0;position:absolute;inset:0;cursor:pointer;margin:0;width:100%;height:100%">
+              <span style="position:absolute;top:3px;left:{{ mu.enabledKnob }};width:18px;height:18px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3)"></span>
+            </span>
+          </label>
+        </div>
+        <div style="height:1px;background:rgba(120,160,120,0.12);margin:20px 0 28px"></div>
+
+        <label class="field-label">Music Source</label>
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <button onClick="{{ mu.setSourceUrl }}" style="flex:1;padding:12px;border:1px solid {{ mu.urlBorder }};background:{{ mu.urlBg }};color:{{ mu.urlColor }};font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:300;border-radius:2px;transition:all 0.2s">◉ Web Link</button>
+          <button onClick="{{ mu.setSourceFile }}" style="flex:1;padding:12px;border:1px solid {{ mu.fileBorder }};background:{{ mu.fileBg }};color:{{ mu.fileColor }};font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:300;border-radius:2px;transition:all 0.2s">↑ Upload File</button>
+        </div>
+
+        <sc-if value="{{ mu.isUrl }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:22px">
+            <label class="field-label">Audio URL</label>
+            <input class="field-input" type="text" value="{{ mu.url }}" onChange="{{ mu.setUrl }}" placeholder="https://example.com/song.mp3">
+            <p style="font-size:11px;color:rgba(120,160,120,0.42);margin:8px 0 0;font-weight:200;line-height:1.6">Paste a direct link to an audio file (.mp3 / .m4a / .wav). Spotify or YouTube page links won't play — they aren't direct audio files.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ mu.isFile }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom:22px">
+            <label class="field-label">Audio File</label>
+            <div onClick="{{ mu.triggerUpload }}" style="border:1px dashed rgba(120,160,120,0.4);border-radius:3px;padding:26px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.02);transition:border-color 0.2s" style-hover="border-color:#7A9E7A">
+              <p style="font-size:14px;color:#C8DEC8;margin:0 0 4px;font-weight:300">{{ mu.fileLabel }}</p>
+              <p style="font-size:11px;color:rgba(120,160,120,0.42);margin:0;font-weight:200">Click to choose an MP3, M4A, or WAV file</p>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ mu.hasSource }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(120,160,120,0.12);border-radius:3px;padding:16px;margin-bottom:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5)">Preview</span>
+              <span style="font-size:11px;color:rgba(120,160,120,0.5);font-weight:200">Length: {{ mu.durationLabel }}</span>
+            </div>
+            <audio ref="{{ mu.audioRef }}" src="{{ mu.previewSrc }}" controls style="width:100%;height:36px"></audio>
+          </div>
+        </sc-if>
+
+        <div style="margin-bottom:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <label class="field-label" style="margin:0">Volume</label>
+            <span style="font-size:13px;color:#C8DEC8;font-family:'Cormorant Garamond',serif">{{ mu.volume }}%</span>
+          </div>
+          <input class="music-range" type="range" min="0" max="100" value="{{ mu.volume }}" onChange="{{ mu.setVolume }}" onInput="{{ mu.setVolume }}">
+        </div>
+
+        <div style="display:flex;gap:12px;margin-bottom:22px">
+          <label class="mu-toggle">
+            <div>
+              <span style="font-size:13px;color:#E8F0E8;font-weight:300">Loop</span>
+              <p style="font-size:10px;color:rgba(120,160,120,0.4);margin:3px 0 0;font-weight:200">Repeat continuously</p>
+            </div>
+            <input type="checkbox" checked="{{ mu.loop }}" onChange="{{ mu.setLoop }}" style="accent-color:#7A9E7A;width:17px;height:17px;cursor:pointer">
+          </label>
+          <label class="mu-toggle">
+            <div>
+              <span style="font-size:13px;color:#E8F0E8;font-weight:300">Autoplay</span>
+              <p style="font-size:10px;color:rgba(120,160,120,0.4);margin:3px 0 0;font-weight:200">Start on page load</p>
+            </div>
+            <input type="checkbox" checked="{{ mu.autoplay }}" onChange="{{ mu.setAutoplay }}" style="accent-color:#7A9E7A;width:17px;height:17px;cursor:pointer">
+          </label>
+        </div>
+
+        <div style="border:1px solid rgba(120,160,120,0.15);border-radius:3px;padding:18px;margin-bottom:16px">
+          <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+            <div>
+              <span style="font-size:13px;color:#E8F0E8;font-weight:300">Trim the track</span>
+              <p style="font-size:11px;color:rgba(120,160,120,0.42);margin:4px 0 0;font-weight:200">Play only a portion of the song, then loop that segment</p>
+            </div>
+            <input type="checkbox" checked="{{ mu.trimEnabled }}" onChange="{{ mu.setTrimEnabled }}" style="accent-color:#7A9E7A;width:17px;height:17px;cursor:pointer;flex-shrink:0;margin-left:16px">
+          </label>
+          <sc-if value="{{ mu.trimEnabled }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px">
+              <div>
+                <label class="field-label">Start (seconds)</label>
+                <input class="field-input" type="number" min="0" value="{{ mu.startTime }}" onChange="{{ mu.setStartTime }}">
+                <p style="font-size:11px;color:rgba(120,160,120,0.4);margin:6px 0 0;font-weight:200">= {{ mu.startLabel }}</p>
+              </div>
+              <div>
+                <label class="field-label">End (seconds)</label>
+                <input class="field-input" type="number" min="0" value="{{ mu.endTime }}" onChange="{{ mu.setEndTime }}">
+                <p style="font-size:11px;color:rgba(120,160,120,0.4);margin:6px 0 0;font-weight:200">= {{ mu.endLabel }}</p>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <p style="font-size:11px;color:rgba(120,160,120,0.32);margin:0 0 24px;font-weight:200;line-height:1.6">Tip: upload the full song and trim + loop here — you keep the original and can re-adjust the played portion anytime, no audio editor needed.</p>
+
+        <button class="save-btn" onClick="{{ mu.save }}">SAVE MUSIC</button>
+      </div>
+    </sc-if>
+
+    <!-- RSVP RESPONSES -->
+    <sc-if value="{{ sectionIs_rsvps }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">RSVP Responses</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">{{ rsvpCount }} responses · {{ rsvpAccepting }} attending · {{ rsvpDeclining }} declined</p>
+          </div>
+          <button class="add-btn" onClick="{{ refreshRsvps }}" style="border-color:rgba(120,160,120,0.3)">↻ REFRESH</button>
+        </div>
+        <sc-if value="{{ hasNoRsvps }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:64px 40px;border:1px solid rgba(120,160,120,0.12);border-radius:3px">
+            <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:rgba(200,222,200,0.4);margin:0 0 8px">No responses yet</p>
+            <p style="font-size:12px;color:rgba(200,220,200,0.3);margin:0;font-weight:200">RSVP submissions will appear here</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasRsvps }}" hint-placeholder-val="{{ false }}">
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:13px">
+              <thead>
+                <tr style="border-bottom:1px solid rgba(120,160,120,0.2)">
+                  <th style="text-align:left;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Name</th>
+                  <th style="text-align:left;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Email</th>
+                  <th style="text-align:center;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Status</th>
+                  <th style="text-align:center;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Guests</th>
+                  <th style="text-align:left;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Message</th>
+                  <th style="text-align:left;padding:10px 14px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.6);font-weight:300">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ rsvpRows }}" as="row" hint-placeholder-count="3">
+                  <tr style="border-bottom:1px solid rgba(120,160,120,0.08);transition:background 0.15s" style-hover="background:rgba(255,255,255,0.025)">
+                    <td style="padding:12px 14px;color:#E8F0E8;font-weight:300">{{ row.name }}</td>
+                    <td style="padding:12px 14px;color:rgba(200,220,200,0.6);font-weight:300;font-size:12px">{{ row.email }}</td>
+                    <td style="padding:12px 14px;text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;letter-spacing:1px;font-weight:300;background:{{ row.statusBg }};color:{{ row.statusColor }}">{{ row.statusLabel }}</span></td>
+                    <td style="padding:12px 14px;text-align:center;color:#C8DEC8;font-family:'Cormorant Garamond',serif;font-size:18px">{{ row.guests }}</td>
+                    <td style="padding:12px 14px;color:rgba(200,220,200,0.5);font-weight:300;font-size:12px;max-width:200px">{{ row.message }}</td>
+                    <td style="padding:12px 14px;color:rgba(200,220,200,0.35);font-size:11px;font-weight:200;white-space:nowrap">{{ row.date }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- GUEST LIST -->
+    <sc-if value="{{ sectionIs_guestlist }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 36px;display:flex;flex-direction:column;height:100%;overflow:hidden">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-shrink:0">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:28px;color:#C8DEC8;margin:0 0 6px">Guest List</h2>
+            <p style="font-size:12px;color:rgba(200,220,200,0.4);margin:0;font-weight:200">{{ guestCount }} total · {{ guestConfirmed }} confirmed · {{ guestDeclined }} declined</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="add-btn" onClick="{{ triggerImport }}" style="font-size:10px">↑ IMPORT CSV</button>
+            <button class="add-btn" onClick="{{ exportCSV }}" style="font-size:10px">↓ EXPORT CSV</button>
+            <button onClick="{{ addGuest }}" style="padding:8px 16px;background:#4A7A4A;border:none;color:#F0F5F0;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:300;border-radius:2px;cursor:pointer">+ GUEST</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-shrink:0;flex-wrap:wrap">
+          <div style="padding:5px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(120,160,120,0.15);border-radius:20px;font-size:11px;font-weight:300;color:rgba(200,220,200,0.55)">{{ guestCount }} Total</div>
+          <div style="padding:5px 14px;background:rgba(200,180,60,0.06);border:1px solid rgba(200,180,60,0.2);border-radius:20px;font-size:11px;font-weight:300;color:rgba(220,200,100,0.7)">{{ guestInvited }} Invited</div>
+          <div style="padding:5px 14px;background:rgba(80,160,80,0.06);border:1px solid rgba(80,160,80,0.2);border-radius:20px;font-size:11px;font-weight:300;color:rgba(120,200,120,0.8)">{{ guestConfirmed }} Confirmed</div>
+          <div style="padding:5px 14px;background:rgba(180,80,80,0.06);border:1px solid rgba(180,80,80,0.18);border-radius:20px;font-size:11px;font-weight:300;color:rgba(220,140,140,0.7)">{{ guestDeclined }} Declined</div>
+        </div>
+        <div style="margin-bottom:14px;flex-shrink:0">
+          <input class="field-input" type="text" placeholder="Search by name, group, phone…" value="{{ guestSearch }}" onChange="{{ setGuestSearch }}" style="max-width:340px">
+        </div>
+        <div style="overflow:auto;border:1px solid rgba(120,160,120,0.12);border-radius:3px;flex:1;min-height:180px">
+          <table style="width:100%;border-collapse:collapse;min-width:700px">
+            <thead style="position:sticky;top:0;z-index:2">
+              <tr style="background:#0F1A0F;border-bottom:1px solid rgba(120,160,120,0.2)">
+                <th style="padding:10px 12px;text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300;width:38px">#</th>
+                <th style="padding:10px 12px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300">Name *</th>
+                <th style="padding:10px 12px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300">Phone / WA</th>
+                <th style="padding:10px 12px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300">Group</th>
+                <th style="padding:10px 12px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300;width:140px">Status</th>
+                <th style="padding:10px 12px;text-align:left;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:300">Notes</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ guestRows }}" as="g" hint-placeholder-count="4">
+                <tr style="border-bottom:1px solid rgba(120,160,120,0.06);background:{{ g.rowBg }}" style-hover="background:rgba(255,255,255,0.03)">
+                  <td style="padding:4px 8px;color:rgba(120,160,120,0.4);font-size:11px;text-align:center;font-family:'Cormorant Garamond',serif">{{ g.num }}</td>
+                  <td style="padding:2px 4px"><input class="guest-input" type="text" value="{{ g.name }}" onChange="{{ g.setName }}" placeholder="Guest name"></td>
+                  <td style="padding:2px 4px"><input class="guest-input" type="text" value="{{ g.phone }}" onChange="{{ g.setPhone }}" placeholder="08xxx"></td>
+                  <td style="padding:2px 4px"><input class="guest-input" type="text" value="{{ g.group }}" onChange="{{ g.setGroup }}" placeholder="Family"></td>
+                  <td style="padding:2px 6px">
+                    <select class="guest-select" value="{{ g.status }}" onChange="{{ g.setStatus }}" style="color:{{ g.statusColor }}">
+                      <option value="invited">Invited</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="declined">Declined</option>
+                    </select>
+                  </td>
+                  <td style="padding:2px 4px"><input class="guest-input" type="text" value="{{ g.notes }}" onChange="{{ g.setNotes }}" placeholder="—"></td>
+                  <td style="padding:4px 6px;text-align:center">
+                    <button onClick="{{ g.remove }}" style="background:none;border:none;color:rgba(220,140,140,0.45);font-size:14px;padding:2px 4px;line-height:1;cursor:pointer" style-hover="color:rgba(220,140,140,0.9)">✕</button>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ noGuests }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:52px 40px">
+              <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:rgba(200,222,200,0.28);margin:0 0 8px">No guests yet</p>
+              <p style="font-size:11px;color:rgba(200,220,200,0.22);margin:0;font-weight:200">Add guests manually or import a CSV file</p>
+            </div>
+          </sc-if>
+        </div>
+        <div style="margin-top:10px;margin-bottom:16px;flex-shrink:0">
+          <p style="font-size:11px;color:rgba(120,160,120,0.32);margin:0;font-weight:200">CSV columns: <span style="color:rgba(120,160,120,0.52);font-family:monospace">Name, Phone, Group, Status, Notes</span> · First row may be a header</p>
+        </div>
+        <div style="flex-shrink:0">
+          <button class="save-btn" onClick="{{ saveGuests }}">SAVE GUEST LIST</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <!-- LIVE PREVIEW PANE -->
+  <div style="width:{{ previewWidth }};flex-shrink:0;background:#0D1A0D;border-left:{{ previewBorder }};display:flex;flex-direction:column;overflow:hidden;transition:width 0.35s cubic-bezier(0.16,1,0.3,1)">
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(120,160,120,0.1);display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(120,160,120,0.5);font-weight:200">LIVE PREVIEW</span>
+      <button onClick="{{ reloadPreview }}" style="background:none;border:none;color:rgba(120,160,120,0.5);font-size:14px;padding:2px 6px">↻</button>
+    </div>
+    <div style="flex:1;overflow:hidden;position:relative">
+      <iframe ref="{{ iframeRef }}" src="./Wedding.dc.html" style="position:absolute;top:0;left:0;width:1280px;height:900px;transform:scale(0.328);transform-origin:top left;border:none;pointer-events:none"></iframe>
+    </div>
+    <div style="padding:10px 16px;border-top:1px solid rgba(120,160,120,0.1)">
+      <p style="font-size:10px;color:rgba(120,160,120,0.35);margin:0;font-weight:200;letter-spacing:1px">Save to refresh · 1280px scaled to 420px</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Hidden CSV import input -->
+<input ref="{{ csvInputRef }}" type="file" accept=".csv,.txt" onChange="{{ onImportFile }}" style="display:none">
+<!-- Hidden music file input -->
+<input ref="{{ mu.audioFileRef }}" type="file" accept="audio/*" onChange="{{ mu.onFile }}" style="display:none">
+
+<!-- TOAST -->
+<sc-if value="{{ showToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#4A7A4A;color:#F0F5F0;padding:12px 24px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:300;border-radius:3px;animation:toastIn 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:200">
+    Changes saved ✓
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;accentTheme&quot;:{&quot;section&quot;:&quot;Feel&quot;,&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sage&quot;,&quot;slate&quot;,&quot;terracotta&quot;,&quot;mauve&quot;],&quot;default&quot;:&quot;sage&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;uiDensity&quot;:{&quot;section&quot;:&quot;Feel&quot;,&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;compact&quot;,&quot;comfortable&quot;,&quot;spacious&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showPreview&quot;:{&quot;section&quot;:&quot;Feel&quot;,&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;maxGuestCapacity&quot;:{&quot;section&quot;:&quot;Guest List&quot;,&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1000,&quot;min&quot;:0,&quot;max&quot;:1000,&quot;unit&quot;:&quot;guests&quot;,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  _defaults = {
+    name1: 'Amirul', name2: 'Nisrina',
+    dateDisplay: '10 · JULY · 2026',
+    dateISO: '2026-07-10T09:00:00+07:00',
+    venueName: 'Hotel, Yogyakarta',
+    venueAddress: 'Yogyakarta, D.I. Yogyakarta, Indonesia\nCeremony begins at 9:00 AM\nComplimentary parking available',
+    venueMapUrl: 'https://maps.google.com/?q=Hotel+Yogyakarta+Indonesia',
+    ceremonyTime: '9:00 AM',
+    rsvpDeadline: 'June 25, 2026',
+    storyQuote: 'We met in a beautiful place on earth,\nthen began painting our story together.',
+    storyBody: 'Every great love story has a beginning — ours started in a single beautiful moment that felt like destiny. A chance meeting that blossomed into a bond neither of us could imagine living without. Today we invite you to witness the next chapter of our journey as we say "I do."',
+    bankName: 'Bank BCA', bankAccount: '1234 5678 90', bankHolder: 'Amirul / Nisrina',
+    wishlistTitle: 'Home & Living',
+    wishlistNote: "We're building our first home together. Kitchenware, linens, and home décor are always warmly welcomed ♥",
+    dressCodeTitle: 'Formal Attire',
+    dressCodeNote: 'We kindly request formal attire in the following palette. Your coordinated presence will make our celebration even more beautiful.',
+    dressCodeAvoid: 'Please kindly avoid white or black attire',
+    schedule: [
+      { time: '09:00 AM', title: 'Akad Nikah', subtitle: 'Sacred marriage ceremony' },
+      { time: '10:00 AM', title: 'Sesi Foto Bersama', subtitle: 'Family & couple portraits' },
+      { time: '11:00 AM', title: 'Resepsi Pernikahan', subtitle: 'Reception doors open' },
+      { time: '12:00 PM', title: 'Makan Siang', subtitle: 'Wedding luncheon & toast' },
+      { time: '13:30 PM', title: 'Penutupan', subtitle: 'Farewell & blessings' },
+    ],
+    dressCodes: [
+      { color: '#7A9E7A', label: 'Sage' }, { color: '#C8DEC8', label: 'Mint' },
+      { color: '#F5F0E6', label: 'Ivory' }, { color: '#C4A96A', label: 'Champagne' },
+      { color: '#8B7355', label: 'Earth' },
+    ],
+    faqs: [
+      { q: 'When should I arrive?', a: 'We recommend arriving 15–30 minutes before the ceremony at 9:00 AM.' },
+      { q: 'Is parking available at the hotel?', a: 'Complimentary parking is available. Please inform hotel staff upon arrival.' },
+      { q: 'Can I bring a plus-one?', a: 'Please indicate your total number of guests in the RSVP.' },
+      { q: 'What is the RSVP deadline?', a: 'Kindly RSVP by June 25, 2026 so we can finalize all arrangements.' },
+      { q: 'Will there be a gift registry?', a: 'Your presence is our greatest gift. Please see the Registry section for details.' },
+    ],
+  };
+
+  state = {
+    section: 'general',
+    form: { ...this._defaults },
+    rsvpList: [],
+    guestList: [],
+    guestSearch: '',
+    music: { enabled:false, sourceType:'url', url:'', fileName:'', volume:70, loop:true, autoplay:true, trimEnabled:false, startTime:0, endTime:0, duration:0 },
+    musicFileURL: '',
+    showToast: false,
+    savedStatus: '',
+  };
+
+  _iframeEl = null;
+  _csvInputEl = null;
+  _musicAudioEl = null;
+  _musicFileInputEl = null;
+  _pendingMusicBlob = null;
+
+  componentDidMount() {
+    const raw = localStorage.getItem('wedding_cms_data');
+    if (raw) {
+      try {
+        const saved = JSON.parse(raw);
+        this.setState(s => ({ form: { ...s.form, ...saved }, savedStatus: 'Last saved: ' + new Date(saved._savedAt || Date.now()).toLocaleTimeString() }));
+      } catch(e) {}
+    }
+    this._loadRsvps();
+    this._loadGuests();
+    this._loadMusic();
+    this._applyTheme();
+  }
+
+  componentDidUpdate() {
+    this._applyTheme();
+  }
+
+  _loadRsvps() {
+    try {
+      const list = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
+      this.setState({ rsvpList: list });
+    } catch(e) {}
+  }
+
+  _setField(key) {
+    return e => this.setState(s => ({ form: { ...s.form, [key]: e.target.value } }));
+  }
+
+  _saveAll() {
+    const data = { ...this.state.form, _savedAt: new Date().toISOString() };
+    localStorage.setItem('wedding_cms_data', JSON.stringify(data));
+    this.setState({ showToast: true, savedStatus: 'Saved at ' + new Date().toLocaleTimeString() });
+    setTimeout(() => this.setState({ showToast: false }), 2500);
+    if (this._iframeEl) this._iframeEl.src = this._iframeEl.src;
+  }
+
+  _loadGuests() {
+    try { const l = JSON.parse(localStorage.getItem('wedding_guests') || '[]'); this.setState({ guestList: l }); } catch(e) {}
+  }
+
+  _idbSet(key, blob) {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open('weddingMedia', 1);
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('media')) req.result.createObjectStore('media'); };
+      req.onsuccess = () => { const db = req.result; const tx = db.transaction('media','readwrite'); tx.objectStore('media').put(blob, key); tx.oncomplete = () => { db.close(); res(); }; tx.onerror = () => rej(tx.error); };
+      req.onerror = () => rej(req.error);
+    });
+  }
+
+  _idbGet(key) {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open('weddingMedia', 1);
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('media')) req.result.createObjectStore('media'); };
+      req.onsuccess = () => { const db = req.result; const tx = db.transaction('media','readonly'); const g = tx.objectStore('media').get(key); g.onsuccess = () => { const v = g.result; db.close(); res(v); }; g.onerror = () => rej(g.error); };
+      req.onerror = () => rej(req.error);
+    });
+  }
+
+  _loadMusic() {
+    let cfg = null;
+    try { cfg = JSON.parse(localStorage.getItem('wedding_music') || 'null'); } catch(e) {}
+    if (!cfg) return;
+    this.setState(s => ({ music: { ...s.music, ...cfg } }));
+    if (cfg.sourceType === 'file') {
+      this._idbGet('wedding_music_blob').then(blob => { if (blob) { const u = URL.createObjectURL(blob); this.setState({ musicFileURL: u }); this._probeDuration(u); } }).catch(()=>{});
+    } else if (cfg.url) {
+      this._probeDuration(cfg.url);
+    }
+  }
+
+  _probeDuration(src) {
+    try {
+      const a = document.createElement('audio');
+      a.preload = 'metadata'; a.src = src;
+      a.addEventListener('loadedmetadata', () => {
+        const dur = Math.floor(a.duration) || 0;
+        this.setState(s => ({ music: { ...s.music, duration: dur, endTime: s.music.endTime || dur } }));
+      });
+    } catch(e) {}
+  }
+
+  _onMusicFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    this._pendingMusicBlob = file;
+    const url = URL.createObjectURL(file);
+    this.setState(s => ({ musicFileURL: url, music: { ...s.music, sourceType: 'file', fileName: file.name } }));
+    this._probeDuration(url);
+    if (this._musicFileInputEl) this._musicFileInputEl.value = '';
+  }
+
+  async _saveMusic() {
+    const m = { ...this.state.music };
+    if (this._pendingMusicBlob) {
+      try { await this._idbSet('wedding_music_blob', this._pendingMusicBlob); this._pendingMusicBlob = null; } catch(e) {}
+    }
+    localStorage.setItem('wedding_music', JSON.stringify(m));
+    this.setState({ showToast: true, savedStatus: 'Saved at ' + new Date().toLocaleTimeString() });
+    setTimeout(() => this.setState({ showToast: false }), 2500);
+    if (this._iframeEl) this._iframeEl.src = this._iframeEl.src;
+  }
+
+  _exportCSV() {
+    const list = this.state.guestList;
+    const esc = v => { const s = v||''; return (s.includes(',') || s.includes('"')) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+    const rows = ['Name,Phone/WA,Group,Status,Notes', ...list.map(g => [esc(g.name),esc(g.phone),esc(g.group),esc(g.status||'invited'),esc(g.notes)].join(','))];
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' }));
+    a.download = 'wedding-guests.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  _parseCSV(text) {
+    const split = row => { const c=[]; let cur='',q=false; for (let i=0;i<row.length;i++) { const ch=row[i]; if(ch==='"'){if(q&&row[i+1]==='"'){cur+='"';i++;}else{q=!q;} continue;} if(ch===','&&!q){c.push(cur.trim());cur='';continue;} cur+=ch; } c.push(cur.trim()); return c; };
+    const lines = text.trim().split(/\r?\n/).filter(l=>l.trim());
+    if (!lines.length) return [];
+    const fl = lines[0].toLowerCase();
+    const start = (fl.includes('name')&&(fl.includes('phone')||fl.includes('group')||fl.includes('status'))) ? 1 : 0;
+    return lines.slice(start).map((l,i) => { const c=split(l); if(!c[0]) return null; const st=(c[3]||'').toLowerCase(); return { id:'imp-'+Date.now()+'-'+i, name:c[0]||'', phone:c[1]||'', group:c[2]||'', status:['confirmed','declined'].includes(st)?st:'invited', notes:c[4]||'' }; }).filter(Boolean);
+  }
+
+  _getThemeVars() {
+    const t = this.props.accentTheme || 'sage';
+    return { sage:{a:'#7A9E7A',rgb:'120,158,122',btn:'#4A7A4A',lbl:'#C8DEC8',bg:'#1A2A1A',dk:'#0F1A0F'}, slate:{a:'#7A8FA8',rgb:'122,143,168',btn:'#4A6078',lbl:'#C8D4E0',bg:'#1A1E2A',dk:'#0F1220'}, terracotta:{a:'#A87A6A',rgb:'168,122,106',btn:'#7A4A3A',lbl:'#E0C8C0',bg:'#231A18',dk:'#160F0E'}, mauve:{a:'#9A7AAA',rgb:'154,122,170',btn:'#6A4A7A',lbl:'#D8C8E0',bg:'#1E1A24',dk:'#130F18'} }[t] || { a:'#7A9E7A',rgb:'120,158,122',btn:'#4A7A4A',lbl:'#C8DEC8',bg:'#1A2A1A',dk:'#0F1A0F' };
+  }
+
+  _applyTheme() {
+    const t = this._getThemeVars();
+    const d = this.props.uiDensity || 'comfortable';
+    const navP = d==='compact'?'7px 20px':d==='spacious'?'14px 20px':'10px 20px';
+    const navFs = d==='compact'?'11px':d==='spacious'?'13px':'12px';
+    const fieldP = d==='compact'?'7px 11px':d==='spacious'?'13px 15px':'10px 13px';
+    let el = document.getElementById('__admin-theme');
+    if (!el) { el = document.createElement('style'); el.id='__admin-theme'; document.head.appendChild(el); }
+    el.textContent = `body{background:${t.bg}!important} .nav-item.active{border-left-color:${t.a}!important;background:rgba(${t.rgb},0.1)!important;color:${t.lbl}!important} .nav-item:hover{color:${t.lbl}!important;background:rgba(${t.rgb},0.05)!important} .field-label{color:${t.a}!important} .save-btn{background:${t.btn}!important} .save-btn:hover{background:${t.a}!important} .add-btn{color:${t.a}!important;border-color:rgba(${t.rgb},0.35)!important;background:rgba(${t.rgb},0.08)!important} .add-btn:hover{background:rgba(${t.rgb},0.2)!important} .nav-item{padding:${navP}!important;font-size:${navFs}!important} .field-input,.field-textarea{padding:${fieldP}!important} input:focus,textarea:focus,select:focus{border-color:${t.a}!important}`;
+  }
+
+  renderVals() {
+    const { section, form, rsvpList, guestList, guestSearch, showToast, savedStatus } = this.state;
+    const f = form;
+
+    const navSections = [
+      { id: 'general', icon: '✦', label: 'General Info' },
+      { id: 'schedule', icon: '◷', label: 'Schedule' },
+      { id: 'dresscode', icon: '◈', label: 'Dress Code' },
+      { id: 'registry', icon: '◇', label: 'Registry' },
+      { id: 'faqs', icon: '?', label: 'FAQs' },
+      { id: 'music', icon: '♪', label: 'Music' },
+      { id: 'rsvps', icon: '◉', label: 'RSVP Responses' },
+      { id: 'guestlist', icon: '◎', label: 'Guest List' },
+    ].map(s => ({ ...s, activeClass: section === s.id ? 'active' : '', onClick: () => this.setState({ section: s.id }) }));
+
+    // Schedule items
+    const scheduleItems = (f.schedule || []).map((ev, i) => ({
+      ...ev,
+      setTime: e => {
+        const arr = [...f.schedule]; arr[i] = { ...arr[i], time: e.target.value };
+        this.setState(s => ({ form: { ...s.form, schedule: arr } }));
+      },
+      setTitle: e => {
+        const arr = [...f.schedule]; arr[i] = { ...arr[i], title: e.target.value };
+        this.setState(s => ({ form: { ...s.form, schedule: arr } }));
+      },
+      setSubtitle: e => {
+        const arr = [...f.schedule]; arr[i] = { ...arr[i], subtitle: e.target.value };
+        this.setState(s => ({ form: { ...s.form, schedule: arr } }));
+      },
+      remove: () => {
+        const arr = f.schedule.filter((_, j) => j !== i);
+        this.setState(s => ({ form: { ...s.form, schedule: arr } }));
+      },
+    }));
+
+    // Dress codes
+    const dressCodes = (f.dressCodes || []).map((sw, i) => ({
+      ...sw,
+      setColor: e => {
+        const arr = [...f.dressCodes]; arr[i] = { ...arr[i], color: e.target.value };
+        this.setState(s => ({ form: { ...s.form, dressCodes: arr } }));
+      },
+      setLabel: e => {
+        const arr = [...f.dressCodes]; arr[i] = { ...arr[i], label: e.target.value };
+        this.setState(s => ({ form: { ...s.form, dressCodes: arr } }));
+      },
+      remove: () => {
+        const arr = f.dressCodes.filter((_, j) => j !== i);
+        this.setState(s => ({ form: { ...s.form, dressCodes: arr } }));
+      },
+    }));
+
+    // FAQs
+    const faqItems = (f.faqs || []).map((faq, i) => ({
+      ...faq, num: i + 1,
+      setQ: e => {
+        const arr = [...f.faqs]; arr[i] = { ...arr[i], q: e.target.value };
+        this.setState(s => ({ form: { ...s.form, faqs: arr } }));
+      },
+      setA: e => {
+        const arr = [...f.faqs]; arr[i] = { ...arr[i], a: e.target.value };
+        this.setState(s => ({ form: { ...s.form, faqs: arr } }));
+      },
+      remove: () => {
+        const arr = f.faqs.filter((_, j) => j !== i);
+        this.setState(s => ({ form: { ...s.form, faqs: arr } }));
+      },
+    }));
+
+    // RSVP rows
+    const accepting = rsvpList.filter(r => r.attending === 'yes');
+    const declining = rsvpList.filter(r => r.attending === 'no');
+    const rsvpRows = rsvpList.map(r => ({
+      name: r.name || '—',
+      email: r.email || '—',
+      guests: r.guests || '1',
+      message: r.message ? (r.message.length > 40 ? r.message.slice(0, 40) + '…' : r.message) : '—',
+      date: r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—',
+      statusLabel: r.attending === 'yes' ? 'ATTENDING' : 'DECLINED',
+      statusBg: r.attending === 'yes' ? 'rgba(80,160,80,0.15)' : 'rgba(180,80,80,0.12)',
+      statusColor: r.attending === 'yes' ? '#6DBF6D' : 'rgba(220,140,140,0.8)',
+    }));
+
+    // Guest list
+    const guestInvited = guestList.filter(g => g.status === 'invited').length;
+    const guestConfirmed = guestList.filter(g => g.status === 'confirmed').length;
+    const guestDeclined = guestList.filter(g => g.status === 'declined').length;
+    const stColors = { invited:'rgba(220,200,100,0.85)', confirmed:'#6DBF6D', declined:'rgba(220,140,140,0.85)' };
+    const filtered = guestSearch ? guestList.filter(g => (g.name||'').toLowerCase().includes(guestSearch.toLowerCase()) || (g.group||'').toLowerCase().includes(guestSearch.toLowerCase()) || (g.phone||'').includes(guestSearch)) : guestList;
+    const guestRows = filtered.map((g, di) => {
+      const up = (f,v) => this.setState(s => ({ guestList: s.guestList.map(x => x.id===g.id ? {...x,[f]:v} : x) }));
+      return { ...g, num: guestList.findIndex(x=>x.id===g.id)+1, rowBg: di%2===0?'transparent':'rgba(255,255,255,0.018)', statusColor: stColors[g.status]||stColors.invited, setName:e=>up('name',e.target.value), setPhone:e=>up('phone',e.target.value), setGroup:e=>up('group',e.target.value), setStatus:e=>up('status',e.target.value), setNotes:e=>up('notes',e.target.value), remove:()=>this.setState(s=>({guestList:s.guestList.filter(x=>x.id!==g.id)})) };
+    });
+
+    // Theme / layout
+    const showPreview = this.props.showPreview !== false;
+    const maxCap = this.props.maxGuestCapacity || 0;
+
+    // Music
+    const m = this.state.music;
+    const fmt = s => { s = Math.max(0, Math.floor(s || 0)); const mm = Math.floor(s/60), ss = s%60; return mm + ':' + String(ss).padStart(2,'0'); };
+    const isFile = m.sourceType === 'file';
+    const previewSrc = isFile ? (this.state.musicFileURL || '') : (m.url || '');
+    const setM = (k, v) => this.setState(s => ({ music: { ...s.music, [k]: v } }));
+    const mu = {
+      enabled: m.enabled,
+      enabledLabel: m.enabled ? 'On' : 'Off',
+      enabledTrack: m.enabled ? '#4A7A4A' : 'rgba(120,160,120,0.25)',
+      enabledKnob: m.enabled ? '25px' : '3px',
+      setEnabled: e => setM('enabled', e.target.checked),
+      isUrl: !isFile, isFile,
+      urlBg: !isFile ? 'rgba(120,160,120,0.15)' : 'transparent', urlBorder: !isFile ? '#7A9E7A' : 'rgba(120,160,120,0.2)', urlColor: !isFile ? '#C8DEC8' : 'rgba(200,220,200,0.5)',
+      fileBg: isFile ? 'rgba(120,160,120,0.15)' : 'transparent', fileBorder: isFile ? '#7A9E7A' : 'rgba(120,160,120,0.2)', fileColor: isFile ? '#C8DEC8' : 'rgba(200,220,200,0.5)',
+      setSourceUrl: () => { setM('sourceType','url'); if (m.url) this._probeDuration(m.url); },
+      setSourceFile: () => { setM('sourceType','file'); if (this.state.musicFileURL) this._probeDuration(this.state.musicFileURL); },
+      url: m.url,
+      setUrl: e => { const v = e.target.value; this.setState(s => ({ music: { ...s.music, url: v } })); if (v) this._probeDuration(v); },
+      triggerUpload: () => { if (this._musicFileInputEl) this._musicFileInputEl.click(); },
+      fileLabel: m.fileName ? ('♪ ' + m.fileName) : 'No file chosen yet',
+      hasSource: !!previewSrc,
+      previewSrc,
+      audioRef: el => { this._musicAudioEl = el; if (el) el.volume = (m.volume ?? 70)/100; },
+      durationLabel: m.duration ? fmt(m.duration) : '—',
+      volume: m.volume ?? 70,
+      setVolume: e => { const v = parseInt(e.target.value,10) || 0; this.setState(s => ({ music: { ...s.music, volume: v } })); if (this._musicAudioEl) this._musicAudioEl.volume = v/100; },
+      loop: m.loop, setLoop: e => setM('loop', e.target.checked),
+      autoplay: m.autoplay, setAutoplay: e => setM('autoplay', e.target.checked),
+      trimEnabled: m.trimEnabled,
+      setTrimEnabled: e => { const c = e.target.checked; this.setState(s => ({ music: { ...s.music, trimEnabled: c, endTime: (c && !s.music.endTime && s.music.duration) ? s.music.duration : s.music.endTime } })); },
+      startTime: m.startTime || 0, setStartTime: e => setM('startTime', Math.max(0, parseInt(e.target.value,10) || 0)),
+      endTime: m.endTime || 0, setEndTime: e => setM('endTime', Math.max(0, parseInt(e.target.value,10) || 0)),
+      startLabel: fmt(m.startTime || 0), endLabel: fmt(m.endTime || 0),
+      save: () => this._saveMusic(),
+      audioFileRef: el => { this._musicFileInputEl = el; },
+      onFile: e => this._onMusicFile(e),
+    };
+
+    return {
+      navSections,
+      section,
+      mu,
+      sectionIs_music: section === 'music',
+      sectionIs_general: section === 'general',
+      sectionIs_schedule: section === 'schedule',
+      sectionIs_dresscode: section === 'dresscode',
+      sectionIs_registry: section === 'registry',
+      sectionIs_faqs: section === 'faqs',
+      sectionIs_rsvps: section === 'rsvps',
+      sectionIs_guestlist: section === 'guestlist',
+      guestCount: guestList.length,
+      guestCapacity: maxCap ? guestList.length + ' / ' + maxCap : String(guestList.length),
+      guestInvited, guestConfirmed, guestDeclined,
+      guestSearch,
+      noGuests: guestList.length === 0,
+      guestRows,
+      setGuestSearch: e => this.setState({ guestSearch: e.target.value }),
+      addGuest: () => this.setState(s => ({ guestList: [...s.guestList, { id:'g-'+Date.now(), name:'', phone:'', group:'', status:'invited', notes:'' }] })),
+      saveGuests: () => { localStorage.setItem('wedding_guests', JSON.stringify(guestList)); this.setState({ showToast: true }); setTimeout(() => this.setState({ showToast: false }), 2500); },
+      triggerImport: () => { if (this._csvInputEl) this._csvInputEl.click(); },
+      exportCSV: () => this._exportCSV(),
+      csvInputRef: el => { this._csvInputEl = el; },
+      onImportFile: e => { const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{const ng=this._parseCSV(ev.target.result);this.setState(s=>({guestList:[...s.guestList,...ng]}));if(this._csvInputEl)this._csvInputEl.value=''}; r.readAsText(f); },
+      previewWidth: showPreview ? '420px' : '0',
+      previewBorder: showPreview ? '1px solid rgba(120,160,120,0.12)' : 'none',
+      showToast,
+      savedStatus,
+      rsvpCount: rsvpList.length,
+      rsvpAccepting: accepting.length,
+      rsvpDeclining: declining.length,
+      hasRsvps: rsvpList.length > 0,
+      hasNoRsvps: rsvpList.length === 0,
+      rsvpRows,
+      scheduleItems,
+      dressCodes,
+      faqItems,
+      saveAll: () => this._saveAll(),
+      reloadPreview: () => { if (this._iframeEl) this._iframeEl.src = this._iframeEl.src; },
+      refreshRsvps: () => this._loadRsvps(),
+      iframeRef: el => { this._iframeEl = el; },
+      addScheduleItem: () => {
+        const arr = [...f.schedule, { time: '', title: '', subtitle: '' }];
+        this.setState(s => ({ form: { ...s.form, schedule: arr } }));
+      },
+      addDressCode: () => {
+        const arr = [...f.dressCodes, { color: '#C8DEC8', label: 'New' }];
+        this.setState(s => ({ form: { ...s.form, dressCodes: arr } }));
+      },
+      addFaq: () => {
+        const arr = [...f.faqs, { q: '', a: '' }];
+        this.setState(s => ({ form: { ...s.form, faqs: arr } }));
+      },
+      f: {
+        ...f,
+        setName1: this._setField('name1'),
+        setName2: this._setField('name2'),
+        setDateDisplay: this._setField('dateDisplay'),
+        setDateISO: this._setField('dateISO'),
+        setCeremonyTime: this._setField('ceremonyTime'),
+        setRsvpDeadline: this._setField('rsvpDeadline'),
+        setVenueName: this._setField('venueName'),
+        setVenueAddress: this._setField('venueAddress'),
+        setVenueMapUrl: this._setField('venueMapUrl'),
+        setStoryQuote: this._setField('storyQuote'),
+        setStoryBody: this._setField('storyBody'),
+        setBankName: this._setField('bankName'),
+        setBankAccount: this._setField('bankAccount'),
+        setBankHolder: this._setField('bankHolder'),
+        setWishlistTitle: this._setField('wishlistTitle'),
+        setWishlistNote: this._setField('wishlistNote'),
+        setDressCodeTitle: this._setField('dressCodeTitle'),
+        setDressCodeNote: this._setField('dressCodeNote'),
+        setDressCodeAvoid: this._setField('dressCodeAvoid'),
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

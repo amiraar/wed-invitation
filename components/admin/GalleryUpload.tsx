@@ -15,23 +15,20 @@ export default function GalleryUpload({ onUpload }: { onUpload: (url: string, ca
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 rounded-2xl border border-gray-200 bg-white p-4">
+    <form onSubmit={handleSubmit} className="admin-card grid gap-3 p-4">
       <input
         value={url}
         onChange={(event) => setUrl(event.target.value)}
-        placeholder="URL gambar"
-        className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
+        placeholder="Image URL"
+        className="admin-input"
       />
       <input
         value={caption}
         onChange={(event) => setCaption(event.target.value)}
         placeholder="Caption"
-        className="rounded-xl border border-gray-200 px-3 py-2 text-sm"
+        className="admin-input"
       />
-      <button
-        type="submit"
-        className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-sm text-white"
-      >
+      <button type="submit" className="admin-btn-primary">
         Upload
       </button>
     </form>

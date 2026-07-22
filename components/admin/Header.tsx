@@ -12,17 +12,20 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+    <header
+      className="flex items-center justify-between px-6 py-4"
+      style={{ background: 'var(--adm-bg-topbar)', borderBottom: '1px solid var(--adm-border)' }}
+    >
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-gray-400">Admin</p>
-        <h1 className="text-lg font-semibold text-gray-800">Wedding Invitation</h1>
+        <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--adm-text-faint)' }}>
+          Admin
+        </p>
+        <h1 className="mt-0.5 text-lg" style={{ color: 'var(--adm-text)' }}>
+          Wedding Invitation
+        </h1>
       </div>
-      <button
-        onClick={handleLogout}
-        className="rounded-full border border-gray-200 px-4 py-2 text-xs uppercase tracking-[0.3em] text-gray-600"
-        disabled={loading}
-      >
-        {loading ? 'Logout...' : 'Logout'}
+      <button onClick={handleLogout} className="admin-btn-outline" disabled={loading}>
+        {loading ? 'Logging out...' : 'Logout'}
       </button>
     </header>
   );

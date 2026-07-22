@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&amp;family=Jost:wght@200;300;400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #F7F9F6; color: #2A3A2A; font-family: 'Jost', sans-serif; -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+    a:hover { opacity: 0.72; }
+    input, textarea, select { font-family: 'Jost', sans-serif; }
+    ::placeholder { color: #9AAA9A; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: #7A9E7A; border-radius: 2px; }
+    @keyframes heroIn { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes scrollBob {
+      0%,100% { transform:translateX(-50%) translateY(0); opacity:0.55; }
+      50% { transform:translateX(-50%) translateY(8px); opacity:1; }
+    }
+    @keyframes eq { 0%,100% { height:5px; } 50% { height:18px; } }
+    .reveal { opacity:0; transform:translateY(26px); transition:opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:0.12s; } .d2 { transition-delay:0.24s; } .d3 { transition-delay:0.36s; }
+    button { cursor:pointer; }
+    input:focus, textarea:focus, select:focus { outline:none; border-color:#7A9E7A !important; }
+  </style>
+</helmet>
+
+<!-- NAV -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:20px 56px;transition:background 0.45s,border-color 0.45s;background:{{ navBg }};border-bottom:{{ navBorder }}">
+  <a href="#hero" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:22px;letter-spacing:1px;color:{{ navLogoColor }};transition:color 0.45s">{{ navInitials }}</a>
+  <div style="display:flex;gap:36px;align-items:center">
+    <a href="#story" style="font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:{{ navLinkColor }};transition:color 0.45s">Story</a>
+    <a href="#schedule" style="font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:{{ navLinkColor }};transition:color 0.45s">Schedule</a>
+    <a href="#venue" style="font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:{{ navLinkColor }};transition:color 0.45s">Venue</a>
+    <a href="#rsvp" style="font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:{{ navLinkColor }};transition:color 0.45s;padding:9px 22px;border:{{ navRsvpBorder }}">RSVP</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" data-screen-label="Hero" style="min-height:100vh;background:{{ heroBg }};display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:80px 24px 64px">
+  <div style="position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.045) 1px,transparent 1px);background-size:38px 38px;pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 50%,transparent 25%,rgba(0,0,0,0.22) 100%);pointer-events:none"></div>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;animation:heroIn 1.3s cubic-bezier(0.16,1,0.3,1) both">
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:6px;text-transform:uppercase;color:rgba(200,222,200,0.65);margin:0 0 28px">WEDDING INVITATION</p>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">
+      <div style="width:72px;height:1px;background:rgba(200,222,200,0.32)"></div>
+      <div style="width:6px;height:6px;background:rgba(200,222,200,0.48);transform:rotate(45deg)"></div>
+      <div style="width:72px;height:1px;background:rgba(200,222,200,0.32)"></div>
+    </div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(54px,9vw,108px);color:#F5F0E6;line-height:0.92;letter-spacing:2px;margin:0 0 6px">{{ name1 }}</h1>
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:clamp(10px,1.2vw,13px);letter-spacing:8px;text-transform:uppercase;color:rgba(200,222,200,0.55);margin:10px 0">and</p>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(54px,9vw,108px);color:#F5F0E6;line-height:0.92;letter-spacing:2px;margin:0 0 28px">{{ name2 }}</h1>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px">
+      <div style="width:72px;height:1px;background:rgba(200,222,200,0.32)"></div>
+      <div style="width:6px;height:6px;background:rgba(200,222,200,0.48);transform:rotate(45deg)"></div>
+      <div style="width:72px;height:1px;background:rgba(200,222,200,0.32)"></div>
+    </div>
+    <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(11px,1.4vw,14px);letter-spacing:5px;text-transform:uppercase;color:#C8DEC8;margin:0 0 10px">{{ dateDisplay }}</p>
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:clamp(10px,1.1vw,12px);letter-spacing:4px;text-transform:uppercase;color:rgba(200,222,200,0.55);margin:0">{{ heroSubline }}</p>
+  </div>
+  <div style="position:absolute;bottom:38px;left:50%;animation:scrollBob 2.6s ease-in-out infinite;display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="width:1px;height:36px;background:linear-gradient(to bottom,rgba(200,222,200,0.45),transparent)"></div>
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(200,222,200,0.45);margin:0">SCROLL</p>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<section id="countdown" data-screen-label="Countdown" style="padding:96px 56px;background:#EFF5EF;text-align:center">
+  <div class="reveal">
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 16px">THE BIG DAY</p>
+  </div>
+  <sc-if value="{{ countdownPast }}" hint-placeholder-val="{{ true }}">
+    <div class="reveal d1" style="display:flex;flex-direction:column;align-items:center;gap:18px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="width:56px;height:1px;background:#C8DEC8"></div>
+        <div style="width:5px;height:5px;background:#7A9E7A;transform:rotate(45deg)"></div>
+        <div style="width:56px;height:1px;background:#C8DEC8"></div>
+      </div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(30px,5vw,52px);color:#2A3A2A;margin:0;line-height:1.2">We Are Married ♥</h2>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#5A6B5A;margin:0">{{ countdownDateLabel }}</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:20px;color:#7A9E7A;margin:0">Thank you for your love and blessings</p>
+    </div>
+  </sc-if>
+  <sc-if value="{{ countdownNotPast }}" hint-placeholder-val="{{ false }}">
+    <div class="reveal d1" style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px">
+      <sc-for list="{{ countdownUnits }}" as="unit" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="width:100px;height:100px;background:#F7F9F6;border:1px solid #C8DEC8;display:flex;align-items:center;justify-content:center">
+            <span style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:46px;color:#3D5C3D;line-height:1">{{ unit.val }}</span>
+          </div>
+          <span style="font-family:'Jost',sans-serif;font-weight:200;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A">{{ unit.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</section>
+
+<!-- OUR STORY -->
+<section id="story" data-screen-label="Story" style="padding:100px 56px;background:#F7F9F6">
+  <div style="max-width:680px;margin:0 auto;text-align:center">
+    <div class="reveal">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">OUR STORY</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(30px,5vw,48px);color:#2A3A2A;line-height:1.2;margin:0 0 44px">How It All Began</h2>
+    </div>
+    <div class="reveal d1">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:72px;color:#C8DEC8;line-height:0.4;margin-bottom:20px;font-weight:300">"</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(20px,3vw,28px);color:#3D5C3D;line-height:1.65;margin:0 0 32px">{{ storyQuote }}</p>
+    </div>
+    <div class="reveal d2">
+      <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:32px">
+        <div style="width:56px;height:1px;background:#C8DEC8"></div>
+        <div style="width:5px;height:5px;background:#7A9E7A;transform:rotate(45deg)"></div>
+        <div style="width:56px;height:1px;background:#C8DEC8"></div>
+      </div>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;color:#5A6B5A;line-height:1.85;margin:0">{{ storyBody }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule" data-screen-label="Schedule" style="padding:100px 56px;background:#EFF5EF">
+  <div style="max-width:580px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:64px">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">THE DAY</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(30px,5vw,48px);color:#2A3A2A;line-height:1.2;margin:0">Order of Events</h2>
+    </div>
+    <div style="position:relative;padding-left:52px">
+      <div style="position:absolute;left:19px;top:10px;bottom:10px;width:1px;background:linear-gradient(to bottom,#C8DEC8 70%,transparent)"></div>
+      <sc-for list="{{ schedule }}" as="item" hint-placeholder-count="5">
+        <div class="reveal" style="position:relative;margin-bottom:44px">
+          <div style="position:absolute;left:-39px;top:5px;width:12px;height:12px;border-radius:50%;background:#7A9E7A;border:2px solid #EFF5EF;box-shadow:0 0 0 3px #C8DEC8"></div>
+          <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;margin:0 0 4px">{{ item.time }}</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:22px;color:#2A3A2A;margin:0 0 3px">{{ item.title }}</p>
+          <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;color:#7A9E7A;margin:0">{{ item.subtitle }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- VENUE -->
+<section id="venue" data-screen-label="Venue" style="padding:100px 56px;background:#F7F9F6">
+  <div style="max-width:1020px;margin:0 auto;display:flex;gap:80px;align-items:center;flex-wrap:wrap">
+    <div class="reveal" style="flex:1;min-width:280px">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">THE VENUE</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0 0 24px">{{ venueName }}</h2>
+      <div style="width:40px;height:1px;background:#7A9E7A;margin-bottom:24px"></div>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#5A6B5A;line-height:2;margin:0 0 32px">{{ venueAddress }}</p>
+      <a href="{{ venueMapUrl }}" target="_blank" style="display:inline-block;font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#F5F0E6;background:#3D5C3D;padding:15px 30px">VIEW ON MAP →</a>
+    </div>
+    <div class="reveal d1" style="flex:1;min-width:280px;height:320px;overflow:hidden">
+      <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="venue-map" shape="rect" placeholder="Drop venue or map photo here" hint-size="100%,320px"></x-import>
+    </div>
+  </div>
+</section>
+
+<!-- DRESS CODE -->
+<section id="dresscode" data-screen-label="Dress Code" style="padding:100px 56px;background:#EFF5EF;text-align:center">
+  <div style="max-width:680px;margin:0 auto">
+    <div class="reveal">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">DRESS CODE</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0 0 18px">{{ dressCodeTitle }}</h2>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#5A6B5A;line-height:1.85;margin:0 0 52px">{{ dressCodeNote }}</p>
+    </div>
+    <div class="reveal d1" style="display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-bottom:44px">
+      <sc-for list="{{ dressCodes }}" as="swatch" hint-placeholder-count="5">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="width:60px;height:60px;border-radius:50%;background:{{ swatch.color }};box-shadow:0 4px 14px rgba(0,0,0,0.1)"></div>
+          <span style="font-family:'Jost',sans-serif;font-weight:200;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7A9E7A">{{ swatch.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div class="reveal d2" style="display:inline-block;padding:18px 36px;border:1px solid #C8DEC8">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:12px;letter-spacing:2px;color:#5A6B5A;margin:0">{{ dressCodeAvoid }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" data-screen-label="Gallery" style="padding:100px 56px;background:#F7F9F6">
+  <div style="max-width:1020px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:52px">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">MOMENTS</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0">Our Gallery</h2>
+    </div>
+    <div class="reveal d1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="overflow:hidden;height:280px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-1" shape="rect" placeholder="Photo 1" hint-size="100%,280px"></x-import></div>
+      <div style="overflow:hidden;height:280px;margin-top:28px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-2" shape="rect" placeholder="Photo 2" hint-size="100%,280px"></x-import></div>
+      <div style="overflow:hidden;height:280px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-3" shape="rect" placeholder="Photo 3" hint-size="100%,280px"></x-import></div>
+      <div style="overflow:hidden;height:280px;margin-top:-28px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-4" shape="rect" placeholder="Photo 4" hint-size="100%,280px"></x-import></div>
+      <div style="overflow:hidden;height:280px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-5" shape="rect" placeholder="Photo 5" hint-size="100%,280px"></x-import></div>
+      <div style="overflow:hidden;height:280px;margin-top:28px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="gal-6" shape="rect" placeholder="Photo 6" hint-size="100%,280px"></x-import></div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTRY -->
+<section id="registry" data-screen-label="Registry" style="padding:100px 56px;background:#EFF5EF">
+  <div style="max-width:820px;margin:0 auto;text-align:center">
+    <div class="reveal">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">REGISTRY &amp; GIFTS</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0 0 18px">With Gratitude</h2>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#5A6B5A;line-height:1.85;margin:0 0 52px">Your presence at our celebration is the most precious gift. Should you wish to honor us further, we've kept it simple.</p>
+    </div>
+    <div class="reveal d1" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px;max-width:340px;padding:40px 32px;background:#F7F9F6;border:1px solid #C8DEC8;text-align:left">
+        <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">GIFT FUND</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#2A3A2A;margin:0 0 16px">Bank Transfer</p>
+        <div style="height:1px;background:#C8DEC8;margin-bottom:16px"></div>
+        <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;color:#5A6B5A;line-height:2;margin:0">{{ bankName }}<br>No. Rek: <strong style="color:#3D5C3D;font-weight:400">{{ bankAccount }}</strong><br>a.n. {{ bankHolder }}</p>
+      </div>
+      <div style="flex:1;min-width:240px;max-width:340px;padding:40px 32px;background:#F7F9F6;border:1px solid #C8DEC8;text-align:left">
+        <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">WISHLIST</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#2A3A2A;margin:0 0 16px">{{ wishlistTitle }}</p>
+        <div style="height:1px;background:#C8DEC8;margin-bottom:16px"></div>
+        <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;color:#5A6B5A;line-height:2;margin:0">{{ wishlistNote }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RSVP -->
+<section id="rsvp" data-screen-label="RSVP" style="padding:100px 56px;background:#F7F9F6">
+  <div style="max-width:580px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:52px">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">JOIN US</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0 0 14px">RSVP</h2>
+      <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#7A9E7A">Kindly respond by {{ rsvpDeadline }}</p>
+    </div>
+    <sc-if value="{{ rsvpSubmitted }}" hint-placeholder-val="{{ false }}">
+      <div class="reveal" style="text-align:center;padding:64px 40px;background:#EFF5EF;border:1px solid #C8DEC8">
+        <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:24px">
+          <div style="width:48px;height:1px;background:#C8DEC8"></div>
+          <div style="width:5px;height:5px;background:#7A9E7A;transform:rotate(45deg)"></div>
+          <div style="width:48px;height:1px;background:#C8DEC8"></div>
+        </div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:34px;color:#2A3A2A;margin:0 0 12px">Thank You!</h3>
+        <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#5A6B5A;line-height:1.85;margin:0">Your RSVP has been received. We can't wait to celebrate with you!</p>
+      </div>
+    </sc-if>
+    <sc-if value="{{ rsvpNotSubmitted }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ submitRsvp }}" class="reveal d1">
+        <div style="margin-bottom:28px">
+          <label style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;display:block;margin-bottom:10px">Will you attend?</label>
+          <div style="display:flex;gap:10px">
+            <label style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#2A3A2A;cursor:pointer;flex:1;padding:14px 18px;border:1px solid #C8DEC8;background:{{ rsvpYesBg }}">
+              <input type="radio" name="attending" value="yes" onChange="{{ setAttending }}" style="accent-color:#7A9E7A"> Joyfully Accept
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#2A3A2A;cursor:pointer;flex:1;padding:14px 18px;border:1px solid #C8DEC8;background:{{ rsvpNoBg }}">
+              <input type="radio" name="attending" value="no" onChange="{{ setAttending }}" style="accent-color:#7A9E7A"> Regretfully Decline
+            </label>
+          </div>
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;display:block;margin-bottom:8px">Full Name *</label>
+          <input type="text" value="{{ rsvpName }}" onChange="{{ setName }}" required="" placeholder="Your full name" style="width:100%;padding:14px 16px;border:1px solid #C8DEC8;background:#F7F9F6;font-weight:300;font-size:14px;color:#2A3A2A">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;display:block;margin-bottom:8px">Email Address</label>
+          <input type="email" value="{{ rsvpEmail }}" onChange="{{ setEmail }}" placeholder="your@email.com" style="width:100%;padding:14px 16px;border:1px solid #C8DEC8;background:#F7F9F6;font-weight:300;font-size:14px;color:#2A3A2A">
+        </div>
+        <div style="margin-bottom:20px">
+          <label style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;display:block;margin-bottom:8px">Number of Guests</label>
+          <select value="{{ rsvpGuests }}" onChange="{{ setGuests }}" style="width:100%;padding:14px 16px;border:1px solid #C8DEC8;background:#F7F9F6;font-weight:300;font-size:14px;color:#2A3A2A;appearance:none;cursor:pointer">
+            <option value="1">1 Guest</option>
+            <option value="2">2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4 Guests</option>
+          </select>
+        </div>
+        <div style="margin-bottom:36px">
+          <label style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7A9E7A;display:block;margin-bottom:8px">A Note for the Couple</label>
+          <textarea value="{{ rsvpMessage }}" onChange="{{ setMessage }}" rows="4" placeholder="Your wishes and message..." style="width:100%;padding:14px 16px;border:1px solid #C8DEC8;background:#F7F9F6;font-weight:300;font-size:14px;color:#2A3A2A;resize:vertical"></textarea>
+        </div>
+        <button type="submit" style="width:100%;padding:18px;background:#3D5C3D;color:#F5F0E6;font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:4px;text-transform:uppercase;border:none">SEND RSVP</button>
+      </form>
+    </sc-if>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" data-screen-label="FAQ" style="padding:100px 56px;background:#EFF5EF">
+  <div style="max-width:680px;margin:0 auto">
+    <div class="reveal" style="text-align:center;margin-bottom:56px">
+      <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;letter-spacing:5px;text-transform:uppercase;color:#7A9E7A;margin:0 0 14px">QUESTIONS</p>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(28px,4vw,44px);color:#2A3A2A;line-height:1.2;margin:0">Frequently Asked</h2>
+    </div>
+    <sc-for list="{{ faqs }}" as="faq" hint-placeholder-count="4">
+      <div class="reveal" style="border-bottom:1px solid #C8DEC8">
+        <button onClick="{{ faq.toggle }}" style="width:100%;padding:22px 0;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;text-align:left;gap:16px">
+          <span style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;color:#2A3A2A">{{ faq.q }}</span>
+          <span style="font-family:'Jost',sans-serif;font-weight:200;font-size:22px;color:#7A9E7A;flex-shrink:0;line-height:1">{{ faq.icon }}</span>
+        </button>
+        <sc-if value="{{ faq.isOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 0 22px">
+            <p style="font-family:'Jost',sans-serif;font-weight:300;font-size:14px;color:#5A6B5A;line-height:1.85;margin:0">{{ faq.a }}</p>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:80px 56px;background:{{ heroBg }};text-align:center">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:18px">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="width:56px;height:1px;background:rgba(200,222,200,0.28)"></div>
+      <div style="width:5px;height:5px;background:rgba(200,222,200,0.42);transform:rotate(45deg)"></div>
+      <div style="width:56px;height:1px;background:rgba(200,222,200,0.28)"></div>
+    </div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(36px,6vw,60px);color:#F5F0E6;margin:0;letter-spacing:2px">{{ footerNames }}</h2>
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:12px;letter-spacing:5px;text-transform:uppercase;color:rgba(200,222,200,0.55);margin:0">{{ dateDisplay }}</p>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="width:56px;height:1px;background:rgba(200,222,200,0.28)"></div>
+      <div style="width:5px;height:5px;background:rgba(200,222,200,0.42);transform:rotate(45deg)"></div>
+      <div style="width:56px;height:1px;background:rgba(200,222,200,0.28)"></div>
+    </div>
+    <p style="font-family:'Jost',sans-serif;font-weight:200;font-size:11px;color:rgba(200,222,200,0.35);letter-spacing:2px;margin-top:16px">{{ footerVenue }}</p>
+  </div>
+</footer>
+
+<!-- MUSIC PLAYER -->
+<sc-if value="{{ musicReady }}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{ toggleMusic }}" aria-label="Toggle music" style="position:fixed;bottom:24px;left:24px;z-index:300;width:54px;height:54px;border-radius:50%;background:{{ heroBg }};border:1px solid rgba(245,240,230,0.3);box-shadow:0 8px 24px rgba(0,0,0,0.28);display:flex;align-items:center;justify-content:center;padding:0">
+    <sc-if value="{{ musicPlaying }}" hint-placeholder-val="{{ true }}">
+      <span style="display:flex;align-items:flex-end;gap:3px;height:20px">
+        <span style="width:3px;height:9px;background:#F5F0E6;border-radius:2px;animation:eq 0.8s ease-in-out infinite;animation-delay:0s"></span>
+        <span style="width:3px;height:16px;background:#F5F0E6;border-radius:2px;animation:eq 0.8s ease-in-out infinite;animation-delay:0.25s"></span>
+        <span style="width:3px;height:12px;background:#F5F0E6;border-radius:2px;animation:eq 0.8s ease-in-out infinite;animation-delay:0.5s"></span>
+        <span style="width:3px;height:16px;background:#F5F0E6;border-radius:2px;animation:eq 0.8s ease-in-out infinite;animation-delay:0.15s"></span>
+      </span>
+    </sc-if>
+    <sc-if value="{{ musicPaused }}" hint-placeholder-val="{{ false }}">
+      <span style="width:0;height:0;border-left:13px solid #F5F0E6;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:4px"></span>
+    </sc-if>
+  </button>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 900 },
+  &quot;coupleName1&quot;: { &quot;section&quot;: &quot;Couple&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Amirul&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;coupleName2&quot;: { &quot;section&quot;: &quot;Couple&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Nisrina&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;weddingDateDisplay&quot;: { &quot;section&quot;: &quot;Event&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;10 · JULY · 2026&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;venueName&quot;: { &quot;section&quot;: &quot;Event&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Hotel, Yogyakarta&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;ceremonyTime&quot;: { &quot;section&quot;: &quot;Event&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;9:00 AM&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;rsvpDeadline&quot;: { &quot;section&quot;: &quot;Event&quot;, &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;June 25, 2026&quot;, &quot;tsType&quot;: &quot;string&quot; },
+  &quot;accentColor&quot;: { &quot;section&quot;: &quot;Design&quot;, &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3D5C3D&quot;, &quot;options&quot;: [&quot;#3D5C3D&quot;, &quot;#5C3D3D&quot;, &quot;#3D4A5C&quot;, &quot;#5C4D3D&quot;], &quot;tsType&quot;: &quot;string&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    cms: null,
+    countdown: { days: 0, hours: 0, minutes: 0, seconds: 0, past: false },
+    rsvpName: '', rsvpEmail: '', rsvpGuests: '2',
+    rsvpAttending: 'yes', rsvpMessage: '',
+    rsvpSubmitted: false,
+    faqOpen: -1,
+    navSolid: false,
+    musicReady: false,
+    musicPlaying: false,
+  };
+
+  _defaults() {
+    return {
+      name1: this.props.coupleName1 || 'Amirul',
+      name2: this.props.coupleName2 || 'Nisrina',
+      dateDisplay: this.props.weddingDateDisplay || '10 · JULY · 2026',
+      dateISO: '2026-07-10T09:00:00+07:00',
+      venueName: this.props.venueName || 'Hotel, Yogyakarta',
+      venueAddress: 'Yogyakarta, D.I. Yogyakarta, Indonesia\nCeremony begins at 9:00 AM\nComplimentary parking available',
+      venueMapUrl: 'https://maps.google.com/?q=Hotel+Yogyakarta+Indonesia',
+      ceremonyTime: this.props.ceremonyTime || '9:00 AM',
+      rsvpDeadline: this.props.rsvpDeadline || 'June 25, 2026',
+      storyQuote: 'We met in a beautiful place on earth,\nthen began painting our story together.',
+      storyBody: 'Every great love story has a beginning — ours started in a single beautiful moment that felt like destiny. A chance meeting that blossomed into a bond neither of us could imagine living without. Today we invite you to witness the next chapter of our journey as we say "I do."',
+      bankName: 'Bank BCA',
+      bankAccount: '1234 5678 90',
+      bankHolder: 'Amirul / Nisrina',
+      wishlistTitle: 'Home & Living',
+      wishlistNote: 'We\'re building our first home together. Kitchenware, linens, and home décor are always warmly welcomed ♥',
+      dressCodeTitle: 'Formal Attire',
+      dressCodeNote: 'We kindly request formal attire in the following palette. Your coordinated presence will make our celebration even more beautiful.',
+      dressCodeAvoid: 'Please kindly avoid white or black attire',
+      heroBg: this.props.accentColor || '#3D5C3D',
+      schedule: [
+        { time: '09:00 AM', title: 'Akad Nikah', subtitle: 'Sacred marriage ceremony' },
+        { time: '10:00 AM', title: 'Sesi Foto Bersama', subtitle: 'Family & couple portraits' },
+        { time: '11:00 AM', title: 'Resepsi Pernikahan', subtitle: 'Reception doors open' },
+        { time: '12:00 PM', title: 'Makan Siang', subtitle: 'Wedding luncheon & toast' },
+        { time: '13:30 PM', title: 'Penutupan', subtitle: 'Farewell & blessings' },
+      ],
+      dressCodes: [
+        { color: '#7A9E7A', label: 'Sage' },
+        { color: '#C8DEC8', label: 'Mint' },
+        { color: '#F5F0E6', label: 'Ivory' },
+        { color: '#C4A96A', label: 'Champagne' },
+        { color: '#8B7355', label: 'Earth' },
+      ],
+      faqs: [
+        { q: 'When should I arrive?', a: 'We recommend arriving 15–30 minutes before the ceremony at 9:00 AM to allow time for seating.' },
+        { q: 'Is parking available at the hotel?', a: 'Complimentary parking is available at the hotel for all guests. Please inform hotel staff upon arrival.' },
+        { q: 'Can I bring a plus-one?', a: 'Please indicate your total number of guests in the RSVP. Our venue has limited capacity and we appreciate your understanding.' },
+        { q: 'What is the RSVP deadline?', a: 'Kindly RSVP by June 25, 2026 so we can finalize all arrangements for the day.' },
+        { q: 'Will there be a gift registry?', a: 'Your presence is our greatest gift. If you wish to give, please see the Registry section above for details.' },
+      ],
+    };
+  }
+
+  _get(key) {
+    const d = this._defaults();
+    const cms = this.state.cms;
+    if (cms && cms[key] !== undefined && cms[key] !== '') return cms[key];
+    return d[key];
+  }
+
+  componentDidMount() {
+    this._loadCMS();
+    this._updateCountdown();
+    this._timer = setInterval(() => this._updateCountdown(), 1000);
+    this._onScroll = () => this.setState({ navSolid: window.scrollY > 64 });
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._onStorage = e => { if (e.key === 'wedding_cms_data') this._loadCMS(); };
+    window.addEventListener('storage', this._onStorage);
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    this._io = io;
+    this._initMusic();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer);
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('storage', this._onStorage);
+    this._io && this._io.disconnect();
+    if (this._audio) { this._audio.pause(); }
+  }
+
+  _idbGet(key) {
+    return new Promise((res, rej) => {
+      const req = indexedDB.open('weddingMedia', 1);
+      req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('media')) req.result.createObjectStore('media'); };
+      req.onsuccess = () => { const db = req.result; if (!db.objectStoreNames.contains('media')) { db.close(); return res(null); } const tx = db.transaction('media','readonly'); const g = tx.objectStore('media').get(key); g.onsuccess = () => { const v = g.result; db.close(); res(v); }; g.onerror = () => { db.close(); rej(g.error); }; };
+      req.onerror = () => rej(req.error);
+    });
+  }
+
+  _initMusic() {
+    let cfg = null;
+    try { cfg = JSON.parse(localStorage.getItem('wedding_music') || 'null'); } catch(e) {}
+    if (!cfg || !cfg.enabled) return;
+    this._musicCfg = cfg;
+    if (cfg.sourceType === 'file') {
+      this._idbGet('wedding_music_blob').then(blob => { if (blob) this._setupAudio(URL.createObjectURL(blob)); }).catch(()=>{});
+    } else if (cfg.url) {
+      this._setupAudio(cfg.url);
+    }
+  }
+
+  _setupAudio(src) {
+    const cfg = this._musicCfg;
+    const a = new Audio(src);
+    a.preload = 'auto';
+    a.loop = !!cfg.loop && !cfg.trimEnabled;
+    a.volume = Math.max(0, Math.min(1, (cfg.volume ?? 70)/100));
+    const startAt = cfg.trimEnabled ? (cfg.startTime || 0) : 0;
+    a.addEventListener('loadedmetadata', () => { if (startAt) { try { a.currentTime = startAt; } catch(e) {} } });
+    a.addEventListener('timeupdate', () => {
+      if (cfg.trimEnabled && cfg.endTime && a.currentTime >= cfg.endTime) {
+        if (cfg.loop) { try { a.currentTime = cfg.startTime || 0; } catch(e) {} }
+        else { a.pause(); }
+      }
+    });
+    a.addEventListener('ended', () => {
+      if (cfg.loop) { try { a.currentTime = cfg.trimEnabled ? (cfg.startTime || 0) : 0; } catch(e) {} a.play().catch(()=>{}); }
+    });
+    a.addEventListener('play', () => this.setState({ musicPlaying: true }));
+    a.addEventListener('pause', () => this.setState({ musicPlaying: false }));
+    this._audio = a;
+    this.setState({ musicReady: true });
+    if (cfg.autoplay) this._tryAutoplay();
+  }
+
+  _tryAutoplay() {
+    const a = this._audio; if (!a) return;
+    const p = a.play();
+    if (p && p.catch) p.catch(() => {
+      const onFirst = () => { a.play().catch(()=>{}); };
+      document.addEventListener('pointerdown', onFirst, { once: true });
+      document.addEventListener('keydown', onFirst, { once: true });
+    });
+  }
+
+  toggleMusic() {
+    const a = this._audio, cfg = this._musicCfg; if (!a) return;
+    if (a.paused) {
+      if (cfg.trimEnabled && (a.currentTime < (cfg.startTime || 0) || (cfg.endTime && a.currentTime >= cfg.endTime))) { try { a.currentTime = cfg.startTime || 0; } catch(e) {} }
+      a.play().catch(()=>{});
+    } else { a.pause(); }
+  }
+
+  _loadCMS() {
+    try {
+      const raw = localStorage.getItem('wedding_cms_data');
+      if (raw) this.setState({ cms: JSON.parse(raw) });
+    } catch(e) {}
+  }
+
+  _updateCountdown() {
+    const iso = this._get('dateISO');
+    const target = new Date(iso);
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      this.setState(s => ({ countdown: { ...s.countdown, past: true } }));
+      clearInterval(this._timer);
+      return;
+    }
+    this.setState({
+      countdown: {
+        past: false,
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+      }
+    });
+  }
+
+  renderVals() {
+    const { countdown, rsvpName, rsvpEmail, rsvpGuests, rsvpAttending, rsvpMessage, rsvpSubmitted, faqOpen, navSolid } = this.state;
+    const pad = n => String(n).padStart(2, '0');
+    const n1 = this._get('name1'), n2 = this._get('name2');
+    const heroBg = this._get('heroBg');
+
+    const rawFaqs = this._get('faqs');
+    const faqs = rawFaqs.map((f, i) => ({
+      ...f,
+      isOpen: faqOpen === i,
+      icon: faqOpen === i ? '−' : '+',
+      toggle: () => this.setState({ faqOpen: faqOpen === i ? -1 : i }),
+    }));
+
+    const venueName = this._get('venueName');
+    const venueAddr = this._get('venueAddress');
+    const time = this._get('ceremonyTime');
+
+    return {
+      name1: n1, name2: n2,
+      navInitials: n1[0] + ' & ' + n2[0],
+      footerNames: n1 + ' & ' + n2,
+      dateDisplay: this._get('dateDisplay'),
+      heroSubline: venueName + ' · ' + time,
+      countdownDateLabel: this._get('dateDisplay').replace(/·/g, '·') + ' · ' + venueName,
+      venueName,
+      venueAddress: venueAddr,
+      venueMapUrl: this._get('venueMapUrl'),
+      rsvpDeadline: this._get('rsvpDeadline'),
+      storyQuote: this._get('storyQuote'),
+      storyBody: this._get('storyBody'),
+      bankName: this._get('bankName'),
+      bankAccount: this._get('bankAccount'),
+      bankHolder: this._get('bankHolder'),
+      wishlistTitle: this._get('wishlistTitle'),
+      wishlistNote: this._get('wishlistNote'),
+      dressCodeTitle: this._get('dressCodeTitle'),
+      dressCodeNote: this._get('dressCodeNote'),
+      dressCodeAvoid: this._get('dressCodeAvoid'),
+      heroBg,
+      footerVenue: venueName + ', Indonesia',
+      schedule: this._get('schedule'),
+      dressCodes: this._get('dressCodes'),
+      faqs,
+      countdownPast: countdown.past,
+      countdownNotPast: !countdown.past,
+      countdownUnits: [
+        { val: pad(countdown.days), label: 'DAYS' },
+        { val: pad(countdown.hours), label: 'HOURS' },
+        { val: pad(countdown.minutes), label: 'MINUTES' },
+        { val: pad(countdown.seconds), label: 'SECONDS' },
+      ],
+      navBg: navSolid ? 'rgba(247,249,246,0.96)' : 'transparent',
+      navBorder: navSolid ? '1px solid rgba(200,222,200,0.4)' : '1px solid transparent',
+      navLogoColor: navSolid ? '#3D5C3D' : '#F5F0E6',
+      navLinkColor: navSolid ? '#5A6B5A' : 'rgba(245,240,230,0.78)',
+      navRsvpBorder: navSolid ? '1px solid rgba(61,92,61,0.4)' : '1px solid rgba(245,240,230,0.45)',
+      musicReady: this.state.musicReady,
+      musicPlaying: this.state.musicPlaying,
+      musicPaused: !this.state.musicPlaying,
+      toggleMusic: () => this.toggleMusic(),
+      rsvpName, rsvpEmail, rsvpGuests, rsvpAttending, rsvpMessage,
+      rsvpSubmitted,
+      rsvpNotSubmitted: !rsvpSubmitted,
+      rsvpYesBg: rsvpAttending === 'yes' ? '#EFF5EF' : '#F7F9F6',
+      rsvpNoBg: rsvpAttending === 'no' ? '#EFF5EF' : '#F7F9F6',
+      setName: e => this.setState({ rsvpName: e.target.value }),
+      setEmail: e => this.setState({ rsvpEmail: e.target.value }),
+      setGuests: e => this.setState({ rsvpGuests: e.target.value }),
+      setAttending: e => this.setState({ rsvpAttending: e.target.value }),
+      setMessage: e => this.setState({ rsvpMessage: e.target.value }),
+      submitRsvp: e => {
+        e.preventDefault();
+        const entry = { name: rsvpName, email: rsvpEmail, guests: rsvpGuests, attending: rsvpAttending, message: rsvpMessage, submittedAt: new Date().toISOString() };
+        try {
+          const list = JSON.parse(localStorage.getItem('wedding_rsvps') || '[]');
+          list.push(entry);
+          localStorage.setItem('wedding_rsvps', JSON.stringify(list));
+        } catch(e) {}
+        this.setState({ rsvpSubmitted: true });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

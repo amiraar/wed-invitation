@@ -4,6 +4,11 @@ export type BankAccount = {
   account_name: string;
 };
 
+export type DressCodeSwatch = {
+  color: string;
+  label: string;
+};
+
 export type WeddingConfig = {
   id: string;
   groom_name: string;
@@ -17,6 +22,14 @@ export type WeddingConfig = {
   music_autoplay: boolean;
   opening_quote: string;
   bank_accounts: BankAccount[];
+  story_body: string;
+  venue_image_url: string;
+  dress_code_title: string;
+  dress_code_note: string;
+  dress_code_avoid_note: string;
+  dress_code_swatches: DressCodeSwatch[];
+  wishlist_title: string;
+  wishlist_note: string;
   updated_at: string;
 };
 
@@ -46,6 +59,14 @@ export type GalleryItem = {
   created_at: string;
 };
 
+export type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  order_index: number;
+  created_at: string;
+};
+
 export type GuestbookItem = {
   id: string;
   name: string;
@@ -69,8 +90,6 @@ export type RSVPItem = {
 export type AppSettings = {
   id: string;
   theme: 'dark' | 'light';
-  cover_title: string;
-  cover_subtitle: string;
   show_lamaran: boolean;
   show_akad: boolean;
   show_resepsi: boolean;

@@ -11,14 +11,24 @@ type Props = {
   src: string;
 };
 
-// Playback is started by the parent (via the imperative handle) inside the
-// "open invitation" tap, so mobile autoplay policies are satisfied.
+// The parent attempts playback on mount via the imperative handle; if the
+// browser blocks autoplay, `play()` falls back to the guest's first tap/key.
 const MusicPlayer = forwardRef<MusicPlayerHandle, Props>(function MusicPlayer({ src }, ref) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
 
   const play = () => {
-    audioRef.current?.play().catch(() => undefined);
+    const audio = audioRef.current;
+    if (!audio) return;
+    const attempt = audio.play();
+    if (attempt && attempt.catch) {
+      attempt.catch(() => {
+        // Autoplay was blocked; retry on the guest's first interaction.
+        const retry = () => audio.play().catch(() => undefined);
+        document.addEventListener('pointerdown', retry, { once: true });
+        document.addEventListener('keydown', retry, { once: true });
+      });
+    }
   };
 
   const pause = () => {
@@ -41,7 +51,7 @@ const MusicPlayer = forwardRef<MusicPlayerHandle, Props>(function MusicPlayer({ 
           color: playing ? 'var(--accent)' : 'var(--text-muted)',
           boxShadow: 'var(--shadow)'
         }}
-        aria-label={playing ? 'Jeda musik' : 'Putar musik'}
+        aria-label={playing ? 'Pause music' : 'Play music'}
         aria-pressed={playing}
       >
         <span className={`text-base ${playing ? 'animate-spin-slow' : ''}`} aria-hidden>

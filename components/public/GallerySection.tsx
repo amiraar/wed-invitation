@@ -47,7 +47,7 @@ export default function GallerySection({ images }: Props) {
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
         >
-          <SectionHeading align="center" eyebrow="Galeri" title="Momen Kami" />
+          <SectionHeading align="center" eyebrow="Moments" title="Our Gallery" />
 
           <div className="mt-12 columns-2 gap-3 sm:gap-4 md:columns-3">
             {images.map((image, index) => (
@@ -56,12 +56,12 @@ export default function GallerySection({ images }: Props) {
                 variants={fadeUpVariant}
                 className="group relative mb-3 w-full overflow-hidden rounded-2xl sm:mb-4"
                 onClick={() => setActiveIndex(index)}
-                aria-label={image.caption || `Foto ${index + 1}`}
+                aria-label={image.caption || `Photo ${index + 1}`}
               >
                 <div className={`relative w-full ${tileHeights[index % tileHeights.length]}`}>
                   <Image
                     src={image.url}
-                    alt={image.caption || `Foto ${index + 1}`}
+                    alt={image.caption || `Photo ${index + 1}`}
                     fill
                     sizes="(min-width: 768px) 33vw, 50vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -88,7 +88,7 @@ export default function GallerySection({ images }: Props) {
             <button
               onClick={close}
               className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-xl text-white/80 transition hover:text-white"
-              aria-label="Tutup"
+              aria-label="Close"
             >
               ✕
             </button>
@@ -101,7 +101,7 @@ export default function GallerySection({ images }: Props) {
                     step(-1);
                   }}
                   className="absolute left-2 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-2xl text-white/80 transition hover:text-white sm:left-6"
-                  aria-label="Foto sebelumnya"
+                  aria-label="Previous photo"
                 >
                   ‹
                 </button>
@@ -111,7 +111,7 @@ export default function GallerySection({ images }: Props) {
                     step(1);
                   }}
                   className="absolute right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-2xl text-white/80 transition hover:text-white sm:right-6"
-                  aria-label="Foto berikutnya"
+                  aria-label="Next photo"
                 >
                   ›
                 </button>
@@ -129,7 +129,7 @@ export default function GallerySection({ images }: Props) {
             >
               <Image
                 src={activeImage.url}
-                alt={activeImage.caption || 'Foto galeri'}
+                alt={activeImage.caption || 'Gallery photo'}
                 fill
                 sizes="100vw"
                 className="object-contain"

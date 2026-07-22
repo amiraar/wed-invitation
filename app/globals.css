@@ -4,37 +4,41 @@
 
 @layer base {
   :root {
-    --bg-primary: #0E0C0A;
-    --bg-secondary: #161210;
-    --bg-card: #1C1612;
-    --bg-elevated: #231A12;
-    --text-primary: #F5F0E8;
-    --text-secondary: #C4B49A;
-    --text-muted: #6B5C4A;
-    --accent: #C9A96E;
-    --accent-light: #E2C98A;
-    --accent-dim: rgba(201, 169, 110, 0.15);
-    --border: rgba(201, 169, 110, 0.12);
-    --border-hover: rgba(201, 169, 110, 0.3);
-    --shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    --bg-primary: #F7F9F6;
+    --bg-secondary: #EFF5EF;
+    --bg-card: #FFFFFF;
+    --bg-elevated: #EFF5EF;
+    --text-primary: #2A3A2A;
+    --text-secondary: #5A6B5A;
+    --text-muted: #7A9E7A;
+    --accent: #3D5C3D;
+    --accent-light: #7A9E7A;
+    --accent-dim: rgba(122, 158, 122, 0.12);
+    --border: #C8DEC8;
+    --border-hover: #7A9E7A;
+    --shadow: 0 24px 64px rgba(61, 92, 61, 0.12);
+    --hero-bg: #3D5C3D;
+    --hero-text: #F5F0E6;
     --font-display: 'Cormorant Garamond', serif;
     --font-body: 'Jost', sans-serif;
   }
 
-  .theme-light {
-    --bg-primary: #F8F4EE;
-    --bg-secondary: #EFE9DF;
-    --bg-card: #FFFFFF;
-    --bg-elevated: #F0EAE0;
-    --text-primary: #1A1208;
-    --text-secondary: #5C4A30;
-    --text-muted: #9A8A70;
-    --accent: #8B5E2A;
-    --accent-light: #B07D40;
-    --accent-dim: rgba(139, 94, 42, 0.1);
-    --border: rgba(139, 94, 42, 0.15);
-    --border-hover: rgba(139, 94, 42, 0.35);
-    --shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+  .theme-dark {
+    --bg-primary: #101a10;
+    --bg-secondary: #16211a;
+    --bg-card: #1a2a1a;
+    --bg-elevated: #1e2e1e;
+    --text-primary: #E8F0E8;
+    --text-secondary: #A8C4A8;
+    --text-muted: #6B8C6B;
+    --accent: #7A9E7A;
+    --accent-light: #A8D4A8;
+    --accent-dim: rgba(122, 158, 122, 0.15);
+    --border: rgba(122, 158, 122, 0.18);
+    --border-hover: rgba(122, 158, 122, 0.4);
+    --shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    --hero-bg: #0F1A0F;
+    --hero-text: #F5F0E6;
   }
 
   * {
@@ -71,6 +75,122 @@
   }
 }
 
+@layer base {
+  .admin-shell {
+    --adm-bg: #1a2a1a;
+    --adm-bg-topbar: #0f1a0f;
+    --adm-card: rgba(255, 255, 255, 0.03);
+    --adm-border: rgba(120, 160, 120, 0.14);
+    --adm-border-strong: rgba(120, 160, 120, 0.32);
+    --adm-text: #e8f0e8;
+    --adm-text-muted: rgba(200, 220, 200, 0.55);
+    --adm-text-faint: rgba(200, 220, 200, 0.35);
+    --adm-accent: #7a9e7a;
+    --adm-accent-strong: #4a7a4a;
+    --adm-accent-strong-hover: #5a8f5a;
+    --adm-danger: rgba(220, 140, 140, 0.9);
+    --adm-danger-bg: rgba(180, 80, 80, 0.12);
+    --adm-danger-border: rgba(180, 80, 80, 0.22);
+    background: var(--adm-bg);
+    color: var(--adm-text);
+    min-height: 100vh;
+    font-family: var(--font-body);
+  }
+}
+
+@layer utilities {
+  .admin-card {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 0.75rem;
+  }
+
+  .admin-input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--adm-border);
+    color: var(--adm-text);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.875rem;
+  }
+
+  .admin-input::placeholder {
+    color: rgba(180, 210, 180, 0.35);
+  }
+
+  .admin-input:focus {
+    outline: none;
+    border-color: var(--adm-accent);
+  }
+
+  .admin-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--adm-accent);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .admin-btn-primary {
+    background: var(--adm-accent-strong);
+    color: #f0f5f0;
+    border-radius: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    border: none;
+  }
+
+  .admin-btn-primary:hover {
+    background: var(--adm-accent-strong-hover);
+  }
+
+  .admin-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .admin-btn-outline {
+    border: 1px solid var(--adm-border-strong);
+    color: var(--adm-accent);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: transparent;
+    transition: background 0.2s;
+  }
+
+  .admin-btn-outline:hover {
+    background: rgba(120, 160, 120, 0.1);
+  }
+
+  .admin-btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .admin-btn-danger {
+    border: 1px solid var(--adm-danger-border);
+    background: var(--adm-danger-bg);
+    color: var(--adm-danger);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .admin-btn-danger:hover {
+    background: rgba(180, 80, 80, 0.22);
+  }
+}
+
 @layer utilities {
   .section-anchor {
     scroll-margin-top: 80px;
@@ -86,17 +206,25 @@
     background-size: 128px 128px;
   }
 
-  .gold-divider {
+  .accent-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     opacity: 0.4;
   }
 
-  .text-gradient-gold {
+  .text-gradient-accent {
     background: linear-gradient(135deg, var(--accent-light), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .ornament-diamond {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    transform: rotate(45deg);
+    display: inline-block;
   }
 
   .glass-card {

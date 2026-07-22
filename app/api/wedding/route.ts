@@ -20,7 +20,7 @@ export async function GET() {
     SELECT * FROM wedding_config WHERE id = 'main' LIMIT 1
   `;
   const data = rows[0];
-  if (!data) return jsonError('Data tidak ditemukan.', 404);
+  if (!data) return jsonError('Data not found.', 404);
 
   setCache(CACHE_KEYS.WEDDING, data, TTL_MS);
   return jsonSuccess(data);
@@ -32,7 +32,7 @@ export async function PUT(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   const parsed = WeddingConfigSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Data tidak valid.', 400);
+  if (!parsed.success) return jsonError('Invalid data.', 400);
 
   const payload = parsed.data;
   const updated = {
@@ -50,7 +50,18 @@ export async function PUT(request: NextRequest) {
       bank: sanitizeText(account.bank),
       account_number: sanitizeText(account.account_number),
       account_name: sanitizeText(account.account_name)
-    }))
+    })),
+    story_body: sanitizeText(payload.story_body ?? ''),
+    venue_image_url: sanitizeText(payload.venue_image_url ?? ''),
+    dress_code_title: sanitizeText(payload.dress_code_title ?? ''),
+    dress_code_note: sanitizeText(payload.dress_code_note ?? ''),
+    dress_code_avoid_note: sanitizeText(payload.dress_code_avoid_note ?? ''),
+    dress_code_swatches: (payload.dress_code_swatches ?? []).map((swatch) => ({
+      color: sanitizeText(swatch.color),
+      label: sanitizeText(swatch.label)
+    })),
+    wishlist_title: sanitizeText(payload.wishlist_title ?? ''),
+    wishlist_note: sanitizeText(payload.wishlist_note ?? '')
   };
 
   const rows = await sql<WeddingRow>`
@@ -66,6 +77,14 @@ export async function PUT(request: NextRequest) {
         music_autoplay = ${updated.music_autoplay},
         opening_quote = ${updated.opening_quote},
         bank_accounts = ${JSON.stringify(updated.bank_accounts)}::jsonb,
+        story_body = ${updated.story_body},
+        venue_image_url = ${updated.venue_image_url},
+        dress_code_title = ${updated.dress_code_title},
+        dress_code_note = ${updated.dress_code_note},
+        dress_code_avoid_note = ${updated.dress_code_avoid_note},
+        dress_code_swatches = ${JSON.stringify(updated.dress_code_swatches)}::jsonb,
+        wishlist_title = ${updated.wishlist_title},
+        wishlist_note = ${updated.wishlist_note},
         updated_at = NOW()
     WHERE id = 'main'
     RETURNING *

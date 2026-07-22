@@ -16,15 +16,15 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: 'Undangan Pernikahan',
-  description: 'Undangan pernikahan digital'
+  title: 'Wedding Invitation',
+  description: 'A digital wedding invitation'
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0E0C0A'
+  themeColor: '#3D5C3D'
 };
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${cormorant.variable} ${jost.variable} theme-dark`}>
+    <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

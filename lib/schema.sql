@@ -24,6 +24,14 @@ CREATE TABLE IF NOT EXISTS wedding_config (
   music_autoplay BOOLEAN DEFAULT FALSE,
   opening_quote TEXT DEFAULT '',
   bank_accounts JSONB NOT NULL DEFAULT '[]'::jsonb,
+  story_body TEXT DEFAULT '',
+  venue_image_url TEXT DEFAULT '',
+  dress_code_title TEXT DEFAULT '',
+  dress_code_note TEXT DEFAULT '',
+  dress_code_avoid_note TEXT DEFAULT '',
+  dress_code_swatches JSONB NOT NULL DEFAULT '[]'::jsonb,
+  wishlist_title TEXT DEFAULT '',
+  wishlist_note TEXT DEFAULT '',
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -32,6 +40,16 @@ INSERT INTO wedding_config (id) VALUES ('main') ON CONFLICT DO NOTHING;
 
 -- Backfill for databases created before bank_accounts existed
 ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS bank_accounts JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+-- Backfill for databases created before the story/venue/dress-code/wishlist columns existed
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS story_body TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS venue_image_url TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_title TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_note TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_avoid_note TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS dress_code_swatches JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS wishlist_title TEXT DEFAULT '';
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS wishlist_note TEXT DEFAULT '';
 
 -- Events (max 3: lamaran, akad, resepsi)
 CREATE TABLE IF NOT EXISTS events (
@@ -92,12 +110,19 @@ CREATE TABLE IF NOT EXISTS guestbook (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- FAQs
+CREATE TABLE IF NOT EXISTS faqs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  question TEXT NOT NULL DEFAULT '',
+  answer TEXT NOT NULL DEFAULT '',
+  order_index INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- App settings
 CREATE TABLE IF NOT EXISTS app_settings (
   id VARCHAR(10) PRIMARY KEY DEFAULT 'main',
-  theme VARCHAR(20) DEFAULT 'dark' CHECK (theme IN ('dark', 'light')),
-  cover_title TEXT DEFAULT 'Kami Menikah',
-  cover_subtitle TEXT DEFAULT 'Buka undangan untuk melihat detail',
+  theme VARCHAR(20) DEFAULT 'light' CHECK (theme IN ('dark', 'light')),
   show_lamaran BOOLEAN DEFAULT TRUE,
   show_akad BOOLEAN DEFAULT TRUE,
   show_resepsi BOOLEAN DEFAULT TRUE,
@@ -107,6 +132,11 @@ CREATE TABLE IF NOT EXISTS app_settings (
 );
 
 INSERT INTO app_settings (id) VALUES ('main') ON CONFLICT DO NOTHING;
+
+-- The invitation no longer has a tap-to-open cover gate, so its title/subtitle are gone.
+ALTER TABLE app_settings DROP COLUMN IF EXISTS cover_title;
+ALTER TABLE app_settings DROP COLUMN IF EXISTS cover_subtitle;
+ALTER TABLE app_settings ALTER COLUMN theme SET DEFAULT 'light';
 
 -- Indexes untuk performa query
 CREATE INDEX IF NOT EXISTS idx_rsvp_created ON rsvp(created_at DESC);
