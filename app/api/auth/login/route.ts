@@ -9,6 +9,10 @@ import { verifyPassword } from '@/lib/hash';
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
 
+// Hash of a random, discarded string (same cost as lib/hash.ts). Comparing against it when the
+// username doesn't exist keeps response time equal, so timing can't reveal valid usernames.
+const DUMMY_HASH = '$2a$12$MI1KYKYI3VlWQPfp..dtIeSsCOIUOO/Gg.gGFQnnyL5lB.6rkYeLG';
+
 type AdminRow = {
   id: string;
   username: string;
@@ -37,12 +41,8 @@ export async function POST(request: NextRequest) {
   `;
 
   const user = rows[0];
-  if (!user) {
-    return jsonError('Incorrect username or password.', 401);
-  }
-
-  const match = await verifyPassword(password, user.password_hash);
-  if (!match) {
+  const match = await verifyPassword(password, user?.password_hash ?? DUMMY_HASH);
+  if (!user || !match) {
     return jsonError('Incorrect username or password.', 401);
   }
 

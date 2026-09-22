@@ -3,6 +3,14 @@ import { z } from 'zod';
 const phoneRegex = /^(\+62|62|0)8\d{7,12}$/;
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^\d{2}:\d{2}$/;
+const hexColorRegex = /^#[0-9a-fA-F]{3,8}$/;
+
+// Admin-entered links end up in href/src attributes; only https:// is accepted so
+// schemes like javascript: or data: can never be stored.
+const safeUrl = z
+  .string()
+  .max(500)
+  .refine((value) => value === '' || /^https:\/\/\S+$/i.test(value), { message: 'must be an https:// URL' });
 
 export const RSVPSchema = z.object({
   name: z.string().min(2).max(150),
@@ -24,6 +32,17 @@ export const LoginSchema = z.object({
   password: z.string().min(8).max(100)
 });
 
+export const ChangePasswordSchema = z.object({
+  current_password: z.string().min(1).max(100),
+  new_password: z.string().min(12).max(100)
+});
+
+export const GalleryItemSchema = z.object({
+  url: safeUrl.refine((value) => value !== '', { message: 'is required' }),
+  caption: z.string().max(200).optional().or(z.literal('')),
+  order_index: z.number().int().min(0).max(100).optional()
+});
+
 export const BankAccountSchema = z.object({
   bank: z.string().min(1).max(100),
   account_number: z.string().min(3).max(50),
@@ -31,7 +50,7 @@ export const BankAccountSchema = z.object({
 });
 
 export const DressCodeSwatchSchema = z.object({
-  color: z.string().min(1).max(20),
+  color: z.string().regex(hexColorRegex, { message: 'must be a hex color like #7A9E7A' }),
   label: z.string().min(1).max(50)
 });
 
@@ -48,13 +67,13 @@ export const WeddingConfigSchema = z.object({
   bride_full_name: z.string().max(150).optional().or(z.literal('')),
   groom_parents: z.string().max(500).optional().or(z.literal('')),
   bride_parents: z.string().max(500).optional().or(z.literal('')),
-  cover_image_url: z.string().max(500).optional().or(z.literal('')),
-  music_url: z.string().max(500).optional().or(z.literal('')),
+  cover_image_url: safeUrl.optional(),
+  music_url: safeUrl.optional(),
   music_autoplay: z.boolean(),
   opening_quote: z.string().max(500).optional().or(z.literal('')),
   bank_accounts: z.array(BankAccountSchema).max(6).optional(),
   story_body: z.string().max(2000).optional().or(z.literal('')),
-  venue_image_url: z.string().max(500).optional().or(z.literal('')),
+  venue_image_url: safeUrl.optional(),
   dress_code_title: z.string().max(200).optional().or(z.literal('')),
   dress_code_note: z.string().max(1000).optional().or(z.literal('')),
   dress_code_avoid_note: z.string().max(500).optional().or(z.literal('')),
@@ -72,7 +91,7 @@ export const EventSchema = z.object({
   time_end: z.string().regex(timeRegex).optional().or(z.literal('')).or(z.null()),
   venue_name: z.string().max(200).optional().or(z.literal('')),
   address: z.string().max(500).optional().or(z.literal('')),
-  maps_url: z.string().max(500).optional().or(z.literal('')),
+  maps_url: safeUrl.optional(),
   latitude: z.number().min(-90).max(90).optional().nullable(),
   longitude: z.number().min(-180).max(180).optional().nullable(),
   dress_code: z.string().max(100).optional().or(z.literal('')),

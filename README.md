@@ -20,8 +20,9 @@
 ## Login
 
 - Open `http://localhost:3000/admin/login`
-- Default credentials: `admin` / `admin123`
-- Change the password after first login.
+- Username: `admin`
+- Password: the value of `ADMIN_PASSWORD` in `.env` (min. 12 characters), or, if unset, the random password printed once by `scripts/setup.ts`
+- Change it any time in Admin → Settings → Change Password.
 
 ## Notes
 

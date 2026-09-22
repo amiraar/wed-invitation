@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { sql } from '@/lib/db';
-import { jsonError, jsonSuccess } from '@/lib/api';
+import { isUuid, jsonError, jsonSuccess } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
 import { invalidateCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
@@ -16,6 +16,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;
+  if (!isUuid(id)) return jsonError('Data not found.', 404);
   const body = await request.json().catch(() => null);
   const parsed = ActionSchema.safeParse(body);
   if (!parsed.success) return jsonError('Invalid data.', 400);
@@ -40,6 +41,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;
+  if (!isUuid(id)) return jsonError('Data not found.', 404);
   const rows = await sql<GuestbookItem>`
     DELETE FROM guestbook
     WHERE id = ${id}

@@ -19,6 +19,9 @@ export default function SettingsPage() {
   const [musicAutoplay, setMusicAutoplay] = useState(false);
   const [status, setStatus] = useState('');
   const [confirmReset, setConfirmReset] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordStatus, setPasswordStatus] = useState('');
 
   useEffect(() => {
     fetch('/api/settings')
@@ -45,6 +48,22 @@ export default function SettingsPage() {
     });
     const data = await response.json().catch(() => null);
     setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
+  };
+
+  const handleChangePassword = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setPasswordStatus('Saving...');
+    const response = await fetch('/api/auth/password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+    });
+    const data = await response.json().catch(() => null);
+    if (data?.success) {
+      setCurrentPassword('');
+      setNewPassword('');
+    }
+    setPasswordStatus(data?.success ? 'Password changed.' : data?.error || 'Failed to change password');
   };
 
   const handleReset = async () => {
@@ -141,6 +160,33 @@ export default function SettingsPage() {
       <button onClick={handleSave} className="admin-btn-primary">
         Save Settings
       </button>
+
+      <SectionCard title="Change Password">
+        <form onSubmit={handleChangePassword} className="grid gap-3 md:max-w-sm">
+          <input
+            type="password"
+            autoComplete="current-password"
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+            placeholder="Current password"
+            className="admin-input"
+          />
+          <input
+            type="password"
+            autoComplete="new-password"
+            minLength={12}
+            maxLength={100}
+            value={newPassword}
+            onChange={(event) => setNewPassword(event.target.value)}
+            placeholder="New password (min. 12 characters)"
+            className="admin-input"
+          />
+          <button type="submit" className="admin-btn-primary">
+            Change Password
+          </button>
+          {passwordStatus && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{passwordStatus}</p>}
+        </form>
+      </SectionCard>
 
       <div className="admin-card p-6" style={{ borderColor: 'var(--adm-danger-border)' }}>
         <h2 className="text-lg" style={{ color: 'var(--adm-danger)' }}>Danger Zone</h2>

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { sql } from '@/lib/db';
-import { jsonError, jsonSuccess } from '@/lib/api';
+import { jsonError, jsonSuccess, jsonValidationError } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
@@ -32,7 +32,7 @@ export async function PUT(request: NextRequest) {
 
   const body = await request.json().catch(() => null);
   const parsed = WeddingConfigSchema.safeParse(body);
-  if (!parsed.success) return jsonError('Invalid data.', 400);
+  if (!parsed.success) return jsonValidationError(parsed.error);
 
   const payload = parsed.data;
   const updated = {
