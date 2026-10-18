@@ -6,6 +6,7 @@ import { rateLimit } from '@/lib/rateLimit';
 import { getClientIp, jsonError, jsonSuccess } from '@/lib/api';
 import { setAuthCookie, signToken } from '@/lib/auth';
 import { verifyPassword } from '@/lib/hash';
+import { logSecurityEvent } from '@/lib/securityLog';
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
 
@@ -21,8 +22,9 @@ type AdminRow = {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(ip);
+  const limit = limiter(`login:${ip}`);
   if (!limit.success) {
+    logSecurityEvent('login_rate_limited', { ip });
     return jsonError('Too many login attempts. Please try again later.', 429);
   }
 
@@ -43,8 +45,10 @@ export async function POST(request: NextRequest) {
   const user = rows[0];
   const match = await verifyPassword(password, user?.password_hash ?? DUMMY_HASH);
   if (!user || !match) {
+    logSecurityEvent('login_failed', { ip });
     return jsonError('Incorrect username or password.', 401);
   }
+  logSecurityEvent('login_success', { ip, userId: user.id });
 
   await sql`
     UPDATE admin_users
@@ -52,7 +56,7 @@ export async function POST(request: NextRequest) {
     WHERE id = ${user.id}
   `;
 
-  const token = signToken({ userId: user.id, username: user.username });
+  const token = signToken(user);
   const response = jsonSuccess({ userId: user.id, username: user.username });
   setAuthCookie(response, token);
   return response;

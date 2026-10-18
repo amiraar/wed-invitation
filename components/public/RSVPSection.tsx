@@ -192,6 +192,11 @@ export default function RSVPSection({ events }: Props) {
                 {isSubmitting ? 'Sending...' : 'Send RSVP'}
               </FancyButton>
 
+              <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+                Your RSVP is only visible to the couple and is used to plan the celebration. Ask the couple anytime
+                if you want it removed.
+              </p>
+
               {status !== 'idle' && (
                 <p
                   role="status"

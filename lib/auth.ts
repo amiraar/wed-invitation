@@ -1,5 +1,7 @@
+import { createHmac } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import type { NextRequest, NextResponse } from 'next/server';
+import { sql } from './db';
 
 const TOKEN_NAME = 'wed_auth';
 const TOKEN_EXPIRES_DAYS = 7;
@@ -13,19 +15,29 @@ function getSecret(): string {
 export type AuthPayload = {
   userId: string;
   username: string;
+  pv: string;
   iat: number;
   exp: number;
 };
 
-export function signToken(payload: { userId: string; username: string }): string {
+// Fingerprint of the current password hash (never the hash itself). It changes whenever the
+// password does, so changing the password signs out every session issued before it.
+function passwordVersion(passwordHash: string): string {
+  return createHmac('sha256', getSecret()).update(passwordHash).digest('base64url').slice(0, 16);
+}
+
+export function signToken(user: { id: string; username: string; password_hash: string }): string {
+  const payload = { userId: user.id, username: user.username, pv: passwordVersion(user.password_hash) };
   return jwt.sign(payload, getSecret(), {
+    algorithm: 'HS256',
     expiresIn: `${TOKEN_EXPIRES_DAYS}d`
   });
 }
 
 export function verifyToken(token: string): AuthPayload | null {
   try {
-    return jwt.verify(token, getSecret()) as AuthPayload;
+    // Pin the algorithm so a token can never pick its own (e.g. "none").
+    return jwt.verify(token, getSecret(), { algorithms: ['HS256'] }) as AuthPayload;
   } catch {
     return null;
   }
@@ -55,8 +67,16 @@ export function getAuthCookie(request: NextRequest): string | null {
   return request.cookies.get(TOKEN_NAME)?.value ?? null;
 }
 
-export function verifyAuth(request: NextRequest): AuthPayload | null {
+export async function verifyAuth(request: NextRequest): Promise<AuthPayload | null> {
   const token = getAuthCookie(request);
   if (!token) return null;
-  return verifyToken(token);
+  const payload = verifyToken(token);
+  if (!payload?.pv) return null;
+
+  const rows = await sql<{ password_hash: string }>`
+    SELECT password_hash FROM admin_users WHERE id = ${payload.userId} LIMIT 1
+  `;
+  const user = rows[0];
+  if (!user || passwordVersion(user.password_hash) !== payload.pv) return null;
+  return payload;
 }

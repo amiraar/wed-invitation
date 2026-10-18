@@ -3,17 +3,20 @@ import { sql } from '@/lib/db';
 import { ChangePasswordSchema } from '@/lib/validations';
 import { rateLimit } from '@/lib/rateLimit';
 import { getClientIp, jsonError, jsonSuccess } from '@/lib/api';
-import { verifyAuth } from '@/lib/auth';
+import { setAuthCookie, signToken, verifyAuth } from '@/lib/auth';
 import { hashPassword, verifyPassword } from '@/lib/hash';
+import { logSecurityEvent } from '@/lib/securityLog';
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
 
 export async function POST(request: NextRequest) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
-  const limit = limiter(`password:${getClientIp(request)}`);
+  const ip = getClientIp(request);
+  const limit = limiter(`password:${ip}`);
   if (!limit.success) {
+    logSecurityEvent('password_change_rate_limited', { ip, userId: auth.userId });
     return jsonError('Too many attempts. Please try again later.', 429);
   }
 
@@ -31,12 +34,19 @@ export async function POST(request: NextRequest) {
   if (!user) return jsonError('Unauthorized', 401);
 
   const match = await verifyPassword(current_password, user.password_hash);
-  if (!match) return jsonError('Current password is incorrect.', 400);
+  if (!match) {
+    logSecurityEvent('password_change_failed', { ip, userId: auth.userId });
+    return jsonError('Current password is incorrect.', 400);
+  }
 
   const passwordHash = await hashPassword(new_password);
   await sql`
     UPDATE admin_users SET password_hash = ${passwordHash} WHERE id = ${auth.userId}
   `;
+  logSecurityEvent('password_changed', { ip, userId: auth.userId });
 
-  return jsonSuccess({ changed: true });
+  // The new hash invalidates every existing session; re-issue this one so the admin stays logged in.
+  const response = jsonSuccess({ changed: true });
+  setAuthCookie(response, signToken({ id: auth.userId, username: auth.username, password_hash: passwordHash }));
+  return response;
 }

@@ -10,7 +10,7 @@ import type { RSVPItem } from '@/lib/types';
 const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 3 });
 
 export async function GET(request: NextRequest) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const rows = await sql<RSVPItem>`
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(ip);
+  const limit = limiter(`rsvp:${ip}`);
   if (!limit.success) {
     return jsonError('RSVP submission limit reached. Please try again later.', 429);
   }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   const payload = parsed.data;
   await sql`
     INSERT INTO rsvp (
-      name, phone, guest_count, attending_lamaran, attending_akad, attending_resepsi, message, ip_address
+      name, phone, guest_count, attending_lamaran, attending_akad, attending_resepsi, message
     )
     VALUES (
       ${sanitizeText(payload.name)},
@@ -45,8 +45,7 @@ export async function POST(request: NextRequest) {
       ${payload.attending_lamaran},
       ${payload.attending_akad},
       ${payload.attending_resepsi},
-      ${sanitizeText(payload.message ?? '')},
-      ${ip}
+      ${sanitizeText(payload.message ?? '')}
     )
   `;
 
