@@ -143,3 +143,32 @@ ALTER TABLE app_settings ALTER COLUMN theme SET DEFAULT 'light';
 CREATE INDEX IF NOT EXISTS idx_rsvp_created ON rsvp(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_guestbook_approved ON guestbook(is_approved, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_gallery_order ON gallery(order_index ASC);
+
+-- Guest list: one row per invitation. The token is the secret part of the personal link.
+CREATE TABLE IF NOT EXISTS guests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  token VARCHAR(32) UNIQUE NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  guest_key VARCHAR(260) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  max_guests INT NOT NULL DEFAULT 1 CHECK (max_guests BETWEEN 1 AND 20),
+  group_name VARCHAR(100) NOT NULL DEFAULT '',
+  invite_lamaran BOOLEAN NOT NULL DEFAULT FALSE,
+  invite_akad BOOLEAN NOT NULL DEFAULT TRUE,
+  invite_resepsi BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_guests_group ON guests(group_name, name);
+
+-- One RSVP per guest (rows from before personal links keep guest_id NULL).
+ALTER TABLE rsvp ADD COLUMN IF NOT EXISTS guest_id UUID REFERENCES guests(id) ON DELETE CASCADE;
+ALTER TABLE rsvp ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+CREATE UNIQUE INDEX IF NOT EXISTS idx_rsvp_guest ON rsvp(guest_id);
+
+-- Wishes belong to a guest; is_anonymous shows "Someone" publicly.
+ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS guest_id UUID REFERENCES guests(id) ON DELETE SET NULL;
+ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS is_anonymous BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- WhatsApp share template for personal links ({name}, {link}, {couple}).
+ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS invite_message TEXT DEFAULT '';

@@ -49,8 +49,9 @@ export const getInvitationData = cache(async (): Promise<InvitationData> => {
       sql`SELECT * FROM wedding_config WHERE id = 'main' LIMIT 1`,
       sql`SELECT * FROM events ORDER BY order_index ASC`,
       sql`SELECT * FROM gallery ORDER BY order_index ASC, created_at ASC`,
-      // Explicit columns: this data is serialized to every visitor, so ip_address must never be selected.
-      sql`SELECT id, name, message, is_approved, created_at FROM guestbook WHERE is_approved = TRUE ORDER BY created_at DESC LIMIT 100`,
+      // Explicit columns: this data is serialized to every visitor, so ip_address must never be selected,
+      // and guests who hid their name are shown as "Someone".
+      sql`SELECT id, CASE WHEN is_anonymous THEN 'Someone' ELSE name END AS name, message, is_approved, created_at FROM guestbook WHERE is_approved = TRUE ORDER BY created_at DESC LIMIT 100`,
       sql`SELECT * FROM faqs ORDER BY order_index ASC`
     ]);
 

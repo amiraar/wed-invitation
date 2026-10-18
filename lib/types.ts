@@ -37,6 +37,7 @@ export type WeddingConfig = {
   wishlist_title: string;
   wishlist_note: string;
   schedule_items: ScheduleItem[];
+  invite_message?: string;
   updated_at: string;
 };
 
@@ -79,6 +80,7 @@ export type GuestbookItem = {
   name: string;
   message: string;
   is_approved: boolean;
+  is_anonymous?: boolean;
   created_at: string;
 };
 
@@ -92,6 +94,47 @@ export type RSVPItem = {
   attending_resepsi: boolean;
   message: string;
   created_at: string;
+  guest_id?: string | null;
+  group_name?: string | null;
+};
+
+export type EventType = EventItem['type'];
+
+// The only guest data sent to the public page (no id, no phone).
+export type GuestView = {
+  token: string;
+  name: string;
+  maxGuests: number;
+  invited: Record<EventType, boolean>;
+  rsvp: {
+    attending: boolean;
+    guestCount: number;
+    lamaran: boolean;
+    akad: boolean;
+    resepsi: boolean;
+    message: string;
+  } | null;
+};
+
+// Admin view of a guest with their RSVP summary.
+export type GuestItem = {
+  id: string;
+  token: string;
+  name: string;
+  phone: string | null;
+  max_guests: number;
+  group_name: string;
+  invite_lamaran: boolean;
+  invite_akad: boolean;
+  invite_resepsi: boolean;
+  path: string;
+  rsvp_status: 'attending' | 'declined' | 'pending';
+  rsvp_guest_count: number | null;
+  rsvp_lamaran: boolean;
+  rsvp_akad: boolean;
+  rsvp_resepsi: boolean;
+  rsvp_message: string;
+  rsvp_updated_at: string | null;
 };
 
 export type AppSettings = {

@@ -1,21 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
-import { GuestbookSchema } from '@/lib/validations';
 import { formatDateShortID } from '@/lib/format';
-import { z } from 'zod';
 import SectionHeading from './SectionHeading';
 import FancyButton from './FancyButton';
-import type { GuestbookItem } from '@/lib/types';
-
-type FormValues = z.infer<typeof GuestbookSchema>;
+import type { GuestbookItem, GuestView } from '@/lib/types';
 
 type Props = {
   messages: GuestbookItem[];
+  guest: GuestView | null;
 };
 
 // Border color must come from classes, not inline style, or the
@@ -28,38 +23,86 @@ const inputStyle = {
 const inputClass =
   'w-full rounded-xl border border-border px-4 py-3.5 text-base sm:text-sm outline-none transition-all duration-300 focus:border-[var(--border-hover)]';
 
-export default function GuestbookSection({ messages }: Props) {
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset
-  } = useForm<FormValues>({
-    resolver: zodResolver(GuestbookSchema),
-    defaultValues: { name: '', message: '' }
-  });
+function WishForm({ guest }: { guest: GuestView }) {
+  const [text, setText] = useState('');
+  const [anonymous, setAnonymous] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const onSubmit = async (values: FormValues) => {
-    setStatus('idle');
-    setMessage('');
+  const onSubmit = async (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+    setStatus(null);
+    if (text.trim().length < 5) {
+      setStatus({ type: 'error', text: 'Message must be at least 5 characters.' });
+      return;
+    }
+    setSubmitting(true);
     const response = await fetch('/api/guestbook', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
-    const data = await response.json().catch(() => null);
+      body: JSON.stringify({ token: guest.token, message: text, is_anonymous: anonymous })
+    }).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    setSubmitting(false);
     if (data?.success) {
-      setStatus('success');
-      setMessage('Thank you! Your message will appear once approved.');
-      reset();
+      setStatus({ type: 'success', text: 'Thank you! Your message will appear once approved.' });
+      setText('');
     } else {
-      setStatus('error');
-      setMessage(data?.error || 'Something went wrong. Please try again.');
+      setStatus({ type: 'error', text: data?.error || 'Something went wrong. Please try again.' });
     }
   };
 
+  return (
+    <form className="grid gap-4" onSubmit={onSubmit}>
+      <div>
+        <input
+          value={anonymous ? 'Someone' : guest.name}
+          readOnly
+          aria-label="Your name"
+          className={`${inputClass} cursor-default opacity-80`}
+          style={inputStyle}
+        />
+        <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+          <input
+            type="checkbox"
+            className="h-4 w-4"
+            checked={anonymous}
+            onChange={(e) => setAnonymous(e.target.checked)}
+          />
+          Hide my name (shown as &ldquo;Someone&rdquo;)
+        </label>
+      </div>
+      <div>
+        <textarea
+          value={text}
+          maxLength={1000}
+          onChange={(e) => setText(e.target.value)}
+          className={`${inputClass} h-32 resize-none`}
+          style={inputStyle}
+          placeholder="Write your wishes and blessings"
+          aria-label="Message"
+        />
+      </div>
+      <FancyButton type="submit" className="w-full py-4" disabled={submitting}>
+        {submitting ? 'Sending...' : 'Send Wishes'}
+      </FancyButton>
+      <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+        Your message will appear publicly on this page once the couple approves it. Links are not allowed. Ask the
+        couple anytime if you want it removed.
+      </p>
+      {status && (
+        <p
+          role="status"
+          className={`text-center text-sm ${status.type === 'success' ? 'text-green-400' : 'text-red-400'}`}
+        >
+          {status.text}
+        </p>
+      )}
+    </form>
+  );
+}
+
+export default function GuestbookSection({ messages, guest }: Props) {
   return (
     <section id="guestbook" className="section-anchor bg-bg-secondary py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
@@ -82,46 +125,13 @@ export default function GuestbookSection({ messages }: Props) {
               className="h-fit rounded-3xl p-6 md:col-span-2"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
             >
-              <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                  <input
-                    {...register('name')}
-                    className={inputClass}
-                    style={inputStyle}
-                    placeholder="Your name"
-                    aria-label="Name"
-                    autoComplete="name"
-                  />
-                  {errors.name && <p className="mt-1.5 text-xs text-red-400">Name must be at least 2 characters.</p>}
-                </div>
-                <div>
-                  <textarea
-                    {...register('message')}
-                    className={`${inputClass} h-32 resize-none`}
-                    style={inputStyle}
-                    placeholder="Write your wishes and blessings"
-                    aria-label="Message"
-                  />
-                  {errors.message && (
-                    <p className="mt-1.5 text-xs text-red-400">Message must be at least 5 characters.</p>
-                  )}
-                </div>
-                <FancyButton type="submit" className="w-full py-4" disabled={isSubmitting}>
-                  {isSubmitting ? 'Sending...' : 'Send Wishes'}
-                </FancyButton>
-                <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Your name and message will appear publicly on this page once the couple approves it. Ask the couple
-                  anytime if you want it removed.
+              {guest ? (
+                <WishForm guest={guest} />
+              ) : (
+                <p className="text-center text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  Wishes can be sent through your personal invitation link. Please open the link the couple sent you.
                 </p>
-                {status !== 'idle' && (
-                  <p
-                    role="status"
-                    className={`text-center text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}
-                  >
-                    {message}
-                  </p>
-                )}
-              </form>
+              )}
             </motion.div>
 
             <motion.div variants={fadeUpVariant} className="md:col-span-3">
@@ -142,7 +152,7 @@ export default function GuestbookSection({ messages }: Props) {
                     >
                       <div className="flex items-baseline justify-between gap-3">
                         <p
-                          className="text-xs font-medium uppercase tracking-[0.25em]"
+                          className="min-w-0 break-words text-xs font-medium uppercase tracking-[0.25em]"
                           style={{ color: 'var(--accent)' }}
                         >
                           {item.name}
@@ -155,7 +165,7 @@ export default function GuestbookSection({ messages }: Props) {
                           {formatDateShortID(item.created_at)}
                         </p>
                       </div>
-                      <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      <p className="mt-3 break-words text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                         {item.message}
                       </p>
                     </div>

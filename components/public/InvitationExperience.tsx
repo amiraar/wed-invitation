@@ -19,12 +19,15 @@ import FooterPublic from './FooterPublic';
 import MusicPlayer, { type MusicPlayerHandle } from './MusicPlayer';
 import { eventTargetDate, formatDateID } from '@/lib/format';
 import type { InvitationData } from '@/lib/queries';
+import type { GuestView } from '@/lib/types';
 
 type Props = {
   data: InvitationData;
+  // Set on a personal link (/to/{name}/{token}); null on the public page.
+  guest: GuestView | null;
 };
 
-export default function InvitationExperience({ data }: Props) {
+export default function InvitationExperience({ data, guest }: Props) {
   const { settings, wedding, events, gallery, guestbook, faqs } = data;
   const musicRef = useRef<MusicPlayerHandle>(null);
 
@@ -35,6 +38,7 @@ export default function InvitationExperience({ data }: Props) {
 
   const activeEvents = events.filter((event) => {
     if (!event.is_active) return false;
+    if (guest && !guest.invited[event.type]) return false;
     if (event.type === 'lamaran') return settings.show_lamaran;
     if (event.type === 'akad') return settings.show_akad;
     if (event.type === 'resepsi') return settings.show_resepsi;
@@ -114,9 +118,9 @@ export default function InvitationExperience({ data }: Props) {
             wishlistNote={wedding.wishlist_note}
           />
         )}
-        <RSVPSection events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
+        <RSVPSection guest={guest} events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
         {hasFaqs && <FAQSection faqs={faqs} />}
-        <GuestbookSection messages={guestbook} />
+        <GuestbookSection guest={guest} messages={guestbook} />
         <FooterPublic groomName={wedding.groom_name} brideName={wedding.bride_name} />
       </main>
 

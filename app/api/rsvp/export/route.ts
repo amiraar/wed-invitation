@@ -2,13 +2,8 @@ import type { NextRequest } from 'next/server';
 import { sql } from '@/lib/db';
 import { verifyAuth } from '@/lib/auth';
 import { jsonError } from '@/lib/api';
-
-// Guest-supplied text starting with = + - @ (or tab/CR) would run as a formula in Excel/Sheets;
-// a leading ' makes the spreadsheet treat it as plain text.
-function csvCell(value: string): string {
-  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
-  return `"${safe.replace(/"/g, '""')}"`;
-}
+import { csvDocument, csvResponse } from '@/lib/csv';
+import { decodeText } from '@/lib/sanitize';
 
 export async function GET(request: NextRequest) {
   const auth = await verifyAuth(request);
@@ -40,28 +35,17 @@ export async function GET(request: NextRequest) {
     'created_at'
   ];
 
-  const lines = [header.join(',')];
-  rows.forEach((row) => {
-    const values = [
-      row.name,
-      row.phone ?? '',
-      row.guest_count.toString(),
-      row.attending_lamaran ? 'true' : 'false',
-      row.attending_akad ? 'true' : 'false',
-      row.attending_resepsi ? 'true' : 'false',
-      (row.message ?? '').replace(/\n/g, ' '),
-      // The Neon driver returns TIMESTAMPTZ as a Date, not a string.
-      new Date(row.created_at).toISOString()
-    ].map(csvCell);
-    lines.push(values.join(','));
-  });
+  const lines = rows.map((row) => [
+    decodeText(row.name),
+    row.phone ?? '',
+    row.guest_count.toString(),
+    row.attending_lamaran ? 'true' : 'false',
+    row.attending_akad ? 'true' : 'false',
+    row.attending_resepsi ? 'true' : 'false',
+    decodeText(row.message ?? '').replace(/\n/g, ' '),
+    // The Neon driver returns TIMESTAMPTZ as a Date, not a string.
+    new Date(row.created_at).toISOString()
+  ]);
 
-  const csv = lines.join('\n');
-  return new Response(csv, {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': 'attachment; filename="rsvp.csv"'
-    }
-  });
+  return csvResponse(csvDocument([header, ...lines]), 'rsvp.csv');
 }
