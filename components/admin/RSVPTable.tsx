@@ -1,11 +1,12 @@
 'use client';
 
+import { formatDateShortID } from '@/lib/format';
 import type { RSVPItem } from '@/lib/types';
 
 // onDelete is optional: the dashboard shows a read-only preview without the Action column.
 export default function RSVPTable({ rows, onDelete }: { rows: RSVPItem[]; onDelete?: (id: string) => void }) {
   return (
-    <div className="admin-card overflow-auto">
+    <div className="admin-card overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead
           className="text-left text-[10px] uppercase tracking-[0.2em]"
@@ -40,7 +41,7 @@ export default function RSVPTable({ rows, onDelete }: { rows: RSVPItem[]; onDele
                   .filter(Boolean)
                   .join(', ') || '-'}
               </td>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{row.created_at}</td>
+              <td className="whitespace-nowrap px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{formatDateShortID(row.created_at)}</td>
               {onDelete && (
                 <td className="px-4 py-3">
                   <button onClick={() => onDelete(row.id)} className="admin-btn-danger">

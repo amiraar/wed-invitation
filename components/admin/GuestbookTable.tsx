@@ -1,7 +1,9 @@
 'use client';
 
+import { formatDateShortID } from '@/lib/format';
 import type { GuestbookItem } from '@/lib/types';
 
+// Buttons follow the wish's state: pending → Approve, approved → Hide (back to pending).
 export default function GuestbookTable({
   rows,
   onAction,
@@ -12,7 +14,7 @@ export default function GuestbookTable({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="admin-card overflow-auto">
+    <div className="admin-card overflow-x-auto">
       <table className="min-w-full text-sm">
         <thead
           className="text-left text-[10px] uppercase tracking-[0.2em]"
@@ -28,24 +30,29 @@ export default function GuestbookTable({
         <tbody>
           {rows.map((row) => (
             <tr key={row.id} style={{ borderTop: '1px solid var(--adm-border)' }}>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>
+              <td className="px-4 py-3 align-top" style={{ color: 'var(--adm-text)' }}>
                 {row.name}
                 {row.is_anonymous && (
-                  <span className="ml-2 text-[10px] uppercase tracking-[0.15em]" style={{ color: 'var(--adm-text-faint)' }}>
+                  <span className="block text-[10px] uppercase tracking-[0.15em]" style={{ color: 'var(--adm-text-faint)' }}>
                     shown as Someone
                   </span>
                 )}
               </td>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.message}</td>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{row.created_at}</td>
-              <td className="px-4 py-3">
-                <div className="flex gap-2">
-                  <button onClick={() => onAction(row.id, 'approve')} className="admin-btn-outline">
-                    Approve
-                  </button>
-                  <button onClick={() => onAction(row.id, 'reject')} className="admin-btn-danger">
-                    Reject
-                  </button>
+              <td className="min-w-[14rem] px-4 py-3 align-top" style={{ color: 'var(--adm-text-muted)' }}>{row.message}</td>
+              <td className="whitespace-nowrap px-4 py-3 align-top" style={{ color: 'var(--adm-text-faint)' }}>
+                {formatDateShortID(row.created_at)}
+              </td>
+              <td className="px-4 py-3 align-top">
+                <div className="flex flex-wrap gap-2">
+                  {row.is_approved ? (
+                    <button onClick={() => onAction(row.id, 'reject')} className="admin-btn-outline">
+                      Hide
+                    </button>
+                  ) : (
+                    <button onClick={() => onAction(row.id, 'approve')} className="admin-btn-outline">
+                      Approve
+                    </button>
+                  )}
                   <button onClick={() => onDelete(row.id)} className="admin-btn-danger">
                     Delete
                   </button>
