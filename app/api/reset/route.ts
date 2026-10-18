@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
   if (!auth) return jsonError('Unauthorized', 401);
   logSecurityEvent('data_reset', { ip: getClientIp(request), userId: auth.userId });
 
-  await sql`TRUNCATE rsvp`;
-  await sql`TRUNCATE guestbook`;
+  // One statement: rsvp and guestbook reference guests.
+  await sql`TRUNCATE rsvp, guestbook, guests`;
   await sql`TRUNCATE gallery`;
   await sql`TRUNCATE faqs`;
 
@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         wishlist_title = '',
         wishlist_note = '',
         schedule_items = '[]'::jsonb,
+        invite_message = '',
         updated_at = NOW()
     WHERE id = 'main'
   `;

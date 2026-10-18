@@ -12,19 +12,39 @@ const safeUrl = z
   .max(500)
   .refine((value) => value === '' || /^https:\/\/\S+$/i.test(value), { message: 'must be an https:// URL' });
 
-export const RSVPSchema = z.object({
-  name: z.string().min(2).max(150),
-  phone: z.string().regex(phoneRegex).optional().or(z.literal('')),
-  guest_count: z.number().int().min(1).max(10),
+const tokenSchema = z.string().regex(/^[A-Za-z0-9_-]{12}$/);
+
+// Public RSVP/wishes come only through a personal link: the server takes the
+// guest's name from the token, never from the request.
+export const GuestRSVPSchema = z.object({
+  token: tokenSchema,
+  attending: z.boolean(),
+  guest_count: z.number().int().min(1).max(20),
   attending_lamaran: z.boolean(),
   attending_akad: z.boolean(),
   attending_resepsi: z.boolean(),
   message: z.string().max(1000).optional().or(z.literal(''))
 });
 
-export const GuestbookSchema = z.object({
-  name: z.string().min(2).max(150),
-  message: z.string().min(5).max(1000)
+export const GuestWishSchema = z.object({
+  token: tokenSchema,
+  message: z.string().trim().min(5).max(1000),
+  is_anonymous: z.boolean()
+});
+
+export const GuestSchema = z.object({
+  name: z.string().trim().min(2).max(150),
+  // Checked by normalizePhone in the route, so "0812 3456 7890" is accepted.
+  phone: z.string().max(30).optional().or(z.literal('')),
+  max_guests: z.number().int().min(1).max(20),
+  group_name: z.string().trim().max(100).optional().or(z.literal('')),
+  invite_lamaran: z.boolean(),
+  invite_akad: z.boolean(),
+  invite_resepsi: z.boolean()
+});
+
+export const InviteMessageSchema = z.object({
+  invite_message: z.string().max(1000)
 });
 
 export const LoginSchema = z.object({
