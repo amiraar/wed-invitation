@@ -1,3 +1,5 @@
+import { OrnamentDivider } from './Ornament';
+
 type Props = {
   groomName: string;
   brideName: string;
@@ -15,11 +17,7 @@ export default function FooterPublic({ groomName, brideName }: Props) {
       }}
     >
       <div className="flex flex-col items-center gap-5">
-        <div className="flex items-center gap-4">
-          <div className="h-px w-14 bg-hero-text/[0.28]" />
-          <div className="ornament-diamond text-hero-text/[0.42]" />
-          <div className="h-px w-14 bg-hero-text/[0.28]" />
-        </div>
+        <OrnamentDivider className="text-hero-text/[0.42]" />
         {couple && (
           <h2
             className="font-display italic"
@@ -31,11 +29,6 @@ export default function FooterPublic({ groomName, brideName }: Props) {
         <p className="text-xs uppercase tracking-[0.35em] text-hero-text/55">
           Thank you for your love and blessings
         </p>
-        <div className="flex items-center gap-4">
-          <div className="h-px w-14 bg-hero-text/[0.28]" />
-          <div className="ornament-diamond text-hero-text/[0.42]" />
-          <div className="h-px w-14 bg-hero-text/[0.28]" />
-        </div>
       </div>
     </footer>
   );

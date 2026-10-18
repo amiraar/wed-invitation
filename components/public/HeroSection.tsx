@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
+import { OrnamentDivider } from './Ornament';
 
 type Props = {
   groomName: string;
@@ -13,13 +14,7 @@ type Props = {
 };
 
 function Divider() {
-  return (
-    <div className="flex items-center gap-4">
-      <div className="h-px w-16 bg-hero-text/30" />
-      <div className="ornament-diamond text-hero-text/50" />
-      <div className="h-px w-16 bg-hero-text/30" />
-    </div>
-  );
+  return <OrnamentDivider className="text-hero-text/50" />;
 }
 
 export default function HeroSection({ groomName, brideName, coverImageUrl, dateLabel, venueLine }: Props) {
