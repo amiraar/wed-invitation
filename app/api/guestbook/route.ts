@@ -13,7 +13,7 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 5 });
 const TTL_MS = 30 * 1000;
 
 export async function GET(request: NextRequest) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (auth) {
     const rows = await sql<GuestbookItem>`
       SELECT id, name, message, is_approved, created_at
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(ip);
+  const limit = limiter(`guestbook:${ip}`);
   if (!limit.success) {
     return jsonError('Message submission limit reached. Please try again later.', 429);
   }
@@ -50,12 +50,11 @@ export async function POST(request: NextRequest) {
 
   const payload = parsed.data;
   await sql`
-    INSERT INTO guestbook (name, message, is_approved, ip_address)
+    INSERT INTO guestbook (name, message, is_approved)
     VALUES (
       ${sanitizeText(payload.name)},
       ${sanitizeText(payload.message)},
-      FALSE,
-      ${ip}
+      FALSE
     )
   `;
 

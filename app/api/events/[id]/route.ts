@@ -9,7 +9,7 @@ import { sanitizeText } from '@/lib/sanitize';
 import type { EventItem } from '@/lib/types';
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;

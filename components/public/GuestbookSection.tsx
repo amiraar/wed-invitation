@@ -109,6 +109,10 @@ export default function GuestbookSection({ messages }: Props) {
                 <FancyButton type="submit" className="w-full py-4" disabled={isSubmitting}>
                   {isSubmitting ? 'Sending...' : 'Send Wishes'}
                 </FancyButton>
+                <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Your name and message will appear publicly on this page once the couple approves it. Ask the couple
+                  anytime if you want it removed.
+                </p>
                 {status !== 'idle' && (
                   <p
                     role="status"

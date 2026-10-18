@@ -4,10 +4,12 @@ import type { GuestbookItem } from '@/lib/types';
 
 export default function GuestbookTable({
   rows,
-  onAction
+  onAction,
+  onDelete
 }: {
   rows: GuestbookItem[];
   onAction: (id: string, action: 'approve' | 'reject') => void;
+  onDelete: (id: string) => void;
 }) {
   return (
     <div className="admin-card overflow-auto">
@@ -36,6 +38,9 @@ export default function GuestbookTable({
                   </button>
                   <button onClick={() => onAction(row.id, 'reject')} className="admin-btn-danger">
                     Reject
+                  </button>
+                  <button onClick={() => onDelete(row.id)} className="admin-btn-danger">
+                    Delete
                   </button>
                 </div>
               </td>

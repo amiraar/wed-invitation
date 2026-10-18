@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
     if (!token || !jwtSecret) return redirectToLogin(request);
 
     try {
-      await jwtVerify(token, new TextEncoder().encode(jwtSecret));
+      await jwtVerify(token, new TextEncoder().encode(jwtSecret), { algorithms: ['HS256'] });
     } catch {
       return redirectToLogin(request);
     }
@@ -46,6 +46,10 @@ export async function proxy(request: NextRequest) {
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  // HSTS only in production, so a local dev domain is never pinned to HTTPS.
+  if (!isDev) response.headers.set('Strict-Transport-Security', 'max-age=31536000');
   return response;
 }
 

@@ -27,7 +27,7 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const body = await request.json().catch(() => null);

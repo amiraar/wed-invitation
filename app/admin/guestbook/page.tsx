@@ -29,6 +29,12 @@ export default function GuestbookPage() {
     );
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Delete this message permanently?')) return;
+    const response = await fetch(`/api/guestbook/${id}`, { method: 'DELETE' });
+    if (response.ok) setRows((prev) => prev.filter((item) => item.id !== id));
+  };
+
   const filtered = rows.filter((item) => {
     if (tab === 'pending') return !item.is_approved;
     if (tab === 'approved') return item.is_approved;
@@ -73,7 +79,7 @@ export default function GuestbookPage() {
           Approve All Pending
         </button>
       )}
-      <GuestbookTable rows={filtered} onAction={handleAction} />
+      <GuestbookTable rows={filtered} onAction={handleAction} onDelete={handleDelete} />
     </div>
   );
 }

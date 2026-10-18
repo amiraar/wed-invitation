@@ -16,6 +16,12 @@ export default function RSVPPage() {
       .catch(() => undefined);
   }, []);
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Delete this RSVP permanently?')) return;
+    const response = await fetch(`/api/rsvp/${id}`, { method: 'DELETE' });
+    if (response.ok) setRows((prev) => prev.filter((item) => item.id !== id));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -24,7 +30,7 @@ export default function RSVPPage() {
           Export CSV
         </a>
       </div>
-      <RSVPTable rows={rows} />
+      <RSVPTable rows={rows} onDelete={handleDelete} />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { jsonError, jsonSuccess } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
-  const payload = verifyAuth(request);
+  const payload = await verifyAuth(request);
   if (!payload) {
     return jsonError('Unauthorized', 401);
   }

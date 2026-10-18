@@ -12,7 +12,7 @@ const ActionSchema = z.object({
 });
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;
@@ -37,7 +37,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
 
   const { id } = await context.params;

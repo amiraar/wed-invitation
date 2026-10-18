@@ -1,13 +1,15 @@
 import type { NextRequest } from 'next/server';
 import { sql } from '@/lib/db';
-import { jsonError, jsonSuccess } from '@/lib/api';
+import { getClientIp, jsonError, jsonSuccess } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
 import { invalidateCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
+import { logSecurityEvent } from '@/lib/securityLog';
 
 export async function POST(request: NextRequest) {
-  const auth = verifyAuth(request);
+  const auth = await verifyAuth(request);
   if (!auth) return jsonError('Unauthorized', 401);
+  logSecurityEvent('data_reset', { ip: getClientIp(request), userId: auth.userId });
 
   await sql`TRUNCATE rsvp`;
   await sql`TRUNCATE guestbook`;

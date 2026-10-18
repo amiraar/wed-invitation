@@ -2,7 +2,8 @@
 
 import type { RSVPItem } from '@/lib/types';
 
-export default function RSVPTable({ rows }: { rows: RSVPItem[] }) {
+// onDelete is optional: the dashboard shows a read-only preview without the Action column.
+export default function RSVPTable({ rows, onDelete }: { rows: RSVPItem[]; onDelete?: (id: string) => void }) {
   return (
     <div className="admin-card overflow-auto">
       <table className="min-w-full text-sm">
@@ -16,6 +17,7 @@ export default function RSVPTable({ rows }: { rows: RSVPItem[] }) {
             <th className="px-4 py-3">Guests</th>
             <th className="px-4 py-3">Event</th>
             <th className="px-4 py-3">Date</th>
+            {onDelete && <th className="px-4 py-3">Action</th>}
           </tr>
         </thead>
         <tbody>
@@ -34,6 +36,13 @@ export default function RSVPTable({ rows }: { rows: RSVPItem[] }) {
                   .join(', ') || '-'}
               </td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{row.created_at}</td>
+              {onDelete && (
+                <td className="px-4 py-3">
+                  <button onClick={() => onDelete(row.id)} className="admin-btn-danger">
+                    Delete
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
