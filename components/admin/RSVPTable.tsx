@@ -23,7 +23,12 @@ export default function RSVPTable({ rows, onDelete }: { rows: RSVPItem[]; onDele
         <tbody>
           {rows.map((row) => (
             <tr key={row.id} style={{ borderTop: '1px solid var(--adm-border)' }}>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>{row.name}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>
+                {row.name}
+                {row.group_name && (
+                  <span className="block text-[11px]" style={{ color: 'var(--adm-text-faint)' }}>{row.group_name}</span>
+                )}
+              </td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.phone ?? '-'}</td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.guest_count}</td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>

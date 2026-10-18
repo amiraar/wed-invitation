@@ -28,7 +28,14 @@ export default function GuestbookTable({
         <tbody>
           {rows.map((row) => (
             <tr key={row.id} style={{ borderTop: '1px solid var(--adm-border)' }}>
-              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>{row.name}</td>
+              <td className="px-4 py-3" style={{ color: 'var(--adm-text)' }}>
+                {row.name}
+                {row.is_anonymous && (
+                  <span className="ml-2 text-[10px] uppercase tracking-[0.15em]" style={{ color: 'var(--adm-text-faint)' }}>
+                    shown as Someone
+                  </span>
+                )}
+              </td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-muted)' }}>{row.message}</td>
               <td className="px-4 py-3" style={{ color: 'var(--adm-text-faint)' }}>{row.created_at}</td>
               <td className="px-4 py-3">
