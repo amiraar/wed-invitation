@@ -102,7 +102,11 @@ function WishForm({ guest }: { guest: GuestView }) {
   );
 }
 
+const PAGE_SIZE = 6;
+
 export default function GuestbookSection({ messages, guest }: Props) {
+  // Grows with "Show more" instead of a scroll box inside the page (awkward on phones).
+  const [visible, setVisible] = useState(PAGE_SIZE);
   return (
     <section id="guestbook" className="section-anchor bg-bg-secondary py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
@@ -143,8 +147,8 @@ export default function GuestbookSection({ messages, guest }: Props) {
                   No messages yet. Be the first to send your wishes!
                 </div>
               ) : (
-                <div className="max-h-[32rem] space-y-4 overflow-y-auto pr-1">
-                  {messages.map((item) => (
+                <div className="space-y-4">
+                  {messages.slice(0, visible).map((item) => (
                     <div
                       key={item.id}
                       className="rounded-2xl p-5"
@@ -170,6 +174,15 @@ export default function GuestbookSection({ messages, guest }: Props) {
                       </p>
                     </div>
                   ))}
+                  {messages.length > visible && (
+                    <button
+                      onClick={() => setVisible((count) => count + PAGE_SIZE)}
+                      className="w-full rounded-2xl border border-border py-3 text-xs uppercase tracking-[0.25em] transition-colors hover:border-[var(--border-hover)]"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      Show more wishes ({messages.length - visible})
+                    </button>
+                  )}
                 </div>
               )}
             </motion.div>

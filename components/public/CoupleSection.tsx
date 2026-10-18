@@ -40,7 +40,7 @@ export default function CoupleSection({ wedding }: Props) {
 
           <div className="mt-12 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-6">
             {people.map((person, index) => (
-              <div key={person.role} className={index === 1 ? 'md:order-3' : ''}>
+              <div key={person.role} className={index === 1 ? 'order-3' : 'order-1'}>
                 <motion.div
                   variants={fadeUpVariant}
                   className="rounded-3xl p-8 text-center sm:p-10"
@@ -82,7 +82,7 @@ export default function CoupleSection({ wedding }: Props) {
 
             <motion.div
               variants={fadeUpVariant}
-              className="font-display text-5xl italic md:order-2"
+              className="order-2 font-display text-5xl italic"
               style={{ color: 'var(--accent)', textAlign: 'center' }}
               aria-hidden
             >
