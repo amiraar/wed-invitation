@@ -1,163 +1,124 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Toggle from '@/components/ui/Toggle';
+import { useToast } from '@/components/admin/ToastProvider';
 import { defaultSettings } from '@/lib/defaults';
 import type { AppSettings } from '@/lib/types';
 
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <div className="admin-card p-6">
       <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>{title}</h2>
+      {description && <p className="mt-1 text-xs" style={{ color: 'var(--adm-text-muted)' }}>{description}</p>}
       <div className="mt-4">{children}</div>
     </div>
   );
 }
 
 export default function SettingsPage() {
+  const toast = useToast();
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
-  const [musicAutoplay, setMusicAutoplay] = useState(false);
-  const [status, setStatus] = useState('');
-  const [confirmReset, setConfirmReset] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [passwordStatus, setPasswordStatus] = useState('');
+  const [resetText, setResetText] = useState('');
 
   useEffect(() => {
     fetch('/api/settings')
       .then((res) => res.json())
       .then((data) => {
-        if (data?.success) setSettings(data.data);
+        if (data?.success) {
+          setSettings(data.data);
+          setLoaded(true);
+        } else {
+          toast('Could not load settings. Please refresh the page.', 'error');
+        }
       })
-      .catch(() => undefined);
-
-    fetch('/api/wedding')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.success) setMusicAutoplay(data.data.music_autoplay);
-      })
-      .catch(() => undefined);
-  }, []);
+      .catch(() => toast('Could not load settings. Please refresh the page.', 'error'));
+  }, [toast]);
 
   const handleSave = async () => {
-    setStatus('Saving...');
     const response = await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...settings, music_autoplay: musicAutoplay })
-    });
-    const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
+      body: JSON.stringify({ theme: settings.theme, show_gallery: settings.show_gallery, show_envelope: settings.show_envelope })
+    }).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    toast(data?.success ? 'Settings saved.' : data?.error || 'Failed to save settings.', data?.success ? 'success' : 'error');
   };
 
-  const handleChangePassword = async (event: React.FormEvent) => {
+  const handleChangePassword = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    setPasswordStatus('Saving...');
     const response = await fetch('/api/auth/password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
-    });
-    const data = await response.json().catch(() => null);
+    }).catch(() => null);
+    const data = await response?.json().catch(() => null);
     if (data?.success) {
       setCurrentPassword('');
       setNewPassword('');
     }
-    setPasswordStatus(data?.success ? 'Password changed.' : data?.error || 'Failed to change password');
+    toast(data?.success ? 'Password changed.' : data?.error || 'Failed to change password.', data?.success ? 'success' : 'error');
   };
 
   const handleReset = async () => {
-    if (!confirmReset) {
-      setConfirmReset(true);
-      setStatus('Click once more to confirm reset.');
-      setTimeout(() => setConfirmReset(false), 5000);
-      return;
-    }
-
-    setStatus('Resetting data...');
-    const response = await fetch('/api/reset', { method: 'POST' });
-    const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Data reset successfully.' : data?.error || 'Reset failed');
-    setConfirmReset(false);
+    const response = await fetch('/api/reset', { method: 'POST' }).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    setResetText('');
+    toast(data?.success ? 'All data has been reset.' : data?.error || 'Reset failed.', data?.success ? 'success' : 'error');
   };
+
+  const themeButton = (theme: AppSettings['theme'], label: string) => (
+    <button
+      onClick={() => setSettings((prev) => ({ ...prev, theme }))}
+      aria-pressed={settings.theme === theme}
+      className="rounded-lg px-4 py-2 text-sm transition-all"
+      style={
+        settings.theme === theme
+          ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+          : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
+      }
+    >
+      {label}
+    </button>
+  );
 
   return (
     <div className="space-y-6">
-      <SectionCard title="Theme">
+      <SectionCard title="Invitation Theme">
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSettings((prev) => ({ ...prev, theme: 'light' }))}
-            className="rounded-lg px-4 py-2 text-sm transition-all"
-            style={
-              settings.theme === 'light'
-                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
-                : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
-            }
-          >
-            Light
-          </button>
-          <button
-            onClick={() => setSettings((prev) => ({ ...prev, theme: 'dark' }))}
-            className="rounded-lg px-4 py-2 text-sm transition-all"
-            style={
-              settings.theme === 'dark'
-                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
-                : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
-            }
-          >
-            Dark
-          </button>
+          {themeButton('light', 'Light')}
+          {themeButton('dark', 'Dark')}
         </div>
       </SectionCard>
 
-      <SectionCard title="Section Visibility">
+      <SectionCard
+        title="Optional Sections"
+        description="Events are shown or hidden in Events & Venues. Music is set in Couple & Story."
+      >
         <div className="grid gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Engagement</span>
-            <Toggle
-              checked={settings.show_lamaran}
-              onChange={(value) => setSettings((prev) => ({ ...prev, show_lamaran: value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Akad</span>
-            <Toggle
-              checked={settings.show_akad}
-              onChange={(value) => setSettings((prev) => ({ ...prev, show_akad: value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Reception</span>
-            <Toggle
-              checked={settings.show_resepsi}
-              onChange={(value) => setSettings((prev) => ({ ...prev, show_resepsi: value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Gallery</span>
-            <Toggle
-              checked={settings.show_gallery}
-              onChange={(value) => setSettings((prev) => ({ ...prev, show_gallery: value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Registry</span>
-            <Toggle
-              checked={settings.show_envelope}
-              onChange={(value) => setSettings((prev) => ({ ...prev, show_envelope: value }))}
-            />
-          </div>
+          {(
+            [
+              ['show_gallery', 'Gallery'],
+              ['show_envelope', 'Gifts (bank accounts & wishlist)']
+            ] as const
+          ).map(([key, label]) => (
+            <div key={key} className="flex items-center justify-between gap-4">
+              <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{label}</span>
+              <Toggle label={label} checked={settings[key]} onChange={(value) => setSettings((prev) => ({ ...prev, [key]: value }))} />
+            </div>
+          ))}
         </div>
+        <p className="mt-4 text-xs" style={{ color: 'var(--adm-text-faint)' }}>
+          Story, rundown, dress code and FAQ appear automatically once they have content.{' '}
+          <Link href="/admin/events" className="underline">Manage events</Link>
+        </p>
       </SectionCard>
 
-      <SectionCard title="Music Autoplay">
-        <div className="flex items-center justify-between">
-          <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Enable autoplay</span>
-          <Toggle checked={musicAutoplay} onChange={setMusicAutoplay} />
-        </div>
-      </SectionCard>
-
-      <button onClick={handleSave} className="admin-btn-primary">
+      <button onClick={handleSave} disabled={!loaded} className="admin-btn-primary disabled:opacity-50">
         Save Settings
       </button>
 
@@ -169,6 +130,7 @@ export default function SettingsPage() {
             value={currentPassword}
             onChange={(event) => setCurrentPassword(event.target.value)}
             placeholder="Current password"
+            aria-label="Current password"
             className="admin-input"
           />
           <input
@@ -179,25 +141,35 @@ export default function SettingsPage() {
             value={newPassword}
             onChange={(event) => setNewPassword(event.target.value)}
             placeholder="New password (min. 12 characters)"
+            aria-label="New password"
             className="admin-input"
           />
           <button type="submit" className="admin-btn-primary">
             Change Password
           </button>
-          {passwordStatus && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{passwordStatus}</p>}
         </form>
       </SectionCard>
 
-      <div className="admin-card p-6" style={{ borderColor: 'var(--adm-danger-border)' }}>
+      <div className="admin-card mt-10 p-6" style={{ borderColor: 'var(--adm-danger-border)' }}>
         <h2 className="text-lg" style={{ color: 'var(--adm-danger)' }}>Danger Zone</h2>
-        <p className="mt-2 text-sm" style={{ color: 'var(--adm-text-muted)' }}>
-          Reset all RSVP, guestbook, gallery, and settings data.
+        <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--adm-text-muted)' }}>
+          Permanently deletes the guest list and personal links, all RSVPs, wishes, gallery photos and FAQs, clears every
+          event&apos;s date and venue, and empties all couple, story, dress code, gift and music content. Settings go back to
+          their defaults. This cannot be undone.
         </p>
-        <button onClick={handleReset} className="admin-btn-danger mt-4">
-          {confirmReset ? 'Confirm Reset' : 'Reset All Data'}
+        <label className="mt-4 block text-xs" style={{ color: 'var(--adm-text-muted)' }}>
+          Type <strong>RESET</strong> to confirm
+          <input
+            value={resetText}
+            onChange={(event) => setResetText(event.target.value)}
+            className="admin-input mt-2 block w-full md:max-w-xs"
+            aria-label="Type RESET to confirm"
+          />
+        </label>
+        <button onClick={handleReset} disabled={resetText !== 'RESET'} className="admin-btn-danger mt-4 disabled:cursor-not-allowed disabled:opacity-40">
+          Reset All Data
         </button>
       </div>
-      {status && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>}
     </div>
   );
 }

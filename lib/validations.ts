@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-const phoneRegex = /^(\+62|62|0)8\d{7,12}$/;
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^\d{2}:\d{2}$/;
 const hexColorRegex = /^#[0-9a-fA-F]{3,8}$/;
@@ -118,14 +117,12 @@ export const EventSchema = z.object({
   order_index: z.number().int().min(0).max(10)
 });
 
+// Event visibility is set per event (Events & Venues) and music autoplay with the music
+// (Couple & Story), so Settings only keeps the theme and the two optional sections.
 export const SettingsSchema = z.object({
   theme: z.enum(['dark', 'light']),
-  show_lamaran: z.boolean(),
-  show_akad: z.boolean(),
-  show_resepsi: z.boolean(),
   show_gallery: z.boolean(),
-  show_envelope: z.boolean(),
-  music_autoplay: z.boolean()
+  show_envelope: z.boolean()
 });
 
 export const FaqSchema = z.object({
