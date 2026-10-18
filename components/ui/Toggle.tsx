@@ -3,14 +3,18 @@
 type Props = {
   checked: boolean;
   onChange: (value: boolean) => void;
+  label?: string;
 };
 
-export default function Toggle({ checked, onChange }: Props) {
+export default function Toggle({ checked, onChange, label }: Props) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
       onClick={() => onChange(!checked)}
-      className="relative h-6 w-12 rounded-full transition"
+      className="relative h-6 w-12 shrink-0 rounded-full transition"
       style={{ background: checked ? 'var(--adm-accent-strong, #4A7A4A)' : 'rgba(120,160,120,0.25)' }}
     >
       <span
