@@ -172,3 +172,10 @@ ALTER TABLE guestbook ADD COLUMN IF NOT EXISTS is_anonymous BOOLEAN NOT NULL DEF
 
 -- WhatsApp share template for personal links ({name}, {link}, {couple}).
 ALTER TABLE wedding_config ADD COLUMN IF NOT EXISTS invite_message TEXT DEFAULT '';
+
+-- Event visibility now lives only on each event (is_active). Carry over events hidden through the
+-- old Settings switches, then retire those switches. A no-op once they are all TRUE.
+UPDATE events SET is_active = FALSE WHERE type = 'lamaran' AND EXISTS (SELECT 1 FROM app_settings WHERE id = 'main' AND show_lamaran = FALSE);
+UPDATE events SET is_active = FALSE WHERE type = 'akad' AND EXISTS (SELECT 1 FROM app_settings WHERE id = 'main' AND show_akad = FALSE);
+UPDATE events SET is_active = FALSE WHERE type = 'resepsi' AND EXISTS (SELECT 1 FROM app_settings WHERE id = 'main' AND show_resepsi = FALSE);
+UPDATE app_settings SET show_lamaran = TRUE, show_akad = TRUE, show_resepsi = TRUE WHERE id = 'main' AND NOT (show_lamaran AND show_akad AND show_resepsi);

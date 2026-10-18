@@ -5,6 +5,10 @@
 @layer base {
   :root {
     --bg-primary: #F7F9F6;
+    /* RGB channels for Tailwind opacity classes (bg-bg-primary/95, text-hero-text/55).
+       Keep them equal to the hex values above. */
+    --bg-primary-rgb: 247 249 246;
+    --hero-text-rgb: 245 240 230;
     --bg-secondary: #EFF5EF;
     --bg-card: #FFFFFF;
     --bg-elevated: #EFF5EF;
@@ -25,6 +29,7 @@
 
   .theme-dark {
     --bg-primary: #101a10;
+    --bg-primary-rgb: 16 26 16;
     --bg-secondary: #16211a;
     --bg-card: #1a2a1a;
     --bg-elevated: #1e2e1e;

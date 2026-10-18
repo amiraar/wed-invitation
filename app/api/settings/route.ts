@@ -37,9 +37,6 @@ export async function PUT(request: NextRequest) {
   const rows = await sql<AppSettings>`
     UPDATE app_settings
     SET theme = ${payload.theme},
-        show_lamaran = ${payload.show_lamaran},
-        show_akad = ${payload.show_akad},
-        show_resepsi = ${payload.show_resepsi},
         show_gallery = ${payload.show_gallery},
         show_envelope = ${payload.show_envelope},
         updated_at = NOW()
@@ -47,12 +44,6 @@ export async function PUT(request: NextRequest) {
     RETURNING *
   `;
 
-  await sql`
-    UPDATE wedding_config
-    SET music_autoplay = ${payload.music_autoplay}, updated_at = NOW()
-    WHERE id = 'main'
-  `;
-
-  invalidateCache([CACHE_KEYS.SETTINGS, CACHE_KEYS.WEDDING]);
+  invalidateCache([CACHE_KEYS.SETTINGS]);
   return jsonSuccess(rows[0]);
 }

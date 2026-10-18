@@ -16,13 +16,13 @@ export default function VenueSection({ event, imageUrl }: Props) {
 
   return (
     <section id="venue" className="section-anchor py-20 md:py-28">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-16 px-6">
+      <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 md:flex-row md:items-center md:gap-16">
         <motion.div
           variants={staggerContainerVariant}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
-          className="min-w-[280px] flex-1"
+          className="w-full min-w-0 md:flex-1"
         >
           <motion.p variants={fadeUpVariant} className="text-xs uppercase tracking-[0.4em] text-text-muted">
             The Venue
@@ -65,7 +65,7 @@ export default function VenueSection({ event, imageUrl }: Props) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            className="relative h-80 min-w-[280px] flex-1 overflow-hidden"
+            className="relative h-64 w-full overflow-hidden sm:h-80 md:flex-1"
           >
             <Image src={imageUrl} alt={event.venue_name || 'Venue'} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-cover" />
           </motion.div>

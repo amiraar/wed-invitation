@@ -36,14 +36,9 @@ export default function InvitationExperience({ data, guest }: Props) {
     document.documentElement.classList.toggle('theme-dark', settings.theme !== 'light');
   }, [settings.theme]);
 
-  const activeEvents = events.filter((event) => {
-    if (!event.is_active) return false;
-    if (guest && !guest.invited[event.type]) return false;
-    if (event.type === 'lamaran') return settings.show_lamaran;
-    if (event.type === 'akad') return settings.show_akad;
-    if (event.type === 'resepsi') return settings.show_resepsi;
-    return true;
-  });
+  // Shown events are set per event in admin (is_active); a personal link also limits them to the
+  // events the guest is invited to.
+  const activeEvents = events.filter((event) => event.is_active && (!guest || guest.invited[event.type]));
 
   const mainEvent =
     activeEvents.find((event) => event.type === 'akad') ??
@@ -85,8 +80,12 @@ export default function InvitationExperience({ data, guest }: Props) {
     }
   }, [hasMusic, wedding.music_autoplay]);
 
+  // The theme class is rendered on the server too, so a dark invitation never flashes light first.
+  const themeClass = settings.theme === 'light' ? 'theme-light' : 'theme-dark';
+
   return (
     <MotionConfig reducedMotion="user">
+      <div className={`${themeClass} min-h-dvh bg-bg-primary text-text-primary`} data-theme={settings.theme}>
       <Navbar brand={brand} sections={navSections} />
 
       <main>
@@ -125,6 +124,7 @@ export default function InvitationExperience({ data, guest }: Props) {
       </main>
 
       {hasMusic && <MusicPlayer ref={musicRef} src={wedding.music_url} />}
+      </div>
     </MotionConfig>
   );
 }

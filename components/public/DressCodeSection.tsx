@@ -51,7 +51,7 @@ export default function DressCodeSection({ title, note, avoidNote, swatches }: P
                     className="h-14 w-14 rounded-full"
                     style={{ background: swatch.color, boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}
                   />
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">{swatch.label}</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-text-muted">{swatch.label}</span>
                 </div>
               ))}
             </motion.div>

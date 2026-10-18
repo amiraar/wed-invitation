@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useToast } from '@/components/admin/ToastProvider';
 import { eventTypeLabel } from '@/lib/format';
+import { friendlyError } from '@/lib/fieldLabels';
 import type { EventType, GuestItem } from '@/lib/types';
 
 const EVENT_TYPES: EventType[] = ['lamaran', 'akad', 'resepsi'];
@@ -66,7 +68,7 @@ export default function GuestsPage() {
   const [groupFilter, setGroupFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [form, setForm] = useState<FormState | null>(null);
-  const [status, setStatus] = useState('');
+  const toast = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [removeMissing, setRemoveMissing] = useState(false);
@@ -110,7 +112,6 @@ export default function GuestsPage() {
 
   const saveGuest = async () => {
     if (!form) return;
-    setStatus('Saving...');
     const { id, ...payload } = form;
     const res = await fetch(id ? `/api/guests/${id}` : '/api/guests', {
       method: id ? 'PUT' : 'POST',
@@ -119,25 +120,25 @@ export default function GuestsPage() {
     }).catch(() => null);
     const data = await res?.json().catch(() => null);
     if (data?.success) {
-      setStatus(id ? 'Guest updated.' : 'Guest added.');
+      toast(id ? 'Guest updated.' : 'Guest added.');
       setForm(null);
       await load();
     } else {
-      setStatus(data?.error || 'Failed to save the guest.');
+      toast(friendlyError(data?.error, 'Failed to save the guest.'), 'error');
     }
   };
 
   const deleteGuest = async (guest: GuestItem) => {
     if (!window.confirm(`Delete ${guest.name}? Their personal link and RSVP will be removed.`)) return;
     const res = await fetch(`/api/guests/${guest.id}`, { method: 'DELETE' }).catch(() => null);
-    setStatus(res?.ok ? `${guest.name} deleted.` : 'Failed to delete the guest.');
+    toast(res?.ok ? `${guest.name} deleted.` : 'Failed to delete the guest.', res?.ok ? 'success' : 'error');
     if (res?.ok) await load();
   };
 
   const regenerateLink = async (guest: GuestItem) => {
     if (!window.confirm(`Create a new link for ${guest.name}? The old link will stop working.`)) return;
     const res = await fetch(`/api/guests/${guest.id}/token`, { method: 'POST' }).catch(() => null);
-    setStatus(res?.ok ? `New link created for ${guest.name}.` : 'Failed to create a new link.');
+    toast(res?.ok ? `New link created for ${guest.name}.` : 'Failed to create a new link.', res?.ok ? 'success' : 'error');
     if (res?.ok) await load();
   };
 
@@ -153,7 +154,7 @@ export default function GuestsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ invite_message: template })
     }).catch(() => null);
-    setStatus(res?.ok ? 'WhatsApp message saved.' : 'Failed to save the message.');
+    toast(res?.ok ? 'WhatsApp message saved.' : 'Failed to save the message.', res?.ok ? 'success' : 'error');
   };
 
   const runImport = async () => {
@@ -169,10 +170,10 @@ export default function GuestsPage() {
     setImporting(false);
     if (data?.success) {
       setImportResult(data.data);
-      setStatus('Import finished.');
+      toast('Import finished.');
       await load();
     } else {
-      setStatus(data?.error || 'Import failed.');
+      toast(data?.error || 'Import failed.', 'error');
     }
   };
 
@@ -201,10 +202,6 @@ export default function GuestsPage() {
           </div>
         ))}
       </div>
-
-      {status && (
-        <p role="status" className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>
-      )}
 
       {form && (
         <div className="admin-card space-y-4 p-5">

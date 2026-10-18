@@ -8,8 +8,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // rgb(... / <alpha-value>) lets opacity modifiers work; plain var() colors silently produce no CSS.
         bg: {
-          primary: 'var(--bg-primary)',
+          primary: 'rgb(var(--bg-primary-rgb) / <alpha-value>)',
           secondary: 'var(--bg-secondary)',
           card: 'var(--bg-card)'
         },
@@ -25,7 +26,7 @@ const config: Config = {
         border: 'var(--border)',
         hero: {
           bg: 'var(--hero-bg)',
-          text: 'var(--hero-text)'
+          text: 'rgb(var(--hero-text-rgb) / <alpha-value>)'
         }
       },
       fontFamily: {

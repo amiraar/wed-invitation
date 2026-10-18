@@ -34,7 +34,7 @@ export default function RegistrySection({ accounts, wishlistTitle, wishlistNote 
 
           <div className="mt-10 flex flex-wrap justify-center gap-5">
             {accounts.map((account, index) => (
-              <motion.div key={`${account.bank}-${index}`} variants={fadeUpVariant} className="min-w-[260px] max-w-sm flex-1">
+              <motion.div key={`${account.bank}-${index}`} variants={fadeUpVariant} className="w-full max-w-sm sm:min-w-[260px] sm:flex-1">
                 <RegistryCard label="Gift Fund" title="Bank Transfer">
                   <p className="text-sm leading-loose" style={{ color: 'var(--text-secondary)' }}>
                     {account.bank}
@@ -48,7 +48,7 @@ export default function RegistrySection({ accounts, wishlistTitle, wishlistNote 
             ))}
 
             {hasWishlist && (
-              <motion.div variants={fadeUpVariant} className="min-w-[260px] max-w-sm flex-1">
+              <motion.div variants={fadeUpVariant} className="w-full max-w-sm sm:min-w-[260px] sm:flex-1">
                 <RegistryCard label="Wishlist" title={wishlistTitle || 'Wishlist'}>
                   <p className="text-sm leading-loose" style={{ color: 'var(--text-secondary)' }}>
                     {wishlistNote}
@@ -66,7 +66,7 @@ export default function RegistrySection({ accounts, wishlistTitle, wishlistNote 
 function RegistryCard({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
   return (
     <div className="h-full p-8 text-left" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-      <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--accent)' }}>
+      <p className="text-xs uppercase tracking-[0.3em]" style={{ color: 'var(--accent)' }}>
         {label}
       </p>
       <p className="mt-3 font-display text-xl italic" style={{ color: 'var(--text-primary)' }}>

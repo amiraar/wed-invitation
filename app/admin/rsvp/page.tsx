@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import RSVPTable from '@/components/admin/RSVPTable';
+import { useToast } from '@/components/admin/ToastProvider';
 import type { RSVPItem } from '@/lib/types';
 
 export default function RSVPPage() {
+  const toast = useToast();
   const [rows, setRows] = useState<RSVPItem[]>([]);
 
   useEffect(() => {
@@ -13,13 +15,18 @@ export default function RSVPPage() {
       .then((data) => {
         if (data?.success) setRows(data.data);
       })
-      .catch(() => undefined);
-  }, []);
+      .catch(() => toast('Could not load RSVPs. Please refresh the page.', 'error'));
+  }, [toast]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Delete this RSVP permanently?')) return;
-    const response = await fetch(`/api/rsvp/${id}`, { method: 'DELETE' });
-    if (response.ok) setRows((prev) => prev.filter((item) => item.id !== id));
+    const response = await fetch(`/api/rsvp/${id}`, { method: 'DELETE' }).catch(() => null);
+    if (!response?.ok) {
+      toast('Failed to delete the RSVP.', 'error');
+      return;
+    }
+    setRows((prev) => prev.filter((item) => item.id !== id));
+    toast('RSVP deleted.');
   };
 
   return (

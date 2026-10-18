@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useToast } from '@/components/admin/ToastProvider';
+import { friendlyError } from '@/lib/fieldLabels';
 import type { FaqItem } from '@/lib/types';
 
 export default function FaqsPage() {
+  const toast = useToast();
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [status, setStatus] = useState('');
 
   useEffect(() => {
     fetch('/api/faqs')
@@ -13,8 +15,8 @@ export default function FaqsPage() {
       .then((data) => {
         if (data?.success) setFaqs(data.data);
       })
-      .catch(() => undefined);
-  }, []);
+      .catch(() => toast('Could not load FAQs. Please refresh the page.', 'error'));
+  }, [toast]);
 
   const handleChange = (id: string, key: 'question' | 'answer', value: string) => {
     setFaqs((prev) => prev.map((faq) => (faq.id === id ? { ...faq, [key]: value } : faq)));
@@ -28,23 +30,33 @@ export default function FaqsPage() {
       body: JSON.stringify({ question: 'New question', answer: 'Write the answer here.', order_index: faqs.length })
     });
     const data = await response.json().catch(() => null);
-    if (data?.success) setFaqs((prev) => [...prev, data.data]);
+    if (data?.success) {
+      setFaqs((prev) => [...prev, data.data]);
+      toast('FAQ added. Edit the question and answer, then press Save.');
+    } else {
+      toast('Failed to add an FAQ.', 'error');
+    }
   };
 
-  const handleRemove = async (id: string) => {
-    await fetch(`/api/faqs/${id}`, { method: 'DELETE' });
-    setFaqs((prev) => prev.filter((faq) => faq.id !== id));
+  const handleRemove = async (faq: FaqItem) => {
+    if (!window.confirm(`Delete the FAQ "${faq.question}"?`)) return;
+    const response = await fetch(`/api/faqs/${faq.id}`, { method: 'DELETE' }).catch(() => null);
+    if (!response?.ok) {
+      toast('Failed to delete the FAQ.', 'error');
+      return;
+    }
+    setFaqs((prev) => prev.filter((item) => item.id !== faq.id));
+    toast('FAQ deleted.');
   };
 
   const handleSave = async (faq: FaqItem) => {
-    setStatus('Saving...');
     const response = await fetch(`/api/faqs/${faq.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question: faq.question, answer: faq.answer, order_index: faq.order_index })
-    });
-    const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
+    }).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    toast(data?.success ? 'FAQ saved.' : friendlyError(data?.error === 'Invalid data.' ? 'Question and answer cannot be empty.' : data?.error), data?.success ? 'success' : 'error');
   };
 
   return (
@@ -66,8 +78,8 @@ export default function FaqsPage() {
               <span className="text-[10px] uppercase tracking-[0.2em]" style={{ color: 'var(--adm-text-faint)' }}>
                 FAQ {index + 1}
               </span>
-              <button onClick={() => handleRemove(faq.id)} className="admin-btn-danger">
-                ✕ Remove
+              <button onClick={() => handleRemove(faq)} className="admin-btn-danger">
+                Delete
               </button>
             </div>
             <div className="space-y-3">
@@ -102,8 +114,6 @@ export default function FaqsPage() {
           </p>
         )}
       </div>
-
-      {status && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>}
     </div>
   );
 }

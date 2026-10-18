@@ -88,11 +88,11 @@ export default function CountdownSection({ targetDate, dateLabel }: Props) {
           </motion.p>
         </motion.div>
       ) : (
-        <div className="mt-7 flex flex-wrap justify-center gap-4">
+        <div className="mx-auto mt-7 grid max-w-sm grid-cols-4 gap-2 px-4 sm:flex sm:max-w-none sm:justify-center sm:gap-4">
           {(['days', 'hours', 'minutes', 'seconds'] as const).map((unit) => (
             <div key={unit} className="flex flex-col items-center gap-2.5">
               <div
-                className="flex h-24 w-24 items-center justify-center sm:h-28 sm:w-28"
+                className="flex aspect-square w-full items-center justify-center sm:h-28 sm:w-28"
                 style={{ background: 'var(--bg-primary)', border: '1px solid var(--border)' }}
               >
                 <div className="h-11 overflow-hidden">
@@ -103,7 +103,7 @@ export default function CountdownSection({ targetDate, dateLabel }: Props) {
                       initial="enter"
                       animate="center"
                       exit="exit"
-                      className="font-display text-4xl sm:text-5xl"
+                      className="font-display text-3xl sm:text-5xl"
                       style={{ color: 'var(--text-primary)', lineHeight: 1 }}
                     >
                       {countdown ? countdown[unit] : '--'}
@@ -111,7 +111,7 @@ export default function CountdownSection({ targetDate, dateLabel }: Props) {
                   </AnimatePresence>
                 </div>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.25em]" style={{ color: 'var(--accent)' }}>
+              <span className="text-[11px] uppercase tracking-[0.12em] sm:text-xs sm:tracking-[0.25em]" style={{ color: 'var(--accent)' }}>
                 {unitLabels[unit]}
               </span>
             </div>

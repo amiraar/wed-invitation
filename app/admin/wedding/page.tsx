@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Toggle from '@/components/ui/Toggle';
+import { useToast } from '@/components/admin/ToastProvider';
 import { defaultWedding } from '@/lib/defaults';
+import { friendlyError } from '@/lib/fieldLabels';
 import type { BankAccount, DressCodeSwatch, ScheduleItem, WeddingConfig } from '@/lib/types';
 
 const MAX_ACCOUNTS = 6;
@@ -14,7 +17,7 @@ const emptyScheduleItem: ScheduleItem = { time: '', title: '', subtitle: '' };
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <div className="admin-card p-6">
+    <div className="admin-card p-4 sm:p-6">
       <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>{title}</h2>
       {description && (
         <p className="mt-1 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
@@ -26,9 +29,21 @@ function SectionCard({ title, description, children }: { title: string; descript
   );
 }
 
+function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="admin-label">{label}</span>
+      {children}
+      {hint && <span className="mt-1 block text-[11px]" style={{ color: 'var(--adm-text-faint)' }}>{hint}</span>}
+    </label>
+  );
+}
+
 export default function WeddingPage() {
+  const toast = useToast();
   const [form, setForm] = useState<WeddingConfig>(defaultWedding);
-  const [status, setStatus] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch('/api/wedding')
@@ -41,10 +56,14 @@ export default function WeddingPage() {
             dress_code_swatches: data.data.dress_code_swatches ?? [],
             schedule_items: data.data.schedule_items ?? []
           });
+          // Saving is only possible once the real content is loaded, so empty defaults never overwrite it.
+          setLoaded(true);
+        } else {
+          toast('Could not load the invitation content. Please refresh the page.', 'error');
         }
       })
-      .catch(() => undefined);
-  }, []);
+      .catch(() => toast('Could not load the invitation content. Please refresh the page.', 'error'));
+  }, [toast]);
 
   const handleChange = (key: keyof WeddingConfig, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -125,99 +144,89 @@ export default function WeddingPage() {
       (account) => !account.bank.trim() || account.account_number.trim().length < 3 || !account.account_name.trim()
     );
     if (incomplete) {
-      setStatus('Please complete all account fields (or remove empty rows).');
+      toast('Please complete all bank account fields (or remove empty rows).', 'error');
       return;
     }
 
-    setStatus('Saving...');
+    setSaving(true);
     const response = await fetch('/api/wedding', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
-    });
-    const data = await response.json().catch(() => null);
-    setStatus(data?.success ? 'Saved' : data?.error || 'Failed to save');
+    }).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    setSaving(false);
+    toast(data?.success ? 'Invitation content saved.' : friendlyError(data?.error), data?.success ? 'success' : 'error');
   };
 
   return (
     <div className="space-y-6">
       <SectionCard title="Couple Details">
         <div className="grid gap-4 md:grid-cols-2">
-          <input
-            value={form.groom_name}
-            onChange={(event) => handleChange('groom_name', event.target.value)}
-            placeholder="Groom's first name"
-            className="admin-input"
-          />
-          <input
-            value={form.bride_name}
-            onChange={(event) => handleChange('bride_name', event.target.value)}
-            placeholder="Bride's first name"
-            className="admin-input"
-          />
-          <input
-            value={form.groom_full_name}
-            onChange={(event) => handleChange('groom_full_name', event.target.value)}
-            placeholder="Groom's full name"
-            className="admin-input"
-          />
-          <input
-            value={form.bride_full_name}
-            onChange={(event) => handleChange('bride_full_name', event.target.value)}
-            placeholder="Bride's full name"
-            className="admin-input"
-          />
-          <input
-            value={form.groom_parents}
-            onChange={(event) => handleChange('groom_parents', event.target.value)}
-            placeholder="Groom's parents (e.g. Mr. Fulan & Mrs. Fulanah)"
-            className="admin-input"
-          />
-          <input
-            value={form.bride_parents}
-            onChange={(event) => handleChange('bride_parents', event.target.value)}
-            placeholder="Bride's parents (e.g. Mr. Fulan & Mrs. Fulanah)"
-            className="admin-input"
-          />
-          <input
-            value={form.cover_image_url}
-            onChange={(event) => handleChange('cover_image_url', event.target.value)}
-            placeholder="Cover photo URL (hero)"
-            className="admin-input"
-          />
-          <input
-            value={form.music_url}
-            onChange={(event) => handleChange('music_url', event.target.value)}
-            placeholder="Music URL (mp3)"
-            className="admin-input"
-          />
+          <Field label="Groom's first name">
+            <input value={form.groom_name} onChange={(e) => handleChange('groom_name', e.target.value)} placeholder="Groom's first name" className="admin-input w-full" />
+          </Field>
+          <Field label="Bride's first name">
+            <input value={form.bride_name} onChange={(e) => handleChange('bride_name', e.target.value)} placeholder="Bride's first name" className="admin-input w-full" />
+          </Field>
+          <Field label="Groom's full name">
+            <input value={form.groom_full_name} onChange={(e) => handleChange('groom_full_name', e.target.value)} placeholder="Groom's full name" className="admin-input w-full" />
+          </Field>
+          <Field label="Bride's full name">
+            <input value={form.bride_full_name} onChange={(e) => handleChange('bride_full_name', e.target.value)} placeholder="Bride's full name" className="admin-input w-full" />
+          </Field>
+          <Field label="Groom's parents">
+            <input value={form.groom_parents} onChange={(e) => handleChange('groom_parents', e.target.value)} placeholder="Mr. Fulan & Mrs. Fulanah" className="admin-input w-full" />
+          </Field>
+          <Field label="Bride's parents">
+            <input value={form.bride_parents} onChange={(e) => handleChange('bride_parents', e.target.value)} placeholder="Mr. Fulan & Mrs. Fulanah" className="admin-input w-full" />
+          </Field>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Media" description="Photos and music used on the invitation. Links must start with https://">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Cover photo URL" hint="Large photo at the top of the invitation.">
+            <input value={form.cover_image_url} onChange={(e) => handleChange('cover_image_url', e.target.value)} placeholder="https://..." className="admin-input w-full" />
+          </Field>
+          <Field label="Venue photo URL" hint="Shown next to the venue details.">
+            <input value={form.venue_image_url} onChange={(e) => handleChange('venue_image_url', e.target.value)} placeholder="https://..." className="admin-input w-full" />
+          </Field>
+          <Field label="Music URL (mp3)" hint="Plays in the background; guests can pause it.">
+            <input value={form.music_url} onChange={(e) => handleChange('music_url', e.target.value)} placeholder="https://...mp3" className="admin-input w-full" />
+          </Field>
+          <div className="flex items-center justify-between gap-4 self-center rounded-lg px-3 py-3" style={{ border: '1px solid var(--adm-border)' }}>
+            <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Start music automatically</span>
+            <Toggle label="Start music automatically" checked={form.music_autoplay} onChange={(value) => handleChange('music_autoplay', value)} />
+          </div>
         </div>
       </SectionCard>
 
       <SectionCard title="Our Story" description="Shown in the Story section of the invitation.">
         <div className="grid gap-4">
-          <div>
-            <label className="admin-label">Pull Quote</label>
+          <Field label="Pull quote">
             <textarea
               value={form.opening_quote}
               onChange={(event) => handleChange('opening_quote', event.target.value)}
               placeholder="We met in a beautiful place..."
               className="admin-input h-20 w-full"
             />
-          </div>
-          <div>
-            <label className="admin-label">Story Body</label>
+          </Field>
+          <Field label="Story">
             <textarea
               value={form.story_body}
               onChange={(event) => handleChange('story_body', event.target.value)}
               placeholder="Every great love story has a beginning..."
               className="admin-input h-28 w-full"
             />
-          </div>
+          </Field>
         </div>
       </SectionCard>
 
-      <SectionCard title="Schedule" description="The 'Order of Events' timeline shown on the invitation.">
+      <SectionCard
+        title="Rundown"
+        description="The 'Order of Events' timeline. It is shown to every guest, not filtered per personal link."
+      >
         <div className="mb-3 flex items-center justify-end">
           <button onClick={addScheduleItem} disabled={form.schedule_items.length >= MAX_SCHEDULE_ITEMS} className="admin-btn-outline disabled:opacity-50">
             + Add Item
@@ -226,31 +235,16 @@ export default function WeddingPage() {
 
         {form.schedule_items.length === 0 && (
           <p className="rounded-lg border border-dashed p-4 text-sm" style={{ borderColor: 'var(--adm-border-strong)', color: 'var(--adm-text-muted)' }}>
-            No schedule items yet. The Schedule section stays hidden until at least one item is added.
+            No rundown items yet. The rundown stays hidden until at least one item is added.
           </p>
         )}
 
         <div className="space-y-3">
           {form.schedule_items.map((item, index) => (
-            <div key={index} className="grid gap-3 rounded-lg p-4 md:grid-cols-[120px_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
-              <input
-                value={item.time}
-                onChange={(event) => handleScheduleItemChange(index, 'time', event.target.value)}
-                placeholder="09:00 AM"
-                className="admin-input"
-              />
-              <input
-                value={item.title}
-                onChange={(event) => handleScheduleItemChange(index, 'title', event.target.value)}
-                placeholder="Akad Nikah"
-                className="admin-input"
-              />
-              <input
-                value={item.subtitle}
-                onChange={(event) => handleScheduleItemChange(index, 'subtitle', event.target.value)}
-                placeholder="Sacred marriage ceremony"
-                className="admin-input"
-              />
+            <div key={index} className="grid gap-3 rounded-lg p-4 lg:grid-cols-[120px_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+              <input value={item.time} onChange={(e) => handleScheduleItemChange(index, 'time', e.target.value)} placeholder="09:00 AM" aria-label={`Item ${index + 1} time`} className="admin-input" />
+              <input value={item.title} onChange={(e) => handleScheduleItemChange(index, 'title', e.target.value)} placeholder="Akad Nikah" aria-label={`Item ${index + 1} title`} className="admin-input" />
+              <input value={item.subtitle} onChange={(e) => handleScheduleItemChange(index, 'subtitle', e.target.value)} placeholder="Sacred marriage ceremony" aria-label={`Item ${index + 1} description`} className="admin-input" />
               <button onClick={() => removeScheduleItem(index)} className="admin-btn-danger">
                 Remove
               </button>
@@ -259,49 +253,25 @@ export default function WeddingPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Venue Photo" description="Shown alongside the venue details on the invitation.">
-        <input
-          value={form.venue_image_url}
-          onChange={(event) => handleChange('venue_image_url', event.target.value)}
-          placeholder="Venue photo URL"
-          className="admin-input w-full"
-        />
-      </SectionCard>
-
       <SectionCard title="Dress Code">
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="admin-label">Title</label>
-            <input
-              value={form.dress_code_title}
-              onChange={(event) => handleChange('dress_code_title', event.target.value)}
-              placeholder="Formal Attire"
-              className="admin-input w-full"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Avoid Note</label>
-            <input
-              value={form.dress_code_avoid_note}
-              onChange={(event) => handleChange('dress_code_avoid_note', event.target.value)}
-              placeholder="Please avoid white or black"
-              className="admin-input w-full"
-            />
-          </div>
+          <Field label="Title">
+            <input value={form.dress_code_title} onChange={(e) => handleChange('dress_code_title', e.target.value)} placeholder="Formal Attire" className="admin-input w-full" />
+          </Field>
+          <Field label="Avoid note">
+            <input value={form.dress_code_avoid_note} onChange={(e) => handleChange('dress_code_avoid_note', e.target.value)} placeholder="Please avoid white or black" className="admin-input w-full" />
+          </Field>
         </div>
         <div className="mt-4">
-          <label className="admin-label">Description</label>
-          <textarea
-            value={form.dress_code_note}
-            onChange={(event) => handleChange('dress_code_note', event.target.value)}
-            className="admin-input h-20 w-full"
-          />
+          <Field label="Description">
+            <textarea value={form.dress_code_note} onChange={(e) => handleChange('dress_code_note', e.target.value)} className="admin-input h-20 w-full" />
+          </Field>
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          <p className="admin-label mb-0">Color Swatches</p>
+          <p className="admin-label mb-0">Colors</p>
           <button onClick={addSwatch} disabled={form.dress_code_swatches.length >= MAX_SWATCHES} className="admin-btn-outline disabled:opacity-50">
-            + Add Swatch
+            + Add Color
           </button>
         </div>
         <div className="mt-3 space-y-3">
@@ -311,25 +281,26 @@ export default function WeddingPage() {
                 type="color"
                 value={swatch.color}
                 onChange={(event) => handleSwatchChange(index, 'color', event.target.value)}
-                className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent"
+                aria-label={`Color ${index + 1}`}
+                className="h-11 w-11 shrink-0 cursor-pointer rounded-full border-none bg-transparent"
               />
               <input
                 value={swatch.label}
                 onChange={(event) => handleSwatchChange(index, 'label', event.target.value)}
                 placeholder="Sage"
-                className="admin-input flex-1"
+                aria-label={`Color ${index + 1} name`}
+                className="admin-input min-w-0 flex-1"
               />
-              <button onClick={() => removeSwatch(index)} className="admin-btn-danger">
-                ✕
+              <button onClick={() => removeSwatch(index)} className="admin-btn-danger" aria-label={`Remove color ${index + 1}`}>
+                Remove
               </button>
             </div>
           ))}
         </div>
       </SectionCard>
 
-      <SectionCard title="Registry & Gifts" description="Bank accounts shown in the Registry section.">
-        <div className="mb-4 flex items-center justify-between">
-          <span />
+      <SectionCard title="Gifts" description="Bank accounts and wishlist shown in the Gifts section (turn it on or off in Settings).">
+        <div className="mb-4 flex items-center justify-end">
           <button onClick={addAccount} disabled={form.bank_accounts.length >= MAX_ACCOUNTS} className="admin-btn-outline disabled:opacity-50">
             + Add Account
           </button>
@@ -337,31 +308,16 @@ export default function WeddingPage() {
 
         {form.bank_accounts.length === 0 && (
           <p className="rounded-lg border border-dashed p-4 text-sm" style={{ borderColor: 'var(--adm-border-strong)', color: 'var(--adm-text-muted)' }}>
-            No accounts yet. The Registry section stays hidden until at least one account is added.
+            No accounts yet. The Gifts section stays hidden until at least one account or a wishlist note is added.
           </p>
         )}
 
         <div className="space-y-3">
           {form.bank_accounts.map((account, index) => (
-            <div key={index} className="grid gap-3 rounded-lg p-4 md:grid-cols-[1fr_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
-              <input
-                value={account.bank}
-                onChange={(event) => handleAccountChange(index, 'bank', event.target.value)}
-                placeholder="Bank / e-wallet (e.g. BCA)"
-                className="admin-input"
-              />
-              <input
-                value={account.account_number}
-                onChange={(event) => handleAccountChange(index, 'account_number', event.target.value)}
-                placeholder="Account number"
-                className="admin-input"
-              />
-              <input
-                value={account.account_name}
-                onChange={(event) => handleAccountChange(index, 'account_name', event.target.value)}
-                placeholder="Account holder"
-                className="admin-input"
-              />
+            <div key={index} className="grid gap-3 rounded-lg p-4 lg:grid-cols-[1fr_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+              <input value={account.bank} onChange={(e) => handleAccountChange(index, 'bank', e.target.value)} placeholder="Bank / e-wallet (e.g. BCA)" aria-label={`Account ${index + 1} bank`} className="admin-input" />
+              <input value={account.account_number} onChange={(e) => handleAccountChange(index, 'account_number', e.target.value)} placeholder="Account number" aria-label={`Account ${index + 1} number`} className="admin-input" />
+              <input value={account.account_name} onChange={(e) => handleAccountChange(index, 'account_name', e.target.value)} placeholder="Account holder" aria-label={`Account ${index + 1} holder`} className="admin-input" />
               <button onClick={() => removeAccount(index)} className="admin-btn-danger">
                 Remove
               </button>
@@ -370,32 +326,19 @@ export default function WeddingPage() {
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="admin-label">Wishlist Title</label>
-            <input
-              value={form.wishlist_title}
-              onChange={(event) => handleChange('wishlist_title', event.target.value)}
-              placeholder="Home & Living"
-              className="admin-input w-full"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Wishlist Note</label>
-            <input
-              value={form.wishlist_note}
-              onChange={(event) => handleChange('wishlist_note', event.target.value)}
-              placeholder="We're building our first home together..."
-              className="admin-input w-full"
-            />
-          </div>
+          <Field label="Wishlist title">
+            <input value={form.wishlist_title} onChange={(e) => handleChange('wishlist_title', e.target.value)} placeholder="Home & Living" className="admin-input w-full" />
+          </Field>
+          <Field label="Wishlist note">
+            <input value={form.wishlist_note} onChange={(e) => handleChange('wishlist_note', e.target.value)} placeholder="We're building our first home together..." className="admin-input w-full" />
+          </Field>
         </div>
       </SectionCard>
 
-      <div className="flex items-center gap-4">
-        <button onClick={handleSave} className="admin-btn-primary">
-          Save
+      <div className="sticky bottom-4 z-10 flex items-center gap-4">
+        <button onClick={handleSave} disabled={!loaded || saving} className="admin-btn-primary shadow-lg disabled:opacity-50">
+          {saving ? 'Saving...' : 'Save'}
         </button>
-        {status && <p className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>{status}</p>}
       </div>
     </div>
   );

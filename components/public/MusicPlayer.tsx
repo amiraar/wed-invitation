@@ -39,7 +39,7 @@ const MusicPlayer = forwardRef<MusicPlayerHandle, Props>(function MusicPlayer({ 
 
   return (
     <div
-      className="fixed right-5 z-50"
+      className="fixed left-5 z-50"
       style={{ bottom: 'calc(1.25rem + env(safe-area-inset-bottom))' }}
     >
       <button

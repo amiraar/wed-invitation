@@ -1,74 +1,64 @@
 'use client';
 
+import Toggle from '@/components/ui/Toggle';
+import { eventTypeLabel } from '@/lib/format';
 import type { EventItem } from '@/lib/types';
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="admin-label">{label}</span>
+      {children}
+    </label>
+  );
+}
 
 export default function EventForm({
   event,
-  onSave
+  onChange
 }: {
   event: EventItem;
-  onSave: (updated: EventItem) => void;
+  onChange: (updated: EventItem) => void;
 }) {
   const handleChange = (key: keyof EventItem, value: string | boolean | number | null) => {
-    onSave({ ...event, [key]: value } as EventItem);
+    onChange({ ...event, [key]: value } as EventItem);
   };
+  const label = eventTypeLabel(event.type);
 
   return (
     <div className="admin-card grid gap-3 p-4">
-      <h3 className="font-display text-lg capitalize italic" style={{ color: '#C8DEC8' }}>
-        {event.type}
-      </h3>
-      <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--adm-text-muted)' }}>
-        <input
-          type="checkbox"
-          checked={event.is_active}
-          onChange={(eventChange) => handleChange('is_active', eventChange.target.checked)}
-          style={{ accentColor: 'var(--adm-accent)' }}
-        />
-        Active
-      </label>
-      <input
-        value={event.event_date ?? ''}
-        onChange={(eventChange) => handleChange('event_date', eventChange.target.value)}
-        placeholder="Date (YYYY-MM-DD)"
-        className="admin-input"
-      />
-      <input
-        value={event.time_start ?? ''}
-        onChange={(eventChange) => handleChange('time_start', eventChange.target.value)}
-        placeholder="Start time (HH:MM)"
-        className="admin-input"
-      />
-      <input
-        value={event.time_end ?? ''}
-        onChange={(eventChange) => handleChange('time_end', eventChange.target.value)}
-        placeholder="End time (HH:MM)"
-        className="admin-input"
-      />
-      <input
-        value={event.venue_name}
-        onChange={(eventChange) => handleChange('venue_name', eventChange.target.value)}
-        placeholder="Venue name"
-        className="admin-input"
-      />
-      <input
-        value={event.address}
-        onChange={(eventChange) => handleChange('address', eventChange.target.value)}
-        placeholder="Address"
-        className="admin-input"
-      />
-      <input
-        value={event.maps_url}
-        onChange={(eventChange) => handleChange('maps_url', eventChange.target.value)}
-        placeholder="Maps URL"
-        className="admin-input"
-      />
-      <input
-        value={event.dress_code}
-        onChange={(eventChange) => handleChange('dress_code', eventChange.target.value)}
-        placeholder="Dress code"
-        className="admin-input"
-      />
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>
+          {label}
+        </h3>
+        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
+          Show on invitation
+          <Toggle label={`Show ${label} on invitation`} checked={event.is_active} onChange={(value) => handleChange('is_active', value)} />
+        </div>
+      </div>
+      <Field label="Date">
+        <input type="date" value={event.event_date ?? ''} onChange={(e) => handleChange('event_date', e.target.value)} className="admin-input w-full" />
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Start time">
+          <input type="time" value={event.time_start ?? ''} onChange={(e) => handleChange('time_start', e.target.value)} className="admin-input w-full" />
+        </Field>
+        <Field label="End time">
+          <input type="time" value={event.time_end ?? ''} onChange={(e) => handleChange('time_end', e.target.value)} className="admin-input w-full" />
+        </Field>
+      </div>
+      <Field label="Venue name">
+        <input value={event.venue_name} onChange={(e) => handleChange('venue_name', e.target.value)} className="admin-input w-full" />
+      </Field>
+      <Field label="Address">
+        <input value={event.address} onChange={(e) => handleChange('address', e.target.value)} className="admin-input w-full" />
+      </Field>
+      <Field label="Maps link">
+        <input value={event.maps_url} onChange={(e) => handleChange('maps_url', e.target.value)} placeholder="https://maps.google.com/..." className="admin-input w-full" />
+      </Field>
+      <Field label="Dress code">
+        <input value={event.dress_code} onChange={(e) => handleChange('dress_code', e.target.value)} className="admin-input w-full" />
+      </Field>
     </div>
   );
 }
