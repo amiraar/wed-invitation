@@ -24,7 +24,8 @@ export default function FaqsPage() {
     const response = await fetch('/api/faqs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: '', answer: '', order_index: faqs.length })
+      // FaqSchema requires non-empty text, so start with editable placeholders.
+      body: JSON.stringify({ question: 'New question', answer: 'Write the answer here.', order_index: faqs.length })
     });
     const data = await response.json().catch(() => null);
     if (data?.success) setFaqs((prev) => [...prev, data.data]);
