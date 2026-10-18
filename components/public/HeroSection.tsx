@@ -15,9 +15,9 @@ type Props = {
 function Divider() {
   return (
     <div className="flex items-center gap-4">
-      <div className="h-px w-16 bg-[var(--hero-text)]/30" />
-      <div className="ornament-diamond text-[var(--hero-text)]/50" />
-      <div className="h-px w-16 bg-[var(--hero-text)]/30" />
+      <div className="h-px w-16 bg-hero-text/30" />
+      <div className="ornament-diamond text-hero-text/50" />
+      <div className="h-px w-16 bg-hero-text/30" />
     </div>
   );
 }
@@ -63,7 +63,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
       >
         <motion.p
           variants={fadeUpVariant}
-          className="mb-7 text-[11px] uppercase tracking-[0.5em] text-[var(--hero-text)]/65"
+          className="mb-7 text-[11px] uppercase tracking-[0.5em] text-hero-text/65"
         >
           Wedding Invitation
         </motion.p>
@@ -82,7 +82,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
 
         <motion.p
           variants={fadeUpVariant}
-          className="my-3 text-[11px] uppercase tracking-[0.6em] text-[var(--hero-text)]/55"
+          className="my-3 text-[11px] uppercase tracking-[0.6em] text-hero-text/55"
         >
           and
         </motion.p>
@@ -111,7 +111,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
         {venueLine && (
           <motion.p
             variants={fadeUpVariant}
-            className="mt-2 text-xs uppercase tracking-[0.3em] text-[var(--hero-text)]/55"
+            className="mt-2 text-xs uppercase tracking-[0.3em] text-hero-text/55"
           >
             {venueLine}
           </motion.p>
@@ -123,8 +123,8 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
         animate={{ y: [0, 8, 0], opacity: [0.55, 1, 0.55] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <div className="h-9 w-px bg-gradient-to-b from-[var(--hero-text)]/45 to-transparent" />
-        <p className="text-[9px] uppercase tracking-[0.3em] text-[var(--hero-text)]/45">Scroll</p>
+        <div className="h-9 w-px bg-gradient-to-b from-hero-text/45 to-transparent" />
+        <p className="text-xs uppercase tracking-[0.3em] text-hero-text/45">Scroll</p>
       </motion.div>
     </section>
   );
