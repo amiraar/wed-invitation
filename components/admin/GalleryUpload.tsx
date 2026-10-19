@@ -16,11 +16,13 @@ export default function GalleryUpload({ onUpload }: { onUpload: (url: string, ca
     let added = 0;
     const failed: string[] = [];
     let firstError = '';
+    // Progress events are throttled and can arrive late; once done, they must not bring the busy text back.
+    let done = false;
     for (const [index, file] of files.entries()) {
       try {
-        const uploaded = await uploadFile('image', file, (percent) =>
-          setBusyText(`Uploading ${index + 1} of ${files.length}… ${percent}%`)
-        );
+        const uploaded = await uploadFile('image', file, (percent) => {
+          if (!done) setBusyText(`Uploading ${index + 1} of ${files.length}… ${percent}%`);
+        });
         if (await onUpload(uploaded, '')) added += 1;
         else failed.push(file.name);
       } catch (error) {
@@ -28,6 +30,7 @@ export default function GalleryUpload({ onUpload }: { onUpload: (url: string, ca
         firstError ||= (error as Error).message;
       }
     }
+    done = true;
     setBusyText(null);
     if (failed.length) {
       toast(`${added} added, ${failed.length} not added${firstError ? `: ${firstError}` : '.'}`, 'error');

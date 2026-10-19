@@ -123,13 +123,17 @@ export default function FileDrop({
 
   const handleFiles = async ([file]: File[]) => {
     if (!file) return;
+    // Progress events are throttled and can arrive after the upload finished; ignore those,
+    // otherwise the drop zone stays on "Uploading… 100%" and refuses the next file.
+    let done = false;
     setProgress(0);
     try {
-      onChange(await uploadFile(kind, file, setProgress));
+      onChange(await uploadFile(kind, file, (percent) => !done && setProgress(percent)));
       toast(`${kind === 'image' ? 'Photo' : 'Music'} uploaded. Press Save to keep it.`);
     } catch (error) {
       toast((error as Error).message, 'error');
     } finally {
+      done = true;
       setProgress(null);
     }
   };
