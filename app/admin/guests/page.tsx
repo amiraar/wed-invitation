@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useToast } from '@/components/admin/ToastProvider';
+import { refreshAdminCounts } from '@/components/admin/nav';
 import { eventTypeLabel } from '@/lib/format';
 import { friendlyError } from '@/lib/fieldLabels';
 import type { EventType, GuestItem } from '@/lib/types';
@@ -80,6 +81,7 @@ export default function GuestsPage() {
     const data = await res?.json().catch(() => null);
     if (data?.success) {
       setGuests(data.data.guests);
+      refreshAdminCounts();
       setCouple(data.data.couple);
       setTemplate((current) => current || data.data.inviteMessage);
     }

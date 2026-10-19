@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import GuestbookTable from '@/components/admin/GuestbookTable';
 import { useToast } from '@/components/admin/ToastProvider';
+import { refreshAdminCounts } from '@/components/admin/nav';
 import type { GuestbookItem } from '@/lib/types';
 
 type Tab = 'pending' | 'approved' | 'all';
@@ -40,6 +41,7 @@ export default function GuestbookPage() {
       return;
     }
     setRows((prev) => prev.map((item) => (item.id === id ? { ...item, is_approved: action === 'approve' } : item)));
+    refreshAdminCounts();
     toast(action === 'approve' ? 'Wish approved — it is now on the invitation.' : 'Wish hidden from the invitation.');
   };
 
@@ -51,6 +53,7 @@ export default function GuestbookPage() {
       return;
     }
     setRows((prev) => prev.filter((item) => item.id !== id));
+    refreshAdminCounts();
     toast('Wish deleted.');
   };
 
@@ -59,6 +62,7 @@ export default function GuestbookPage() {
     const results = await Promise.all(pending.map((item) => setApproval(item.id, 'approve').then((ok) => ({ id: item.id, ok }))));
     const approved = new Set(results.filter((r) => r.ok).map((r) => r.id));
     setRows((prev) => prev.map((item) => (approved.has(item.id) ? { ...item, is_approved: true } : item)));
+    refreshAdminCounts();
     const failed = results.length - approved.size;
     toast(
       failed ? `${approved.size} approved, ${failed} failed. Please try again.` : `${approved.size} wishes approved.`,
