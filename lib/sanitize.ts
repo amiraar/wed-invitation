@@ -19,3 +19,15 @@ export function decodeText(value: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&');
 }
+
+// decodeText for every string in a row, including the ones inside JSON columns
+// (rundown items, dress code colors, bank accounts). Admin forms need this too,
+// otherwise saving again escapes the text a second time ("&amp;amp;").
+export function decodeDeep<T>(value: T): T {
+  if (typeof value === 'string') return decodeText(value) as T;
+  if (Array.isArray(value)) return value.map((item) => decodeDeep(item)) as T;
+  if (value && typeof value === 'object' && !(value instanceof Date)) {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, decodeDeep(item)])) as T;
+  }
+  return value;
+}

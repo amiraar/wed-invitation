@@ -5,20 +5,20 @@ import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import { FaqSchema } from '@/lib/validations';
-import { sanitizeText } from '@/lib/sanitize';
+import { decodeDeep, sanitizeText } from '@/lib/sanitize';
 import type { FaqItem } from '@/lib/types';
 
 const TTL_MS = 30 * 1000;
 
 export async function GET() {
   const cached = getCache<FaqItem[]>(CACHE_KEYS.FAQS);
-  if (cached) return jsonSuccess(cached);
+  if (cached) return jsonSuccess(decodeDeep(cached));
 
   const rows = await sql<FaqItem>`
     SELECT * FROM faqs ORDER BY order_index ASC
   `;
   setCache(CACHE_KEYS.FAQS, rows, TTL_MS);
-  return jsonSuccess(rows);
+  return jsonSuccess(decodeDeep(rows));
 }
 
 export async function POST(request: NextRequest) {
@@ -41,5 +41,5 @@ export async function POST(request: NextRequest) {
   `;
 
   invalidateCache([CACHE_KEYS.FAQS]);
-  return jsonSuccess(rows[0]);
+  return jsonSuccess(decodeDeep(rows[0]));
 }

@@ -5,7 +5,7 @@ import { verifyAuth } from '@/lib/auth';
 import { invalidateCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import { EventSchema } from '@/lib/validations';
-import { sanitizeText } from '@/lib/sanitize';
+import { decodeDeep, sanitizeText } from '@/lib/sanitize';
 import type { EventItem } from '@/lib/types';
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
   if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.EVENTS]);
-  return jsonSuccess(data);
+  return jsonSuccess(decodeDeep(data));
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {

@@ -4,7 +4,7 @@ import { jsonError, jsonSuccess, jsonValidationError } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
-import { sanitizeText } from '@/lib/sanitize';
+import { decodeDeep, sanitizeText } from '@/lib/sanitize';
 import { GalleryItemSchema } from '@/lib/validations';
 import type { GalleryItem } from '@/lib/types';
 
@@ -12,13 +12,13 @@ const TTL_MS = 30 * 1000;
 
 export async function GET() {
   const cached = getCache<GalleryItem[]>(CACHE_KEYS.GALLERY);
-  if (cached) return jsonSuccess(cached);
+  if (cached) return jsonSuccess(decodeDeep(cached));
 
   const rows = await sql<GalleryItem>`
     SELECT * FROM gallery ORDER BY order_index ASC
   `;
   setCache(CACHE_KEYS.GALLERY, rows, TTL_MS);
-  return jsonSuccess(rows);
+  return jsonSuccess(decodeDeep(rows));
 }
 
 export async function POST(request: NextRequest) {
@@ -41,5 +41,5 @@ export async function POST(request: NextRequest) {
   `;
 
   invalidateCache([CACHE_KEYS.GALLERY]);
-  return jsonSuccess(rows[0]);
+  return jsonSuccess(decodeDeep(rows[0]));
 }

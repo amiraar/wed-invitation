@@ -5,14 +5,14 @@ import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import { EventSchema } from '@/lib/validations';
-import { sanitizeText } from '@/lib/sanitize';
+import { decodeDeep, sanitizeText } from '@/lib/sanitize';
 import type { EventItem } from '@/lib/types';
 
 const TTL_MS = 60 * 1000;
 
 export async function GET() {
   const cached = getCache<EventItem[]>(CACHE_KEYS.EVENTS);
-  if (cached) return jsonSuccess(cached);
+  if (cached) return jsonSuccess(decodeDeep(cached));
 
   // The driver turns DATE into a JS Date (ISO timestamp, timezone-shifted), TIME into "HH:MM:SS"
   // and DECIMAL into a string; return them in the shapes EventSchema accepts so admin saves work.
@@ -27,7 +27,7 @@ export async function GET() {
     FROM events ORDER BY order_index ASC
   `;
   setCache(CACHE_KEYS.EVENTS, rows, TTL_MS);
-  return jsonSuccess(rows);
+  return jsonSuccess(decodeDeep(rows));
 }
 
 export async function POST(request: NextRequest) {
@@ -66,5 +66,5 @@ export async function POST(request: NextRequest) {
   `;
 
   invalidateCache([CACHE_KEYS.EVENTS]);
-  return jsonSuccess(rows[0]);
+  return jsonSuccess(decodeDeep(rows[0]));
 }
