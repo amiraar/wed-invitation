@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Toggle from '@/components/ui/Toggle';
+import FileDrop from '@/components/admin/FileDrop';
 import { useToast } from '@/components/admin/ToastProvider';
 import { defaultWedding, withScheduleDefaults } from '@/lib/defaults';
 import { friendlyError } from '@/lib/fieldLabels';
@@ -211,18 +212,12 @@ export default function WeddingPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Media" description="Photos and music used on the invitation. Links must start with https://">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field label="Cover photo URL" hint="Large photo at the top of the invitation.">
-            <input value={form.cover_image_url} onChange={(e) => handleChange('cover_image_url', e.target.value)} placeholder="https://..." className="admin-input w-full" />
-          </Field>
-          <Field label="Venue photo URL" hint="Shown next to the venue details.">
-            <input value={form.venue_image_url} onChange={(e) => handleChange('venue_image_url', e.target.value)} placeholder="https://..." className="admin-input w-full" />
-          </Field>
-          <Field label="Music URL (mp3)" hint="Plays in the background; guests can pause it.">
-            <input value={form.music_url} onChange={(e) => handleChange('music_url', e.target.value)} placeholder="https://...mp3" className="admin-input w-full" />
-          </Field>
-          <div className="flex items-center justify-between gap-4 self-center rounded-lg px-3 py-3" style={{ border: '1px solid var(--adm-border)' }}>
+      <SectionCard title="Media" description="Photos and music used on the invitation. Drag & drop a file, or paste a link that starts with https://">
+        <div className="grid gap-6 md:grid-cols-2">
+          <FileDrop kind="image" label="Cover photo" hint="Large photo at the top of the invitation." value={form.cover_image_url} onChange={(url) => handleChange('cover_image_url', url)} />
+          <FileDrop kind="image" label="Venue photo" hint="Shown above the event cards." value={form.venue_image_url} onChange={(url) => handleChange('venue_image_url', url)} />
+          <FileDrop kind="audio" label="Music" hint="Plays in the background; guests can pause it." value={form.music_url} onChange={(url) => handleChange('music_url', url)} />
+          <div className="flex items-center justify-between gap-4 self-start rounded-lg px-3 py-3 md:mt-6" style={{ border: '1px solid var(--adm-border)' }}>
             <span className="text-sm" style={{ color: 'var(--adm-text-muted)' }}>Start music automatically</span>
             <Toggle label="Start music automatically" checked={form.music_autoplay} onChange={(value) => handleChange('music_autoplay', value)} />
           </div>
