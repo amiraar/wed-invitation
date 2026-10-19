@@ -14,7 +14,11 @@
 3. Run database setup (safe to re-run; also applies new schema changes):
 	- `npx tsx scripts/setup.ts`
 
-4. Start development server:
+4. File uploads (optional; without this, photos and music can still be added by link):
+	- Vercel dashboard → Storage → Create → Blob → connect it to this project. Vercel adds `BLOB_READ_WRITE_TOKEN`; redeploy afterwards.
+	- For local development, copy `BLOB_READ_WRITE_TOKEN` into `.env` (or run `vercel env pull`).
+
+5. Start development server:
 	- `npm run dev`
 
 ## Login
@@ -30,7 +34,8 @@
 - Each guest gets a personal link `/to/{name}/{token}` (Admin → Guests). The token keeps guests from opening each other's invitation; "New Link" replaces a link that was forwarded.
 - Guest lists can be imported/exported as CSV or Excel in Admin → Guests (download the template there). Re-importing an exported file updates guests and keeps their links.
 - Wishes with links or rude words are rejected; every wish still needs admin approval. Guests can hide their name (shown as "Someone").
-- Music: set the URL in Admin → Wedding and enable autoplay in Admin → Settings; guests can also use the music button
+- Music, cover and venue photo: drag & drop a file or paste a link in Admin → Couple & Story (autoplay is set there too); guests can also use the music button
+- Gallery: drag & drop several photos at once in Admin → Gallery, and choose the layout (masonry, grid, slideshow), where it appears, and per photo its size and which part stays in view
 - Bank accounts for the digital envelope are managed in Admin → Wedding
 - All admin routes are protected by middleware
 - RSVP and Guestbook endpoints have rate limiting
