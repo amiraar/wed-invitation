@@ -20,7 +20,7 @@ import FooterPublic from './FooterPublic';
 import MusicPlayer, { type MusicPlayerHandle } from './MusicPlayer';
 import { eventTargetDate, formatDateID } from '@/lib/format';
 import type { InvitationData } from '@/lib/queries';
-import type { GuestView } from '@/lib/types';
+import type { GalleryPosition, GuestView } from '@/lib/types';
 
 type Props = {
   data: InvitationData;
@@ -72,15 +72,21 @@ export default function InvitationExperience({ data, guest }: Props) {
   const mainEventTarget = mainEvent ? eventTargetDate(mainEvent) : null;
   const dateLabel = mainEvent ? formatDateID(mainEvent.event_date) : '';
 
+  // Where the couple placed the gallery (Gallery page); the menu follows the page order.
+  // Fallbacks cover a database that hasn't run the gallery-options migration yet.
+  const galleryAt = (position: GalleryPosition) => showGallery && (settings.gallery_position ?? 'after_events') === position;
+  const galleryNav = [{ id: 'gallery', label: 'Gallery' }];
   const navSections: NavSection[] = [
     { id: 'hero', label: 'Home' },
     ...(hasStory ? [{ id: 'story', label: 'Story' }] : []),
-    ...(hasSchedule ? [{ id: 'schedule', label: 'Schedule' }] : []),
+    ...(galleryAt('after_story') ? galleryNav : []),
     ...(hasEvents ? [{ id: 'events', label: 'Events' }] : []),
-    ...(showGallery ? [{ id: 'gallery', label: 'Gallery' }] : []),
+    ...(hasSchedule ? [{ id: 'schedule', label: 'Schedule' }] : []),
+    ...(galleryAt('after_events') || galleryAt('before_rsvp') ? galleryNav : []),
     { id: 'rsvp', label: 'RSVP' },
     ...(hasFaqs ? [{ id: 'faq', label: 'FAQ' }] : [])
   ];
+  const gallerySection = <GallerySection images={gallery} layout={settings.gallery_layout ?? 'masonry'} />;
 
   const brand =
     wedding.groom_name && wedding.bride_name
@@ -128,6 +134,7 @@ export default function InvitationExperience({ data, guest }: Props) {
           <CountdownSection targetDate={mainEventTarget} dateLabel={dateLabel} />
           {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
           {hasCouple && <CoupleSection wedding={wedding} />}
+          {galleryAt('after_story') && gallerySection}
           {hasEvents && (
             <EventsSection
               events={eventsWithDetails}
@@ -144,7 +151,7 @@ export default function InvitationExperience({ data, guest }: Props) {
               swatches={wedding.dress_code_swatches}
             />
           )}
-          {showGallery && <GallerySection images={gallery} />}
+          {galleryAt('after_events') && gallerySection}
           {showRegistry && (
             <RegistrySection
               accounts={wedding.bank_accounts}
@@ -152,7 +159,8 @@ export default function InvitationExperience({ data, guest }: Props) {
               wishlistNote={wedding.wishlist_note}
             />
           )}
-          <RSVPSection guest={guest} events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
+          {galleryAt('before_rsvp') && gallerySection}
+          <RSVPSection guest={guest}events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
           {hasFaqs && <FAQSection faqs={faqs} />}
           <GuestbookSection guest={guest} messages={guestbook} />
           <FooterPublic groomName={wedding.groom_name} brideName={wedding.bride_name} />
