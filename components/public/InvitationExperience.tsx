@@ -60,7 +60,10 @@ export default function InvitationExperience({ data, guest }: Props) {
   const showGallery = settings.show_gallery && gallery.length > 0;
   const showRegistry = settings.show_envelope && (wedding.bank_accounts.length > 0 || wedding.wishlist_note);
   const hasStory = Boolean(wedding.opening_quote || wedding.story_body);
-  const hasSchedule = wedding.schedule_items.length > 0;
+  // Rundown items follow their event: hidden when the event is off or the guest isn't invited to it.
+  const shownEventTypes = new Set(activeEvents.map((event) => event.type));
+  const scheduleItems = wedding.schedule_items.filter((item) => item.event === 'all' || shownEventTypes.has(item.event));
+  const hasSchedule = scheduleItems.length > 0;
   const hasEvents = eventsWithDetails.length > 0;
   const hasDressCode = Boolean(
     wedding.dress_code_title || wedding.dress_code_note || wedding.dress_code_swatches.length > 0
@@ -126,7 +129,7 @@ export default function InvitationExperience({ data, guest }: Props) {
           {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
           {hasCouple && <CoupleSection wedding={wedding} />}
           {hasEvents && <EventsSection events={eventsWithDetails} imageUrl={wedding.venue_image_url} />}
-          {hasSchedule && <ScheduleSection items={wedding.schedule_items} />}
+          {hasSchedule && <ScheduleSection items={scheduleItems} events={activeEvents} />}
           {hasDressCode && (
             <DressCodeSection
               title={wedding.dress_code_title}

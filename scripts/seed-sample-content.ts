@@ -15,11 +15,11 @@ const dressCodeSwatches = [
 ];
 
 const scheduleItems = [
-  { time: '09:00 AM', title: 'Akad Nikah', subtitle: 'Sacred marriage ceremony' },
-  { time: '10:00 AM', title: 'Family Photos', subtitle: 'Family & couple portraits' },
-  { time: '11:00 AM', title: 'Reception', subtitle: 'Reception doors open' },
-  { time: '12:00 PM', title: 'Luncheon', subtitle: 'Wedding luncheon & toast' },
-  { time: '01:30 PM', title: 'Farewell', subtitle: 'Farewell & blessings' }
+  { event: 'akad', time_start: '09:00', time_end: '10:00', title: 'Akad Nikah', subtitle: 'Sacred marriage ceremony' },
+  { event: 'akad', time_start: '10:00', time_end: '', title: 'Family Photos', subtitle: 'Family & couple portraits' },
+  { event: 'resepsi', time_start: '11:00', time_end: '', title: 'Reception', subtitle: 'Reception doors open' },
+  { event: 'resepsi', time_start: '12:00', time_end: '13:30', title: 'Luncheon', subtitle: 'Wedding luncheon & toast' },
+  { event: 'resepsi', time_start: '13:30', time_end: '', title: 'Farewell', subtitle: 'Farewell & blessings' }
 ];
 
 const faqs = [

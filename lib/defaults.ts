@@ -1,4 +1,4 @@
-import type { AppSettings, WeddingConfig } from './types';
+import type { AppSettings, ScheduleItem, WeddingConfig } from './types';
 
 export const defaultSettings: AppSettings = {
   id: 'main',
@@ -35,3 +35,15 @@ export const defaultWedding: WeddingConfig = {
   schedule_items: [],
   updated_at: ''
 };
+
+// Rundown items saved before they were linked to events have no event or start/end time.
+export function withScheduleDefaults(item: Partial<ScheduleItem>): ScheduleItem {
+  return {
+    event: item.event ?? 'all',
+    time_start: item.time_start ?? '',
+    time_end: item.time_end ?? '',
+    title: item.title ?? '',
+    subtitle: item.subtitle ?? '',
+    ...(item.time ? { time: item.time } : {})
+  };
+}

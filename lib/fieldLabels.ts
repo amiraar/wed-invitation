@@ -48,8 +48,11 @@ const ITEM_LABELS: Record<string, string> = {
   account_number: 'account number',
   account_name: 'account holder',
   time: 'time',
+  event: 'event',
+  time_start: 'start time',
+  time_end: 'end time',
   title: 'title',
-  subtitle: 'subtitle'
+  subtitle: 'description'
 };
 
 function describe(field: string): string {

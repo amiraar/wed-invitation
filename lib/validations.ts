@@ -73,10 +73,15 @@ export const DressCodeSwatchSchema = z.object({
   label: z.string().min(1).max(50)
 });
 
+const optionalTime = z.string().regex(timeRegex).or(z.literal(''));
+
 export const ScheduleItemSchema = z.object({
-  time: z.string().max(50),
-  title: z.string().max(150),
-  subtitle: z.string().max(200)
+  event: z.enum(['all', 'lamaran', 'akad', 'resepsi']).default('all'),
+  time_start: optionalTime.default(''),
+  time_end: optionalTime.default(''),
+  title: z.string().trim().min(1).max(150),
+  subtitle: z.string().max(200).default(''),
+  time: z.string().max(50).optional()
 });
 
 export const WeddingConfigSchema = z.object({

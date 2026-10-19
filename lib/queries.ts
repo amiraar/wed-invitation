@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { sql } from './db';
 import { decodeDeep } from './sanitize';
-import { defaultSettings, defaultWedding } from './defaults';
+import { defaultSettings, defaultWedding, withScheduleDefaults } from './defaults';
 import type { AppSettings, EventItem, FaqItem, GalleryItem, GuestbookItem, WeddingConfig } from './types';
 
 export type InvitationData = {
@@ -61,7 +61,7 @@ export const getInvitationData = cache(async (): Promise<InvitationData> => {
         ...weddingRow,
         bank_accounts: Array.isArray(weddingRow.bank_accounts) ? weddingRow.bank_accounts : [],
         dress_code_swatches: Array.isArray(weddingRow.dress_code_swatches) ? weddingRow.dress_code_swatches : [],
-        schedule_items: Array.isArray(weddingRow.schedule_items) ? weddingRow.schedule_items : []
+        schedule_items: Array.isArray(weddingRow.schedule_items) ? weddingRow.schedule_items.map(withScheduleDefaults) : []
       },
       events: eventRows.map((row) => ({
         ...normalizeRow<EventItem>(row),

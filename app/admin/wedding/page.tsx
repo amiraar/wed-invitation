@@ -3,17 +3,30 @@
 import { useEffect, useState } from 'react';
 import Toggle from '@/components/ui/Toggle';
 import { useToast } from '@/components/admin/ToastProvider';
-import { defaultWedding } from '@/lib/defaults';
+import { defaultWedding, withScheduleDefaults } from '@/lib/defaults';
 import { friendlyError } from '@/lib/fieldLabels';
-import type { BankAccount, DressCodeSwatch, ScheduleItem, WeddingConfig } from '@/lib/types';
+import { eventTypeLabel, formatDateID } from '@/lib/format';
+import type { BankAccount, DressCodeSwatch, EventItem, EventType, ScheduleItem, WeddingConfig } from '@/lib/types';
 
 const MAX_ACCOUNTS = 6;
 const MAX_SWATCHES = 10;
 const MAX_SCHEDULE_ITEMS = 20;
+const EVENT_TYPES: EventType[] = ['lamaran', 'akad', 'resepsi'];
 
 const emptyAccount: BankAccount = { bank: '', account_number: '', account_name: '' };
 const emptySwatch: DressCodeSwatch = { color: '#7A9E7A', label: '' };
-const emptyScheduleItem: ScheduleItem = { time: '', title: '', subtitle: '' };
+const emptyScheduleItem: ScheduleItem = { event: 'all', time_start: '', time_end: '', title: '', subtitle: '' };
+
+// Tells the admin which date a rundown item will appear under on the invitation.
+function scheduleDateNote(item: ScheduleItem, events: EventItem[]): string {
+  const legacy = item.time && !item.time_start ? ` Old time "${item.time}" is shown until you pick a start time.` : '';
+  if (item.event === 'all') return `Shown to every guest, without a date.${legacy}`;
+  const event = events.find((e) => e.type === item.event);
+  const label = eventTypeLabel(item.event);
+  if (event && !event.is_active) return `${label} is turned off in Events & Venues, so this item is hidden.${legacy}`;
+  if (!event?.event_date) return `${label} has no date yet. Set it in Events & Venues.${legacy}`;
+  return `${label} · ${formatDateID(event.event_date)}${legacy}`;
+}
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -44,6 +57,7 @@ export default function WeddingPage() {
   const [form, setForm] = useState<WeddingConfig>(defaultWedding);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [events, setEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
     fetch('/api/wedding')
@@ -54,7 +68,7 @@ export default function WeddingPage() {
             ...data.data,
             bank_accounts: data.data.bank_accounts ?? [],
             dress_code_swatches: data.data.dress_code_swatches ?? [],
-            schedule_items: data.data.schedule_items ?? []
+            schedule_items: (data.data.schedule_items ?? []).map(withScheduleDefaults)
           });
           // Saving is only possible once the real content is loaded, so empty defaults never overwrite it.
           setLoaded(true);
@@ -63,6 +77,13 @@ export default function WeddingPage() {
         }
       })
       .catch(() => toast('Could not load the invitation content. Please refresh the page.', 'error'));
+    // Only used to show each rundown item's date; the rundown still saves without it.
+    fetch('/api/events')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) setEvents(data.data);
+      })
+      .catch(() => undefined);
   }, [toast]);
 
   const handleChange = (key: keyof WeddingConfig, value: string | boolean) => {
@@ -226,7 +247,7 @@ export default function WeddingPage() {
 
       <SectionCard
         title="Rundown"
-        description="The 'Order of Events' timeline. It is shown to every guest, not filtered per personal link."
+        description="The 'Order of Events' timeline. Link each item to an event: its date comes from Events & Venues, and guests only see items for events they are invited to."
       >
         <div className="mb-3 flex items-center justify-end">
           <button onClick={addScheduleItem} disabled={form.schedule_items.length >= MAX_SCHEDULE_ITEMS} className="admin-btn-outline disabled:opacity-50">
@@ -242,13 +263,41 @@ export default function WeddingPage() {
 
         <div className="space-y-3">
           {form.schedule_items.map((item, index) => (
-            <div key={index} className="grid gap-3 rounded-lg p-4 lg:grid-cols-[120px_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
-              <input value={item.time} onChange={(e) => handleScheduleItemChange(index, 'time', e.target.value)} placeholder="09:00 AM" aria-label={`Item ${index + 1} time`} className="admin-input" />
-              <input value={item.title} onChange={(e) => handleScheduleItemChange(index, 'title', e.target.value)} placeholder="Akad Nikah" aria-label={`Item ${index + 1} title`} className="admin-input" />
-              <input value={item.subtitle} onChange={(e) => handleScheduleItemChange(index, 'subtitle', e.target.value)} placeholder="Sacred marriage ceremony" aria-label={`Item ${index + 1} description`} className="admin-input" />
-              <button onClick={() => removeScheduleItem(index)} className="admin-btn-danger">
-                Remove
-              </button>
+            <div key={index} className="grid gap-3 rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+                <Field label={`Item ${index + 1} · Event`}>
+                  <select value={item.event} onChange={(e) => handleScheduleItemChange(index, 'event', e.target.value)} className="admin-input w-full">
+                    <option value="all">General (every guest)</option>
+                    {EVENT_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {eventTypeLabel(type)}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Start time">
+                  <input type="time" value={item.time_start} onChange={(e) => handleScheduleItemChange(index, 'time_start', e.target.value)} className="admin-input w-full" />
+                </Field>
+                <Field label="End time (optional)">
+                  <input type="time" value={item.time_end} onChange={(e) => handleScheduleItemChange(index, 'time_end', e.target.value)} className="admin-input w-full" />
+                </Field>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Field label="Title">
+                  <input value={item.title} onChange={(e) => handleScheduleItemChange(index, 'title', e.target.value)} placeholder="Akad Nikah" className="admin-input w-full" />
+                </Field>
+                <Field label="Description (optional)">
+                  <input value={item.subtitle} onChange={(e) => handleScheduleItemChange(index, 'subtitle', e.target.value)} placeholder="Sacred marriage ceremony" className="admin-input w-full" />
+                </Field>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs" style={{ color: 'var(--adm-text-muted)' }} data-testid={`rundown-date-${index}`}>
+                  {scheduleDateNote(item, events)}
+                </p>
+                <button onClick={() => removeScheduleItem(index)} className="admin-btn-danger">
+                  Remove
+                </button>
+              </div>
             </div>
           ))}
         </div>

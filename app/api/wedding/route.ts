@@ -63,9 +63,13 @@ export async function PUT(request: NextRequest) {
     wishlist_title: sanitizeText(payload.wishlist_title ?? ''),
     wishlist_note: sanitizeText(payload.wishlist_note ?? ''),
     schedule_items: (payload.schedule_items ?? []).map((item) => ({
-      time: sanitizeText(item.time),
+      event: item.event,
+      time_start: item.time_start,
+      time_end: item.time_end,
       title: sanitizeText(item.title),
-      subtitle: sanitizeText(item.subtitle)
+      subtitle: sanitizeText(item.subtitle),
+      // The old free-text time is only kept until a start time replaces it.
+      ...(item.time && !item.time_start ? { time: sanitizeText(item.time) } : {})
     }))
   };
 
