@@ -86,7 +86,7 @@ function SortableItem({
   const name = `Photo ${index + 1}`;
 
   return (
-    <div ref={setNodeRef} style={style} className="admin-card grid gap-3 p-3" data-testid="gallery-item">
+    <div ref={setNodeRef} style={style} className="admin-card grid grid-cols-1 gap-3 p-3" data-testid="gallery-item">
       <div className="flex items-center gap-3">
         <div
           {...attributes}
