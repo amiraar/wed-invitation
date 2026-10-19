@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-const timeRegex = /^\d{2}:\d{2}$/;
+const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 const hexColorRegex = /^#[0-9a-fA-F]{3,8}$/;
 
 // Admin-entered links end up in href/src attributes; only https:// is accepted so
