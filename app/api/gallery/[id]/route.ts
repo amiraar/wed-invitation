@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { del } from '@vercel/blob';
 import { sql } from '@/lib/db';
 import { isUuid, jsonError, jsonSuccess } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
@@ -48,6 +49,13 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
   const data = rows[0];
   if (!data) return jsonError('Data not found.', 404);
+
+  // Uploaded photos live in our Vercel Blob store; remove the file too so it doesn't pile up.
+  // Links to other sites are left alone, and a failed cleanup never fails the delete.
+  const url = decodeDeep(data.url);
+  if (process.env.BLOB_READ_WRITE_TOKEN && /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i.test(url)) {
+    await del(url).catch(() => undefined);
+  }
 
   invalidateCache([CACHE_KEYS.GALLERY]);
   return jsonSuccess({ deleted: true });

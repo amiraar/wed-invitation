@@ -63,7 +63,8 @@ export default function GalleryPage() {
     const response = await fetch('/api/gallery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, caption, order_index: items.length })
+      // No order_index: the server puts the photo last, also when several are added in a row.
+      body: JSON.stringify({ url, caption })
     }).catch(() => null);
     const data = await response?.json().catch(() => null);
     if (!data?.success) {
@@ -71,7 +72,6 @@ export default function GalleryPage() {
       return false;
     }
     setItems((prev) => [...prev, data.data]);
-    toast('Photo added.');
     return true;
   };
 

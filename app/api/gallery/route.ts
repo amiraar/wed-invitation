@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     VALUES (
       ${sanitizeText(payload.url)},
       ${sanitizeText(payload.caption ?? '')},
-      ${payload.order_index ?? 0}
+      COALESCE(${payload.order_index ?? null}::int, (SELECT COALESCE(MAX(order_index) + 1, 0) FROM gallery))
     )
     RETURNING *
   `;
