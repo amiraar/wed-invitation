@@ -69,8 +69,14 @@ export type GalleryItem = {
   url: string;
   caption: string;
   order_index: number;
+  // 'large' takes the full width; focus is the part of the photo kept when it is cropped.
+  size: 'normal' | 'large';
+  focus: 'top' | 'center' | 'bottom';
   created_at: string;
 };
+
+export type GalleryLayout = 'masonry' | 'grid' | 'slideshow';
+export type GalleryPosition = 'after_story' | 'after_events' | 'before_rsvp';
 
 export type FaqItem = {
   id: string;
@@ -150,5 +156,7 @@ export type AppSettings = {
   show_resepsi: boolean;
   show_gallery: boolean;
   show_envelope: boolean;
+  gallery_layout: GalleryLayout;
+  gallery_position: GalleryPosition;
   updated_at: string;
 };

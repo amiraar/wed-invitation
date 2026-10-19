@@ -8,6 +8,8 @@ export const defaultSettings: AppSettings = {
   show_resepsi: true,
   show_gallery: true,
   show_envelope: true,
+  gallery_layout: 'masonry',
+  gallery_position: 'after_events',
   updated_at: ''
 };
 

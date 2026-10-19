@@ -66,6 +66,8 @@ export async function POST(request: NextRequest) {
         show_resepsi = TRUE,
         show_gallery = TRUE,
         show_envelope = TRUE,
+        gallery_layout = 'masonry',
+        gallery_position = 'after_events',
         updated_at = NOW()
     WHERE id = 'main'
   `;
