@@ -5,6 +5,7 @@ import Toggle from '@/components/ui/Toggle';
 import { useToast } from '@/components/admin/ToastProvider';
 import { defaultWedding, withScheduleDefaults } from '@/lib/defaults';
 import { friendlyError } from '@/lib/fieldLabels';
+import { colorName } from '@/lib/colorNames';
 import { eventTypeLabel, formatDateID } from '@/lib/format';
 import type { BankAccount, DressCodeSwatch, EventItem, EventType, ScheduleItem, WeddingConfig } from '@/lib/types';
 
@@ -14,7 +15,7 @@ const MAX_SCHEDULE_ITEMS = 20;
 const EVENT_TYPES: EventType[] = ['lamaran', 'akad', 'resepsi'];
 
 const emptyAccount: BankAccount = { bank: '', account_number: '', account_name: '' };
-const emptySwatch: DressCodeSwatch = { color: '#7A9E7A', label: '' };
+const emptySwatch: DressCodeSwatch = { color: '#7A9E7A', label: colorName('#7A9E7A') };
 const emptyScheduleItem: ScheduleItem = { event: 'all', time_start: '', time_end: '', title: '', subtitle: '' };
 
 // Tells the admin which date a rundown item will appear under on the invitation.
@@ -116,9 +117,13 @@ export default function WeddingPage() {
 
   const handleSwatchChange = (index: number, key: keyof DressCodeSwatch, value: string) => {
     setForm((prev) => {
-      const swatches = prev.dress_code_swatches.map((swatch, i) =>
-        i === index ? { ...swatch, [key]: value } : swatch
-      );
+      const swatches = prev.dress_code_swatches.map((swatch, i) => {
+        if (i !== index) return swatch;
+        if (key === 'label') return { ...swatch, label: value };
+        // The name follows the colour unless the admin typed their own name.
+        const autoNamed = !swatch.label.trim() || swatch.label === colorName(swatch.color);
+        return { color: value, label: autoNamed ? colorName(value) : swatch.label };
+      });
       return { ...prev, dress_code_swatches: swatches };
     });
   };
@@ -318,9 +323,14 @@ export default function WeddingPage() {
           </Field>
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
-          <p className="admin-label mb-0">Colors</p>
-          <button onClick={addSwatch} disabled={form.dress_code_swatches.length >= MAX_SWATCHES} className="admin-btn-outline disabled:opacity-50">
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <div>
+            <p className="admin-label mb-0">Colors</p>
+            <p className="mt-1 text-[11px]" style={{ color: 'var(--adm-text-faint)' }}>
+              Tap the circle to pick a colour. Its name fills in automatically, and you can rename it.
+            </p>
+          </div>
+          <button onClick={addSwatch} disabled={form.dress_code_swatches.length >= MAX_SWATCHES} className="admin-btn-outline shrink-0 disabled:opacity-50">
             + Add Color
           </button>
         </div>
