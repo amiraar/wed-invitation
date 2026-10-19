@@ -88,12 +88,12 @@
     --adm-border: rgba(120, 160, 120, 0.14);
     --adm-border-strong: rgba(120, 160, 120, 0.32);
     --adm-text: #e8f0e8;
-    --adm-text-muted: rgba(200, 220, 200, 0.55);
-    --adm-text-faint: rgba(200, 220, 200, 0.35);
+    --adm-text-muted: rgba(200, 220, 200, 0.75);
+    --adm-text-faint: rgba(200, 220, 200, 0.65);
     --adm-accent: #7a9e7a;
     --adm-accent-strong: #4a7a4a;
     --adm-accent-strong-hover: #5a8f5a;
-    --adm-danger: rgba(220, 140, 140, 0.9);
+    --adm-danger: rgb(220, 140, 140);
     --adm-danger-bg: rgba(180, 80, 80, 0.12);
     --adm-danger-border: rgba(180, 80, 80, 0.22);
     background: var(--adm-bg);
@@ -120,7 +120,7 @@
   }
 
   .admin-input::placeholder {
-    color: rgba(180, 210, 180, 0.35);
+    color: rgba(180, 210, 180, 0.7);
   }
 
   .admin-input:focus {
