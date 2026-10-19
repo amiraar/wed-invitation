@@ -160,7 +160,8 @@ export default function WeddingPage() {
   };
 
   return (
-    <div className="space-y-6">
+    // Fields stay disabled until the saved content has loaded, so nothing typed early gets replaced.
+    <fieldset disabled={!loaded} className="m-0 min-w-0 space-y-6 border-0 p-0">
       <SectionCard title="Couple Details">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Groom's first name">
@@ -340,6 +341,6 @@ export default function WeddingPage() {
           {saving ? 'Saving...' : 'Save'}
         </button>
       </div>
-    </div>
+    </fieldset>
   );
 }

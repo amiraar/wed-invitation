@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { MotionConfig } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import Navbar, { type NavSection } from './Navbar';
+import CoverOverlay from './CoverOverlay';
 import HeroSection from './HeroSection';
 import CountdownSection from './CountdownSection';
 import StorySection from './StorySection';
 import CoupleSection from './CoupleSection';
 import ScheduleSection from './ScheduleSection';
-import VenueSection from './VenueSection';
+import EventsSection from './EventsSection';
 import DressCodeSection from './DressCodeSection';
 import GallerySection from './GallerySection';
 import RegistrySection from './RegistrySection';
@@ -30,15 +31,25 @@ type Props = {
 export default function InvitationExperience({ data, guest }: Props) {
   const { settings, wedding, events, gallery, guestbook, faqs } = data;
   const musicRef = useRef<MusicPlayerHandle>(null);
+  const [opened, setOpened] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('theme-light', settings.theme === 'light');
     document.documentElement.classList.toggle('theme-dark', settings.theme !== 'light');
   }, [settings.theme]);
 
+  // The page behind the cover doesn't scroll until the invitation is opened.
+  useEffect(() => {
+    document.body.style.overflow = opened ? '' : 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [opened]);
+
   // Shown events are set per event in admin (is_active); a personal link also limits them to the
   // events the guest is invited to.
   const activeEvents = events.filter((event) => event.is_active && (!guest || guest.invited[event.type]));
+  const eventsWithDetails = activeEvents.filter((event) => event.event_date || event.venue_name || event.address);
 
   const mainEvent =
     activeEvents.find((event) => event.type === 'akad') ??
@@ -50,18 +61,19 @@ export default function InvitationExperience({ data, guest }: Props) {
   const showRegistry = settings.show_envelope && (wedding.bank_accounts.length > 0 || wedding.wishlist_note);
   const hasStory = Boolean(wedding.opening_quote || wedding.story_body);
   const hasSchedule = wedding.schedule_items.length > 0;
-  const hasVenue = Boolean(mainEvent?.venue_name || mainEvent?.address);
+  const hasEvents = eventsWithDetails.length > 0;
   const hasDressCode = Boolean(
     wedding.dress_code_title || wedding.dress_code_note || wedding.dress_code_swatches.length > 0
   );
   const hasFaqs = faqs.length > 0;
   const mainEventTarget = mainEvent ? eventTargetDate(mainEvent) : null;
+  const dateLabel = mainEvent ? formatDateID(mainEvent.event_date) : '';
 
   const navSections: NavSection[] = [
     { id: 'hero', label: 'Home' },
     ...(hasStory ? [{ id: 'story', label: 'Story' }] : []),
     ...(hasSchedule ? [{ id: 'schedule', label: 'Schedule' }] : []),
-    ...(hasVenue ? [{ id: 'venue', label: 'Venue' }] : []),
+    ...(hasEvents ? [{ id: 'events', label: 'Events' }] : []),
     ...(showGallery ? [{ id: 'gallery', label: 'Gallery' }] : []),
     { id: 'rsvp', label: 'RSVP' },
     ...(hasFaqs ? [{ id: 'faq', label: 'FAQ' }] : [])
@@ -74,11 +86,11 @@ export default function InvitationExperience({ data, guest }: Props) {
 
   const hasMusic = Boolean(wedding.music_url);
 
-  useEffect(() => {
-    if (hasMusic && wedding.music_autoplay) {
-      musicRef.current?.play();
-    }
-  }, [hasMusic, wedding.music_autoplay]);
+  // Opening is a user gesture, so the browser allows the music to start here.
+  const handleOpen = () => {
+    setOpened(true);
+    if (hasMusic && wedding.music_autoplay) musicRef.current?.play();
+  };
 
   // The theme class is rendered on the server too, so a dark invitation never flashes light first.
   const themeClass = settings.theme === 'light' ? 'theme-light' : 'theme-dark';
@@ -86,44 +98,58 @@ export default function InvitationExperience({ data, guest }: Props) {
   return (
     <MotionConfig reducedMotion="user">
       <div className={`${themeClass} min-h-dvh bg-bg-primary text-text-primary`} data-theme={settings.theme}>
-      <Navbar brand={brand} sections={navSections} />
+        <AnimatePresence>
+          {!opened && (
+            <CoverOverlay
+              groomName={wedding.groom_name}
+              brideName={wedding.bride_name}
+              guestName={guest?.name ?? null}
+              dateLabel={dateLabel}
+              coverImageUrl={wedding.cover_image_url}
+              showMusicHint={hasMusic && wedding.music_autoplay}
+              onOpen={handleOpen}
+            />
+          )}
+        </AnimatePresence>
 
-      <main>
-        <HeroSection
-          groomName={wedding.groom_name}
-          brideName={wedding.bride_name}
-          coverImageUrl={wedding.cover_image_url}
-          dateLabel={mainEvent ? formatDateID(mainEvent.event_date) : ''}
-          venueLine={mainEvent?.venue_name ?? ''}
-        />
-        <CountdownSection targetDate={mainEventTarget} dateLabel={mainEvent ? formatDateID(mainEvent.event_date) : ''} />
-        {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
-        {hasCouple && <CoupleSection wedding={wedding} />}
-        {hasSchedule && <ScheduleSection items={wedding.schedule_items} />}
-        {hasVenue && mainEvent && <VenueSection event={mainEvent} imageUrl={wedding.venue_image_url} />}
-        {hasDressCode && (
-          <DressCodeSection
-            title={wedding.dress_code_title}
-            note={wedding.dress_code_note}
-            avoidNote={wedding.dress_code_avoid_note}
-            swatches={wedding.dress_code_swatches}
-          />
-        )}
-        {showGallery && <GallerySection images={gallery} />}
-        {showRegistry && (
-          <RegistrySection
-            accounts={wedding.bank_accounts}
-            wishlistTitle={wedding.wishlist_title}
-            wishlistNote={wedding.wishlist_note}
-          />
-        )}
-        <RSVPSection guest={guest} events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
-        {hasFaqs && <FAQSection faqs={faqs} />}
-        <GuestbookSection guest={guest} messages={guestbook} />
-        <FooterPublic groomName={wedding.groom_name} brideName={wedding.bride_name} />
-      </main>
+        <Navbar brand={brand} sections={navSections} />
 
-      {hasMusic && <MusicPlayer ref={musicRef} src={wedding.music_url} />}
+        <main>
+          <HeroSection
+            groomName={wedding.groom_name}
+            brideName={wedding.bride_name}
+            coverImageUrl={wedding.cover_image_url}
+            dateLabel={dateLabel}
+            venueLine={mainEvent?.venue_name ?? ''}
+          />
+          <CountdownSection targetDate={mainEventTarget} dateLabel={dateLabel} />
+          {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
+          {hasCouple && <CoupleSection wedding={wedding} />}
+          {hasEvents && <EventsSection events={eventsWithDetails} imageUrl={wedding.venue_image_url} />}
+          {hasSchedule && <ScheduleSection items={wedding.schedule_items} />}
+          {hasDressCode && (
+            <DressCodeSection
+              title={wedding.dress_code_title}
+              note={wedding.dress_code_note}
+              avoidNote={wedding.dress_code_avoid_note}
+              swatches={wedding.dress_code_swatches}
+            />
+          )}
+          {showGallery && <GallerySection images={gallery} />}
+          {showRegistry && (
+            <RegistrySection
+              accounts={wedding.bank_accounts}
+              wishlistTitle={wedding.wishlist_title}
+              wishlistNote={wedding.wishlist_note}
+            />
+          )}
+          <RSVPSection guest={guest} events={activeEvents.map((event) => ({ id: event.id, type: event.type }))} />
+          {hasFaqs && <FAQSection faqs={faqs} />}
+          <GuestbookSection guest={guest} messages={guestbook} />
+          <FooterPublic groomName={wedding.groom_name} brideName={wedding.bride_name} />
+        </main>
+
+        {hasMusic && <MusicPlayer ref={musicRef} src={wedding.music_url} />}
       </div>
     </MotionConfig>
   );

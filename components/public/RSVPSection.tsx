@@ -39,6 +39,24 @@ function FieldLabel({ htmlFor, children }: { htmlFor?: string; children: string 
   );
 }
 
+// Success is a soft highlighted card right under the button, so it is seen on phones too.
+export function StatusMessage({ status }: { status: { type: 'success' | 'error'; text: string } }) {
+  return (
+    <p
+      role="status"
+      className="rounded-2xl px-4 py-3 text-center text-sm"
+      style={
+        status.type === 'success'
+          ? { background: 'var(--accent-dim)', border: '1px solid var(--border-hover)', color: 'var(--accent)' }
+          : { background: 'rgba(220, 80, 80, 0.08)', border: '1px solid rgba(220, 80, 80, 0.35)', color: '#c24848' }
+      }
+    >
+      {status.type === 'success' ? '♥ ' : ''}
+      {status.text}
+    </p>
+  );
+}
+
 function Card({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
@@ -125,7 +143,7 @@ function RSVPForm({ guest, events }: { guest: GuestView; events: Props['events']
               <input
                 type="radio"
                 name="rsvp-attending"
-                className="h-4 w-4 shrink-0"
+                className="h-4 w-4 shrink-0 accent-[var(--accent)]"
                 checked={attending === option.value}
                 onChange={() => setAttending(option.value)}
               />
@@ -145,7 +163,7 @@ function RSVPForm({ guest, events }: { guest: GuestView; events: Props['events']
               <label key={item.id} className={optionClass} style={inputStyle}>
                 <input
                   type="checkbox"
-                  className="h-4 w-4 shrink-0"
+                  className="h-4 w-4 shrink-0 accent-[var(--accent)]"
                   checked={selected[item.type]}
                   onChange={(e) => setSelected((prev) => ({ ...prev, [item.type]: e.target.checked }))}
                 />
@@ -189,19 +207,12 @@ function RSVPForm({ guest, events }: { guest: GuestView; events: Props['events']
         {submitting ? 'Sending...' : hasRsvp ? 'Update RSVP' : 'Send RSVP'}
       </FancyButton>
 
+      {status && <StatusMessage status={status} />}
+
       <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
         Your RSVP is only visible to the couple and is used to plan the celebration. Ask the couple anytime if you
         want it removed.
       </p>
-
-      {status && (
-        <p
-          role="status"
-          className={`text-center text-sm ${status.type === 'success' ? 'text-green-400' : 'text-red-400'}`}
-        >
-          {status.text}
-        </p>
-      )}
     </form>
   );
 }

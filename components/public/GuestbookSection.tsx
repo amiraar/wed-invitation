@@ -6,6 +6,7 @@ import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
 import { formatDateShortID } from '@/lib/format';
 import SectionHeading from './SectionHeading';
 import FancyButton from './FancyButton';
+import { StatusMessage } from './RSVPSection';
 import type { GuestbookItem, GuestView } from '@/lib/types';
 
 type Props = {
@@ -65,7 +66,7 @@ function WishForm({ guest }: { guest: GuestView }) {
         <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
           <input
             type="checkbox"
-            className="h-4 w-4"
+            className="h-4 w-4 accent-[var(--accent)]"
             checked={anonymous}
             onChange={(e) => setAnonymous(e.target.checked)}
           />
@@ -86,18 +87,11 @@ function WishForm({ guest }: { guest: GuestView }) {
       <FancyButton type="submit" className="w-full py-4" disabled={submitting}>
         {submitting ? 'Sending...' : 'Send Wishes'}
       </FancyButton>
+      {status && <StatusMessage status={status} />}
       <p className="text-center text-xs" style={{ color: 'var(--text-muted)' }}>
         Your message will appear publicly on this page once the couple approves it. Links are not allowed. Ask the
         couple anytime if you want it removed.
       </p>
-      {status && (
-        <p
-          role="status"
-          className={`text-center text-sm ${status.type === 'success' ? 'text-green-400' : 'text-red-400'}`}
-        >
-          {status.text}
-        </p>
-      )}
     </form>
   );
 }
