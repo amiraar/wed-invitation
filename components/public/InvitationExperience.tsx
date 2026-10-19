@@ -128,7 +128,13 @@ export default function InvitationExperience({ data, guest }: Props) {
           <CountdownSection targetDate={mainEventTarget} dateLabel={dateLabel} />
           {hasStory && <StorySection quote={wedding.opening_quote} body={wedding.story_body} />}
           {hasCouple && <CoupleSection wedding={wedding} />}
-          {hasEvents && <EventsSection events={eventsWithDetails} imageUrl={wedding.venue_image_url} />}
+          {hasEvents && (
+            <EventsSection
+              events={eventsWithDetails}
+              imageUrl={wedding.venue_image_url}
+              hasDressCodeColors={hasDressCode && wedding.dress_code_swatches.length > 0}
+            />
+          )}
           {hasSchedule && <ScheduleSection items={scheduleItems} events={activeEvents} />}
           {hasDressCode && (
             <DressCodeSection

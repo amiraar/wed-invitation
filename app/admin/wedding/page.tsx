@@ -308,7 +308,10 @@ export default function WeddingPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Dress Code">
+      <SectionCard
+        title="Dress Code"
+        description="The general dress code for all events, shown in its own section with color circles. A short note per event (e.g. 'Batik') is set in Events & Venues."
+      >
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Title">
             <input value={form.dress_code_title} onChange={(e) => handleChange('dress_code_title', e.target.value)} placeholder="Formal Attire" className="admin-input w-full" />
@@ -327,7 +330,7 @@ export default function WeddingPage() {
           <div>
             <p className="admin-label mb-0">Colors</p>
             <p className="mt-1 text-[11px]" style={{ color: 'var(--adm-text-faint)' }}>
-              Tap the circle to pick a colour. Its name fills in automatically, and you can rename it.
+              Tap the circle to pick a color. Its name fills in automatically, and you can rename it.
             </p>
           </div>
           <button onClick={addSwatch} disabled={form.dress_code_swatches.length >= MAX_SWATCHES} className="admin-btn-outline shrink-0 disabled:opacity-50">

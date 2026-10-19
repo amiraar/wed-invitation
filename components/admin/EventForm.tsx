@@ -4,6 +4,9 @@ import Toggle from '@/components/ui/Toggle';
 import { eventTypeLabel } from '@/lib/format';
 import type { EventItem } from '@/lib/types';
 
+// Common Indonesian wedding dress codes, written for guests.
+const DRESS_CODE_PICKS = ['Formal', 'Batik', 'Traditional attire', 'Smart casual', 'Modest attire'];
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
@@ -56,9 +59,39 @@ export default function EventForm({
       <Field label="Maps link">
         <input value={event.maps_url} onChange={(e) => handleChange('maps_url', e.target.value)} placeholder="https://maps.google.com/..." className="admin-input w-full" />
       </Field>
-      <Field label="Dress code">
-        <input value={event.dress_code} onChange={(e) => handleChange('dress_code', e.target.value)} className="admin-input w-full" />
+      <Field label="What to wear (dress code)">
+        <input
+          value={event.dress_code}
+          onChange={(e) => handleChange('dress_code', e.target.value)}
+          maxLength={100}
+          placeholder="e.g. Batik or formal"
+          className="admin-input w-full"
+        />
       </Field>
+      <div className="-mt-1 space-y-2">
+        <div className="flex flex-wrap gap-2" aria-label={`Quick picks for ${label} dress code`}>
+          {DRESS_CODE_PICKS.map((pick) => (
+            <button
+              key={pick}
+              type="button"
+              onClick={() => handleChange('dress_code', pick)}
+              aria-pressed={event.dress_code === pick}
+              className="min-h-[44px] rounded-full px-4 text-xs transition-colors"
+              style={
+                event.dress_code === pick
+                  ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                  : { border: '1px solid var(--adm-border-strong)', color: 'var(--adm-text-muted)' }
+              }
+            >
+              {pick}
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px]" style={{ color: 'var(--adm-text-faint)' }}>
+          A short note shown on this event&apos;s card, so guests know what to wear. Colors are set once for all events in
+          Couple &amp; Story → Dress Code.
+        </p>
+      </div>
     </div>
   );
 }
