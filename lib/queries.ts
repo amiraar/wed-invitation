@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { sql } from './db';
-import { decodeText } from './sanitize';
-import { defaultSettings, defaultWedding } from './defaults';
+import { decodeDeep } from './sanitize';
+import { defaultSettings, defaultWedding, withScheduleDefaults } from './defaults';
 import type { AppSettings, EventItem, FaqItem, GalleryItem, GuestbookItem, WeddingConfig } from './types';
 
 export type InvitationData = {
@@ -14,16 +14,14 @@ export type InvitationData = {
 };
 
 // Rows go from a server component to client components, so Date objects are
-// normalized to strings and sanitized text is decoded back for display.
+// normalized to strings and sanitized text (also inside JSON columns) is decoded back for display.
 function normalizeRow<T>(row: Record<string, unknown>): T {
   const normalized: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(row)) {
     if (value instanceof Date) {
       normalized[key] = value.toISOString();
-    } else if (typeof value === 'string') {
-      normalized[key] = decodeText(value);
     } else {
-      normalized[key] = value;
+      normalized[key] = decodeDeep(value);
     }
   }
   return normalized as T;
@@ -63,7 +61,7 @@ export const getInvitationData = cache(async (): Promise<InvitationData> => {
         ...weddingRow,
         bank_accounts: Array.isArray(weddingRow.bank_accounts) ? weddingRow.bank_accounts : [],
         dress_code_swatches: Array.isArray(weddingRow.dress_code_swatches) ? weddingRow.dress_code_swatches : [],
-        schedule_items: Array.isArray(weddingRow.schedule_items) ? weddingRow.schedule_items : []
+        schedule_items: Array.isArray(weddingRow.schedule_items) ? weddingRow.schedule_items.map(withScheduleDefaults) : []
       },
       events: eventRows.map((row) => ({
         ...normalizeRow<EventItem>(row),

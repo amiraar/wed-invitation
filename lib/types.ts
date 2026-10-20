@@ -9,10 +9,15 @@ export type DressCodeSwatch = {
   label: string;
 };
 
+// A rundown item belongs to one event (its date comes from that event) or to every event ('all').
 export type ScheduleItem = {
-  time: string;
+  event: EventType | 'all';
+  time_start: string; // "HH:MM" or ''
+  time_end: string; // "HH:MM" or ''
   title: string;
   subtitle: string;
+  // Free-text time saved before start/end times existed; only shown when time_start is empty.
+  time?: string;
 };
 
 export type WeddingConfig = {

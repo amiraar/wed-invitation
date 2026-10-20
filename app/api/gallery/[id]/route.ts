@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { sql } from '@/lib/db';
 import { isUuid, jsonError, jsonSuccess } from '@/lib/api';
 import { verifyAuth } from '@/lib/auth';
+import { decodeDeep } from '@/lib/sanitize';
 import { invalidateCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import type { GalleryItem } from '@/lib/types';
@@ -32,7 +33,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   if (!data) return jsonError('Data not found.', 404);
 
   invalidateCache([CACHE_KEYS.GALLERY]);
-  return jsonSuccess(data);
+  return jsonSuccess(decodeDeep(data));
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {

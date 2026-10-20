@@ -5,7 +5,7 @@ import { verifyAuth } from '@/lib/auth';
 import { getCache, invalidateCache, setCache } from '@/lib/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 import { WeddingConfigSchema } from '@/lib/validations';
-import { sanitizeText } from '@/lib/sanitize';
+import { decodeDeep, sanitizeText } from '@/lib/sanitize';
 import type { WeddingConfig } from '@/lib/types';
 
 const TTL_MS = 60 * 1000;
@@ -14,7 +14,7 @@ type WeddingRow = WeddingConfig;
 
 export async function GET() {
   const cached = getCache<WeddingRow>(CACHE_KEYS.WEDDING);
-  if (cached) return jsonSuccess(cached);
+  if (cached) return jsonSuccess(decodeDeep(cached));
 
   const rows = await sql<WeddingRow>`
     SELECT * FROM wedding_config WHERE id = 'main' LIMIT 1
@@ -23,7 +23,7 @@ export async function GET() {
   if (!data) return jsonError('Data not found.', 404);
 
   setCache(CACHE_KEYS.WEDDING, data, TTL_MS);
-  return jsonSuccess(data);
+  return jsonSuccess(decodeDeep(data));
 }
 
 export async function PUT(request: NextRequest) {
@@ -63,9 +63,13 @@ export async function PUT(request: NextRequest) {
     wishlist_title: sanitizeText(payload.wishlist_title ?? ''),
     wishlist_note: sanitizeText(payload.wishlist_note ?? ''),
     schedule_items: (payload.schedule_items ?? []).map((item) => ({
-      time: sanitizeText(item.time),
+      event: item.event,
+      time_start: item.time_start,
+      time_end: item.time_end,
       title: sanitizeText(item.title),
-      subtitle: sanitizeText(item.subtitle)
+      subtitle: sanitizeText(item.subtitle),
+      // The old free-text time is only kept until a start time replaces it.
+      ...(item.time && !item.time_start ? { time: sanitizeText(item.time) } : {})
     }))
   };
 
@@ -98,5 +102,5 @@ export async function PUT(request: NextRequest) {
 
   const data = rows[0];
   invalidateCache([CACHE_KEYS.WEDDING]);
-  return jsonSuccess(data);
+  return jsonSuccess(decodeDeep(data));
 }

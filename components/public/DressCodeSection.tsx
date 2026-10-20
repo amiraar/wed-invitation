@@ -44,7 +44,12 @@ export default function DressCodeSection({ title, note, avoidNote, swatches }: P
           )}
 
           {swatches.length > 0 && (
-            <motion.div variants={fadeUpVariant} className="mt-12 flex flex-wrap justify-center gap-7">
+            <motion.p variants={fadeUpVariant} className="mt-10 text-xs uppercase tracking-[0.3em] text-text-muted">
+              Suggested colors
+            </motion.p>
+          )}
+          {swatches.length > 0 && (
+            <motion.div variants={fadeUpVariant} className="mt-6 flex flex-wrap justify-center gap-7">
               {swatches.map((swatch, index) => (
                 <div key={`${swatch.label}-${index}`} className="flex flex-col items-center gap-3">
                   <div

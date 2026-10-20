@@ -11,6 +11,8 @@ type Props = {
   // Shown events (and, on a personal link, only the ones the guest is invited to).
   events: EventItem[];
   imageUrl: string;
+  // The general Dress Code section (with colours) is on the page, so cards can link to it.
+  hasDressCodeColors: boolean;
 };
 
 const GRID_BY_COUNT: Record<number, string> = {
@@ -19,7 +21,7 @@ const GRID_BY_COUNT: Record<number, string> = {
 };
 
 // One card per event, so what the couple fills in under Events & Venues maps 1:1 to the page.
-export default function EventsSection({ events, imageUrl }: Props) {
+export default function EventsSection({ events, imageUrl, hasDressCodeColors }: Props) {
   return (
     <section id="events" className="section-anchor py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-6">
@@ -67,9 +69,19 @@ export default function EventsSection({ events, imageUrl }: Props) {
                     </p>
                   )}
                   {event.dress_code && (
-                    <p className="mt-4 text-xs uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>
-                      Dress code: <span style={{ color: 'var(--text-secondary)' }}>{event.dress_code}</span>
-                    </p>
+                    <div className="mt-5 rounded-2xl px-4 py-3" style={{ background: 'var(--bg-secondary)' }} data-testid="event-dress-code">
+                      <p className="text-xs uppercase tracking-[0.25em]" style={{ color: 'var(--text-muted)' }}>
+                        What to wear
+                      </p>
+                      <p className="mt-1 text-sm" style={{ color: 'var(--text-primary)' }}>
+                        {event.dress_code}
+                      </p>
+                      {hasDressCodeColors && (
+                        <a href="#dresscode" className="mt-1 inline-block text-xs underline underline-offset-4" style={{ color: 'var(--accent)' }}>
+                          See suggested colors
+                        </a>
+                      )}
+                    </div>
                   )}
                   {event.maps_url && (
                     <div className="mt-auto pt-6">
