@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import RSVPTable from '@/components/admin/RSVPTable';
 import { useToast } from '@/components/admin/ToastProvider';
+import { refreshAdminCounts } from '@/components/admin/nav';
 import type { RSVPItem } from '@/lib/types';
 
 export default function RSVPPage() {
@@ -26,6 +27,7 @@ export default function RSVPPage() {
       return;
     }
     setRows((prev) => prev.filter((item) => item.id !== id));
+    refreshAdminCounts();
     toast('RSVP deleted.');
   };
 

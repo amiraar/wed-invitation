@@ -11,8 +11,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [ready, setReady] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
 
-  // The mobile drawer closes on navigation and with Escape.
+  // The mobile drawer closes on navigation and with Escape; the page behind it doesn't scroll.
   useEffect(() => setNavOpen(false), [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = navOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [navOpen]);
   useEffect(() => {
     if (!navOpen) return;
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setNavOpen(false);
