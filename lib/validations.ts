@@ -124,11 +124,26 @@ export const EventSchema = z.object({
 
 // Event visibility is set per event (Events & Venues) and music autoplay with the music
 // (Couple & Story), so Settings only keeps the theme and the two optional sections.
+export const GalleryLayoutSchema = z.enum(['masonry', 'grid', 'slideshow']);
+export const GalleryPositionSchema = z.enum(['after_story', 'after_events', 'before_rsvp']);
+
+// The gallery layout/position are set on the Gallery page; Settings may leave them out.
 export const SettingsSchema = z.object({
   theme: z.enum(['dark', 'light']),
   show_gallery: z.boolean(),
-  show_envelope: z.boolean()
+  show_envelope: z.boolean(),
+  gallery_layout: GalleryLayoutSchema.optional(),
+  gallery_position: GalleryPositionSchema.optional()
 });
+
+export const GalleryPatchSchema = z
+  .object({
+    order_index: z.number().int().min(0).max(100).optional(),
+    caption: z.string().max(200).optional(),
+    size: z.enum(['normal', 'large']).optional(),
+    focus: z.enum(['top', 'center', 'bottom']).optional()
+  })
+  .refine((value) => Object.values(value).some((v) => v !== undefined), { message: 'has nothing to change' });
 
 export const FaqSchema = z.object({
   question: z.string().min(1).max(300),

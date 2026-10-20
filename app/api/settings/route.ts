@@ -39,6 +39,8 @@ export async function PUT(request: NextRequest) {
     SET theme = ${payload.theme},
         show_gallery = ${payload.show_gallery},
         show_envelope = ${payload.show_envelope},
+        gallery_layout = COALESCE(${payload.gallery_layout ?? null}, gallery_layout),
+        gallery_position = COALESCE(${payload.gallery_position ?? null}, gallery_position),
         updated_at = NOW()
     WHERE id = 'main'
     RETURNING *

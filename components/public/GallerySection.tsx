@@ -1,21 +1,46 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeUpVariant, staggerContainerVariant } from '@/lib/motion';
 import SectionHeading from './SectionHeading';
-import type { GalleryItem } from '@/lib/types';
+import type { GalleryItem, GalleryLayout } from '@/lib/types';
 
 type Props = {
   images: GalleryItem[];
+  layout: GalleryLayout;
 };
 
 // Varied tile heights give the masonry columns an organic rhythm.
 const tileHeights = ['h-72', 'h-52', 'h-64', 'h-56', 'h-80', 'h-60'];
 
-export default function GallerySection({ images }: Props) {
+const LAYOUT_CLASS: Record<GalleryLayout, string> = {
+  masonry: 'mt-12 columns-2 gap-3 sm:gap-4 md:columns-3',
+  grid: 'mt-12 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3',
+  // Swipe on phones; the buttons above scroll it too.
+  slideshow: 'mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2'
+};
+
+const FOCUS_CLASS: Record<string, string> = { top: 'object-top', center: 'object-center', bottom: 'object-bottom' };
+
+// "Large" photos take the full width in masonry and grid, and a wider slide in the slideshow.
+function tileClass(layout: GalleryLayout, image: GalleryItem, index: number): string {
+  const large = image.size === 'large';
+  if (layout === 'grid') return `w-full ${large ? 'col-span-full aspect-[16/9]' : 'aspect-square'}`;
+  if (layout === 'slideshow') {
+    return `shrink-0 snap-center ${large ? 'w-[90%] aspect-[4/3] md:w-[70%]' : 'w-[80%] aspect-[4/5] sm:w-[45%] md:w-[32%]'}`;
+  }
+  return `mb-3 block w-full sm:mb-4 ${large ? '[column-span:all] h-80 md:h-[28rem]' : tileHeights[index % tileHeights.length]}`;
+}
+
+export default function GallerySection({ images, layout }: Props) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const slide = (direction: number) => {
+    const track = trackRef.current;
+    if (track) track.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' });
+  };
 
   const close = useCallback(() => setActiveIndex(null), []);
   const step = useCallback(
@@ -49,24 +74,34 @@ export default function GallerySection({ images }: Props) {
         >
           <SectionHeading align="center" eyebrow="Moments" title="Our Gallery" />
 
-          <div className="mt-12 columns-2 gap-3 sm:gap-4 md:columns-3">
+          {layout === 'slideshow' && images.length > 1 && (
+            <div className="mt-8 flex justify-center gap-3">
+              <button onClick={() => slide(-1)} className="flex h-11 w-11 items-center justify-center rounded-full text-xl" style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)' }} aria-label="Previous photos">
+                ‹
+              </button>
+              <button onClick={() => slide(1)} className="flex h-11 w-11 items-center justify-center rounded-full text-xl" style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)' }} aria-label="More photos">
+                ›
+              </button>
+            </div>
+          )}
+
+          <div ref={trackRef} className={LAYOUT_CLASS[layout] ?? LAYOUT_CLASS.masonry} data-layout={layout}>
             {images.map((image, index) => (
               <motion.button
                 key={image.id}
                 variants={fadeUpVariant}
-                className="group relative mb-3 w-full overflow-hidden rounded-2xl sm:mb-4"
+                className={`group relative overflow-hidden rounded-2xl ${tileClass(layout, image, index)}`}
                 onClick={() => setActiveIndex(index)}
                 aria-label={image.caption || `Photo ${index + 1}`}
+                data-size={image.size}
               >
-                <div className={`relative w-full ${tileHeights[index % tileHeights.length]}`}>
-                  <Image
-                    src={image.url}
-                    alt={image.caption || `Photo ${index + 1}`}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 50vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
+                <Image
+                  src={image.url}
+                  alt={image.caption || `Photo ${index + 1}`}
+                  fill
+                  sizes={image.size === 'large' || layout === 'slideshow' ? '(min-width: 768px) 70vw, 90vw' : '(min-width: 768px) 33vw, 50vw'}
+                  className={`object-cover ${FOCUS_CLASS[image.focus] ?? 'object-center'} transition-transform duration-700 group-hover:scale-105`}
+                />
                 <div className="absolute inset-0 bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </motion.button>
             ))}

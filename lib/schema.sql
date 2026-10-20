@@ -179,3 +179,10 @@ UPDATE events SET is_active = FALSE WHERE type = 'lamaran' AND EXISTS (SELECT 1 
 UPDATE events SET is_active = FALSE WHERE type = 'akad' AND EXISTS (SELECT 1 FROM app_settings WHERE id = 'main' AND show_akad = FALSE);
 UPDATE events SET is_active = FALSE WHERE type = 'resepsi' AND EXISTS (SELECT 1 FROM app_settings WHERE id = 'main' AND show_resepsi = FALSE);
 UPDATE app_settings SET show_lamaran = TRUE, show_akad = TRUE, show_resepsi = TRUE WHERE id = 'main' AND NOT (show_lamaran AND show_akad AND show_resepsi);
+
+-- Gallery display options (set on the Gallery page): per-photo size and crop focus,
+-- and the layout and position of the whole section. Defaults keep today's look.
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS size VARCHAR(10) NOT NULL DEFAULT 'normal';
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS focus VARCHAR(10) NOT NULL DEFAULT 'center';
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS gallery_layout VARCHAR(20) NOT NULL DEFAULT 'masonry';
+ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS gallery_position VARCHAR(20) NOT NULL DEFAULT 'after_events';
