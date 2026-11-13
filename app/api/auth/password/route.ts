@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   if (!auth) return jsonError('Unauthorized', 401);
 
   const ip = getClientIp(request);
-  const limit = limiter(`password:${ip}`);
+  const limit = await limiter(`password:${ip}`);
   if (!limit.success) {
     logSecurityEvent('password_change_rate_limited', { ip, userId: auth.userId });
     return jsonError('Too many attempts. Please try again later.', 429);

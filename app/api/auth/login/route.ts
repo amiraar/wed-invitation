@@ -22,7 +22,7 @@ type AdminRow = {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(`login:${ip}`);
+  const limit = await limiter(`login:${ip}`);
   if (!limit.success) {
     logSecurityEvent('login_rate_limited', { ip });
     return jsonError('Too many login attempts. Please try again later.', 429);

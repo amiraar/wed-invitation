@@ -186,3 +186,11 @@ ALTER TABLE gallery ADD COLUMN IF NOT EXISTS size VARCHAR(10) NOT NULL DEFAULT '
 ALTER TABLE gallery ADD COLUMN IF NOT EXISTS focus VARCHAR(10) NOT NULL DEFAULT 'center';
 ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS gallery_layout VARCHAR(20) NOT NULL DEFAULT 'masonry';
 ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS gallery_position VARCHAR(20) NOT NULL DEFAULT 'after_events';
+
+-- Rate limit counters shared by every server instance (lib/rateLimit.ts). The key is a SHA-256
+-- hash, so no IP address or token is stored.
+CREATE TABLE IF NOT EXISTS rate_limits (
+  key CHAR(64) PRIMARY KEY,
+  count INT NOT NULL,
+  reset_at TIMESTAMPTZ NOT NULL
+);
