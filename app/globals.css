@@ -128,6 +128,7 @@
     border-radius: 0.5rem;
     padding: 0.6rem 0.85rem;
     font-size: 0.875rem;
+    min-height: 2.75rem; /* 44px tap target */
   }
 
   .admin-input::placeholder {
@@ -158,6 +159,7 @@
     text-transform: uppercase;
     transition: background 0.2s;
     border: none;
+    min-height: 2.75rem;
   }
 
   .admin-btn-primary:hover {
@@ -179,6 +181,7 @@
     text-transform: uppercase;
     background: transparent;
     transition: background 0.2s;
+    min-height: 2.75rem;
   }
 
   .admin-btn-outline:hover {
@@ -200,6 +203,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     transition: all 0.2s;
+    min-height: 2.75rem;
   }
 
   .admin-btn-danger:hover {

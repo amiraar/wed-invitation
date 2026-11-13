@@ -75,7 +75,7 @@ export default function SettingsPage() {
     <button
       onClick={() => setSettings((prev) => ({ ...prev, theme }))}
       aria-pressed={settings.theme === theme}
-      className="rounded-lg px-4 py-2 text-sm transition-all"
+      className="min-h-[44px] rounded-lg px-4 py-2 text-sm transition-all"
       style={
         settings.theme === theme
           ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }

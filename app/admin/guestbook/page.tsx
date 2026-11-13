@@ -89,7 +89,7 @@ export default function GuestbookPage() {
             role="tab"
             aria-selected={tab === item}
             onClick={() => setTab(item)}
-            className="rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all"
+            className="min-h-[44px] rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all"
             style={
               tab === item
                 ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }

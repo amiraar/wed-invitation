@@ -237,8 +237,8 @@ export default function GuestsPage() {
               {EVENT_TYPES.map((type) => {
                 const key = `invite_${type}` as const;
                 return (
-                  <label key={type} className="flex items-center gap-2 text-sm" style={{ color: 'var(--adm-text)' }}>
-                    <input type="checkbox" checked={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.checked })} />
+                  <label key={type} className="flex min-h-[44px] items-center gap-2 text-sm" style={{ color: 'var(--adm-text)' }}>
+                    <input type="checkbox" className="h-5 w-5" checked={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.checked })} />
                     {eventTypeLabel(type)}
                   </label>
                 );
@@ -268,8 +268,8 @@ export default function GuestsPage() {
             className="block w-full text-sm"
             style={{ color: 'var(--adm-text)' }}
           />
-          <label className="flex items-center gap-2 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
-            <input type="checkbox" checked={removeMissing} onChange={(e) => setRemoveMissing(e.target.checked)} />
+          <label className="flex min-h-[44px] items-center gap-2 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
+            <input type="checkbox" className="h-5 w-5" checked={removeMissing} onChange={(e) => setRemoveMissing(e.target.checked)} />
             Also delete guests that are not in this file
           </label>
           <button onClick={runImport} disabled={!importFile || importing} className="admin-btn-primary disabled:opacity-50">
