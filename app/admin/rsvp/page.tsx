@@ -34,7 +34,7 @@ export default function RSVPPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>RSVP List</h2>
+        <h2 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>RSVP List</h2>
         <a href="/api/rsvp/export" className="admin-btn-primary">
           Export CSV
         </a>

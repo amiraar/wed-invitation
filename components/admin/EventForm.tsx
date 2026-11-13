@@ -31,7 +31,7 @@ export default function EventForm({
   return (
     <div className="admin-card grid gap-3 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>
+        <h3 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>
           {label}
         </h3>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
@@ -79,7 +79,7 @@ export default function EventForm({
               className="min-h-[44px] rounded-full px-4 text-xs transition-colors"
               style={
                 event.dress_code === pick
-                  ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                  ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }
                   : { border: '1px solid var(--adm-border-strong)', color: 'var(--adm-text-muted)' }
               }
             >

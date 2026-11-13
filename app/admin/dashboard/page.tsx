@@ -87,7 +87,7 @@ export default function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>Pending Wishes</h2>
+        <h2 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>Pending Wishes</h2>
         <div className="mt-4 space-y-3">
           {guestbook
             .filter((item) => !item.is_approved)

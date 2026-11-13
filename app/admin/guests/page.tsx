@@ -40,8 +40,8 @@ const emptyForm: FormState = {
 };
 
 const STATUS_STYLE: Record<GuestItem['rsvp_status'], { label: string; color: string }> = {
-  attending: { label: 'Attending', color: '#8fd08f' },
-  declined: { label: 'Declined', color: '#e8a0a0' },
+  attending: { label: 'Attending', color: 'var(--adm-success)' },
+  declined: { label: 'Declined', color: 'var(--adm-danger)' },
   pending: { label: 'No reply yet', color: 'var(--adm-text-muted)' }
 };
 
@@ -182,7 +182,7 @@ export default function GuestsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>Guest List</h2>
+        <h2 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>Guest List</h2>
         <div className="flex flex-wrap gap-2">
           <a href="/api/guests/export?format=xlsx" className="admin-btn-outline">Export Excel</a>
           <a href="/api/guests/export?format=csv" className="admin-btn-outline">Export CSV</a>
@@ -200,14 +200,14 @@ export default function GuestsPage() {
         ].map(([label, value]) => (
           <div key={label} className="admin-card p-3">
             <p className="text-[10px] uppercase tracking-[0.2em]" style={{ color: 'var(--adm-text-muted)' }}>{label}</p>
-            <p className="mt-1 font-display text-2xl" style={{ color: '#C8DEC8' }}>{value}</p>
+            <p className="mt-1 font-display text-2xl" style={{ color: 'var(--adm-heading)' }}>{value}</p>
           </div>
         ))}
       </div>
 
       {form && (
         <div className="admin-card space-y-4 p-5">
-          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: '#C8DEC8' }}>
+          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: 'var(--adm-heading)' }}>
             {form.id ? 'Edit Guest' : 'Add Guest'}
           </h3>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -254,7 +254,7 @@ export default function GuestsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="admin-card space-y-3 p-5">
-          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: '#C8DEC8' }}>Import Guests</h3>
+          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: 'var(--adm-heading)' }}>Import Guests</h3>
           <p className="text-xs leading-relaxed" style={{ color: 'var(--adm-text-muted)' }}>
             Upload a .csv or .xlsx file with columns name, phone, max_guests, group, lamaran, akad, resepsi (yes/no).
             Existing guests are updated; their links stay the same.{' '}
@@ -282,7 +282,7 @@ export default function GuestsPage() {
                 {importResult.skippedCount}
               </p>
               {importResult.skipped.length > 0 && (
-                <ul className="mt-2 list-disc pl-5" style={{ color: '#e8a0a0' }}>
+                <ul className="mt-2 list-disc pl-5" style={{ color: 'var(--adm-danger)' }}>
                   {importResult.skipped.map((item) => (
                     <li key={item.row}>Row {item.row}: {item.reason}</li>
                   ))}
@@ -293,7 +293,7 @@ export default function GuestsPage() {
         </div>
 
         <div className="admin-card space-y-3 p-5">
-          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: '#C8DEC8' }}>WhatsApp Message</h3>
+          <h3 className="text-sm uppercase tracking-[0.2em]" style={{ color: 'var(--adm-heading)' }}>WhatsApp Message</h3>
           <p className="text-xs" style={{ color: 'var(--adm-text-muted)' }}>
             Used by the WhatsApp button. {'{name}'}, {'{couple}'} and {'{link}'} are filled in for each guest.
           </p>

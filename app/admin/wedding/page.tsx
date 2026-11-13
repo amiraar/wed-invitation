@@ -33,7 +33,7 @@ function scheduleDateNote(item: ScheduleItem, events: EventItem[]): string {
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <div className="admin-card p-4 sm:p-6">
-      <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>{title}</h2>
+      <h2 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>{title}</h2>
       {description && (
         <p className="mt-1 text-xs" style={{ color: 'var(--adm-text-muted)' }}>
           {description}
@@ -263,7 +263,7 @@ export default function WeddingPage() {
 
         <div className="space-y-3">
           {form.schedule_items.map((item, index) => (
-            <div key={index} className="grid gap-3 rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+            <div key={index} className="grid gap-3 rounded-lg p-4" style={{ background: 'var(--adm-card)', border: '1px solid var(--adm-border)' }}>
               <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
                 <Field label={`Item ${index + 1} · Event`}>
                   <select value={item.event} onChange={(e) => handleScheduleItemChange(index, 'event', e.target.value)} className="admin-input w-full">
@@ -334,7 +334,7 @@ export default function WeddingPage() {
         </div>
         <div className="mt-3 space-y-3">
           {form.dress_code_swatches.map((swatch, index) => (
-            <div key={index} className="flex items-center gap-3 rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+            <div key={index} className="flex items-center gap-3 rounded-lg p-3" style={{ background: 'var(--adm-card)', border: '1px solid var(--adm-border)' }}>
               <input
                 type="color"
                 value={swatch.color}
@@ -372,7 +372,7 @@ export default function WeddingPage() {
 
         <div className="space-y-3">
           {form.bank_accounts.map((account, index) => (
-            <div key={index} className="grid gap-3 rounded-lg p-4 lg:grid-cols-[1fr_1fr_1fr_auto]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--adm-border)' }}>
+            <div key={index} className="grid gap-3 rounded-lg p-4 lg:grid-cols-[1fr_1fr_1fr_auto]" style={{ background: 'var(--adm-card)', border: '1px solid var(--adm-border)' }}>
               <input value={account.bank} onChange={(e) => handleAccountChange(index, 'bank', e.target.value)} placeholder="Bank / e-wallet (e.g. BCA)" aria-label={`Account ${index + 1} bank`} className="admin-input" />
               <input value={account.account_number} onChange={(e) => handleAccountChange(index, 'account_number', e.target.value)} placeholder="Account number" aria-label={`Account ${index + 1} number`} className="admin-input" />
               <input value={account.account_name} onChange={(e) => handleAccountChange(index, 'account_name', e.target.value)} placeholder="Account holder" aria-label={`Account ${index + 1} holder`} className="admin-input" />

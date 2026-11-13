@@ -92,7 +92,7 @@ export default function GuestbookPage() {
             className="rounded-full px-4 py-2 text-xs uppercase tracking-[0.2em] transition-all"
             style={
               tab === item
-                ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+                ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }
                 : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
             }
           >

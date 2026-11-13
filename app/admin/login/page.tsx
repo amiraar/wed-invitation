@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-6" style={{ background: 'var(--adm-bg)' }}>
       <div className="admin-card w-full max-w-md p-8">
-        <h1 className="font-display text-2xl italic" style={{ color: '#C8DEC8' }}>Admin Login</h1>
+        <h1 className="font-display text-2xl italic" style={{ color: 'var(--adm-heading)' }}>Admin Login</h1>
         <p className="mt-2 text-sm" style={{ color: 'var(--adm-text-muted)' }}>Sign in to manage the invitation.</p>
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <input
