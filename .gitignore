@@ -7,3 +7,6 @@ node_modules
 
 # TypeScript incremental build info
 tsconfig.tsbuildinfo
+
+# e2e test output (tests/e2e/run.sh)
+test-results/

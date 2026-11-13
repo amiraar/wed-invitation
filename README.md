@@ -21,6 +21,17 @@
 5. Start development server:
 	- `npm run dev`
 
+## Tests
+
+End-to-end tests use Playwright against a production build and a throwaway local database in Docker (`docker-compose.test.yml`: Postgres + a Neon-compatible HTTP proxy). They never use the database from `.env`.
+
+- Needs Docker running, then once: `npx playwright install chromium`
+- All suites: `npm run test:e2e` (about 10 minutes; each suite gets a fresh database and server)
+- Some suites: `bash tests/e2e/run.sh guests.mjs uploads.mjs` (add `SKIP_BUILD=1` to reuse the last build)
+- Output, server logs and screenshots go to `test-results/`
+
+CI (`.github/workflows/ci.yml`) runs on every pull request and on `main`: type check, `npm audit` (fails on high/critical), all e2e suites, and a gitleaks secret scan of the git history. Both jobs are required checks for merging into `main`. Dependabot opens weekly dependency update PRs, which go through the same checks.
+
 ## Login
 
 - Open `http://localhost:3000/admin/login`
@@ -38,4 +49,4 @@
 - Gallery: drag & drop several photos at once in Admin → Gallery, and choose the layout (masonry, grid, slideshow), where it appears, and per photo its size and which part stays in view
 - Bank accounts for the digital envelope are managed in Admin → Wedding
 - All admin routes are protected by middleware
-- RSVP and Guestbook endpoints have rate limiting
+- Login, password change, RSVP and Guestbook have rate limits, stored in the database so they hold across server instances

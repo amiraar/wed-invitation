@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(`rsvp:${ip}`);
+  const limit = await limiter(`rsvp:${ip}`);
   if (!limit.success) {
     return jsonError('RSVP submission limit reached. Please try again later.', 429);
   }

@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const limit = limiter(`guestbook:${ip}`);
+  const limit = await limiter(`guestbook:${ip}`);
   if (!limit.success) {
     return jsonError('Message submission limit reached. Please try again later.', 429);
   }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return jsonError('Your message must be between 5 and 1000 characters.', 400);
 
   const payload = parsed.data;
-  if (!tokenLimiter(`guestbook-token:${payload.token}`).success) {
+  if (!(await tokenLimiter(`guestbook-token:${payload.token}`)).success) {
     return jsonError('Message submission limit reached. Please try again later.', 429);
   }
 

@@ -1,40 +1,35 @@
-type RateLimitEntry = {
-  count: number;
-  resetAt: number;
-};
+import { createHash } from 'node:crypto';
+import { sql } from '@/lib/db';
+import { logSecurityEvent } from '@/lib/securityLog';
 
-const store = new Map<string, RateLimitEntry>();
-let lastCleanup = Date.now();
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+type RateLimitResult = { success: boolean; remaining: number; resetAt: number };
 
-function cleanupExpired(now: number): void {
-  if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
-  for (const [key, entry] of store.entries()) {
-    if (entry.resetAt <= now) {
-      store.delete(key);
-    }
-  }
-  lastCleanup = now;
-}
-
+// Counters live in Postgres (rate_limits), so every Vercel instance and every cold start shares
+// them. One atomic upsert per request: a new window starts at 1 once the old one has expired.
 export function rateLimit(config: { windowMs: number; max: number }) {
-  return (ip: string): { success: boolean; remaining: number; resetAt: number } => {
-    const now = Date.now();
-    cleanupExpired(now);
-
-    const existing = store.get(ip);
-    if (!existing || existing.resetAt <= now) {
-      const resetAt = now + config.windowMs;
-      store.set(ip, { count: 1, resetAt });
-      return { success: true, remaining: config.max - 1, resetAt };
+  return async (key: string): Promise<RateLimitResult> => {
+    const hashed = createHash('sha256').update(key).digest('hex');
+    try {
+      const rows = await sql<{ count: number; reset_at: string }>`
+        INSERT INTO rate_limits (key, count, reset_at)
+        VALUES (${hashed}, 1, NOW() + make_interval(secs => ${config.windowMs / 1000}))
+        ON CONFLICT (key) DO UPDATE SET
+          count = CASE WHEN rate_limits.reset_at <= NOW() THEN 1 ELSE rate_limits.count + 1 END,
+          reset_at = CASE WHEN rate_limits.reset_at <= NOW() THEN EXCLUDED.reset_at ELSE rate_limits.reset_at END
+        RETURNING count, reset_at
+      `;
+      // Old rows are only clutter; clear them now and then.
+      if (Math.random() < 0.02) await sql`DELETE FROM rate_limits WHERE reset_at < NOW() - INTERVAL '1 day'`;
+      const count = Number(rows[0].count);
+      return {
+        success: count <= config.max,
+        remaining: Math.max(0, config.max - count),
+        resetAt: new Date(rows[0].reset_at).getTime()
+      };
+    } catch {
+      // Fail open: a database hiccup must not lock the admin or guests out.
+      logSecurityEvent('rate_limit_unavailable');
+      return { success: true, remaining: config.max, resetAt: Date.now() + config.windowMs };
     }
-
-    if (existing.count >= config.max) {
-      return { success: false, remaining: 0, resetAt: existing.resetAt };
-    }
-
-    existing.count += 1;
-    store.set(ip, existing);
-    return { success: true, remaining: config.max - existing.count, resetAt: existing.resetAt };
   };
 }
