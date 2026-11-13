@@ -26,7 +26,7 @@ export default function FooterPublic({ groomName, brideName }: Props) {
             {couple}
           </h2>
         )}
-        <p className="text-xs uppercase tracking-[0.35em] text-hero-text/55">
+        <p className="text-xs uppercase tracking-[0.35em] text-hero-text/80">
           Thank you for your love and blessings
         </p>
       </div>

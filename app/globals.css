@@ -14,8 +14,12 @@
     --bg-elevated: #EFF5EF;
     --text-primary: #2A3A2A;
     --text-secondary: #5A6B5A;
-    --text-muted: #7A9E7A;
+    /* Small labels and helper text: 4.5:1 or more on every background of this theme. */
+    --text-muted: #567656;
     --accent: #3D5C3D;
+    /* Text on an --accent background, and error text. */
+    --on-accent: #F5F0E6;
+    --danger: #B03A3A;
     --accent-light: #7A9E7A;
     --accent-dim: rgba(122, 158, 122, 0.12);
     --border: #C8DEC8;
@@ -35,8 +39,10 @@
     --bg-elevated: #1e2e1e;
     --text-primary: #E8F0E8;
     --text-secondary: #A8C4A8;
-    --text-muted: #6B8C6B;
+    --text-muted: #779777;
     --accent: #7A9E7A;
+    --on-accent: #0F1A0F;
+    --danger: #E8A0A0;
     --accent-light: #A8D4A8;
     --accent-dim: rgba(122, 158, 122, 0.15);
     --border: rgba(122, 158, 122, 0.18);

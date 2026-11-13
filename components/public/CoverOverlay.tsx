@@ -78,7 +78,7 @@ export default function CoverOverlay({ groomName, brideName, guestName, dateLabe
             initial={{ opacity: 0, letterSpacing: '0.15em' }}
             animate={{ opacity: 1, letterSpacing: '0.4em' }}
             transition={{ duration: 1.4, delay: 0.2 }}
-            className="text-xs uppercase text-hero-text/70"
+            className="text-xs uppercase text-hero-text/80"
           >
             The Wedding of
           </motion.p>
@@ -104,7 +104,7 @@ export default function CoverOverlay({ groomName, brideName, guestName, dateLabe
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
-              className="text-xs uppercase tracking-[0.35em] text-hero-text/75"
+              className="text-xs uppercase tracking-[0.35em] text-hero-text/80"
             >
               {dateLabel}
             </motion.p>
@@ -116,7 +116,7 @@ export default function CoverOverlay({ groomName, brideName, guestName, dateLabe
             transition={{ duration: 0.7, delay: 1.2 }}
             className="mt-9"
           >
-            <p className="text-xs uppercase tracking-[0.3em] text-hero-text/60">Kepada Yth.</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-hero-text/80">Kepada Yth.</p>
             <p className="mt-2 break-words font-display text-2xl italic text-hero-text sm:text-3xl">
               {guestName || 'Bapak/Ibu/Saudara/i'}
             </p>
@@ -137,7 +137,7 @@ export default function CoverOverlay({ groomName, brideName, guestName, dateLabe
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2 }}
-              className="mt-5 text-xs uppercase tracking-[0.3em] text-hero-text/50"
+              className="mt-5 text-xs uppercase tracking-[0.3em] text-hero-text/80"
             >
               ♫ Music will play
             </motion.p>
