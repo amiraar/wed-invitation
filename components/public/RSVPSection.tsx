@@ -48,7 +48,7 @@ export function StatusMessage({ status }: { status: { type: 'success' | 'error';
       style={
         status.type === 'success'
           ? { background: 'var(--accent-dim)', border: '1px solid var(--border-hover)', color: 'var(--accent)' }
-          : { background: 'rgba(220, 80, 80, 0.08)', border: '1px solid rgba(220, 80, 80, 0.35)', color: '#c24848' }
+          : { background: 'rgba(220, 80, 80, 0.08)', border: '1px solid rgba(220, 80, 80, 0.35)', color: 'var(--danger)' }
       }
     >
       {status.type === 'success' ? '♥ ' : ''}

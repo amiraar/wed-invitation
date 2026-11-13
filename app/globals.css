@@ -14,8 +14,12 @@
     --bg-elevated: #EFF5EF;
     --text-primary: #2A3A2A;
     --text-secondary: #5A6B5A;
-    --text-muted: #7A9E7A;
+    /* Small labels and helper text: 4.5:1 or more on every background of this theme. */
+    --text-muted: #567656;
     --accent: #3D5C3D;
+    /* Text on an --accent background, and error text. */
+    --on-accent: #F5F0E6;
+    --danger: #B03A3A;
     --accent-light: #7A9E7A;
     --accent-dim: rgba(122, 158, 122, 0.12);
     --border: #C8DEC8;
@@ -35,8 +39,10 @@
     --bg-elevated: #1e2e1e;
     --text-primary: #E8F0E8;
     --text-secondary: #A8C4A8;
-    --text-muted: #6B8C6B;
+    --text-muted: #779777;
     --accent: #7A9E7A;
+    --on-accent: #0F1A0F;
+    --danger: #E8A0A0;
     --accent-light: #A8D4A8;
     --accent-dim: rgba(122, 158, 122, 0.15);
     --border: rgba(122, 158, 122, 0.18);
@@ -89,8 +95,13 @@
     --adm-border-strong: rgba(120, 160, 120, 0.32);
     --adm-text: #e8f0e8;
     --adm-text-muted: rgba(200, 220, 200, 0.75);
-    --adm-text-faint: rgba(200, 220, 200, 0.65);
+    --adm-text-faint: rgba(200, 220, 200, 0.7);
+    --adm-heading: #c8dec8;
     --adm-accent: #7a9e7a;
+    /* --adm-accent is for borders and fills; small accent text needs this lighter sage (4.5:1+). */
+    --adm-accent-text: #93b093;
+    --adm-selected-bg: rgba(122, 158, 122, 0.15);
+    --adm-success: #8fd08f;
     --adm-accent-strong: #4a7a4a;
     --adm-accent-strong-hover: #5a8f5a;
     --adm-danger: rgb(220, 140, 140);
@@ -117,6 +128,7 @@
     border-radius: 0.5rem;
     padding: 0.6rem 0.85rem;
     font-size: 0.875rem;
+    min-height: 2.75rem; /* 44px tap target */
   }
 
   .admin-input::placeholder {
@@ -132,7 +144,7 @@
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--adm-accent);
+    color: var(--adm-accent-text);
     display: block;
     margin-bottom: 0.4rem;
   }
@@ -147,6 +159,7 @@
     text-transform: uppercase;
     transition: background 0.2s;
     border: none;
+    min-height: 2.75rem;
   }
 
   .admin-btn-primary:hover {
@@ -160,7 +173,7 @@
 
   .admin-btn-outline {
     border: 1px solid var(--adm-border-strong);
-    color: var(--adm-accent);
+    color: var(--adm-accent-text);
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 0.7rem;
@@ -168,6 +181,7 @@
     text-transform: uppercase;
     background: transparent;
     transition: background 0.2s;
+    min-height: 2.75rem;
   }
 
   .admin-btn-outline:hover {
@@ -189,6 +203,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     transition: all 0.2s;
+    min-height: 2.75rem;
   }
 
   .admin-btn-danger:hover {

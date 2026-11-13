@@ -58,7 +58,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
       >
         <motion.p
           variants={fadeUpVariant}
-          className="mb-7 text-[11px] uppercase tracking-[0.5em] text-hero-text/65"
+          className="mb-7 text-[11px] uppercase tracking-[0.5em] text-hero-text/80"
         >
           Wedding Invitation
         </motion.p>
@@ -77,7 +77,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
 
         <motion.p
           variants={fadeUpVariant}
-          className="my-3 text-[11px] uppercase tracking-[0.6em] text-hero-text/55"
+          className="my-3 text-[11px] uppercase tracking-[0.6em] text-hero-text/80"
         >
           and
         </motion.p>
@@ -106,7 +106,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
         {venueLine && (
           <motion.p
             variants={fadeUpVariant}
-            className="mt-2 text-xs uppercase tracking-[0.3em] text-hero-text/55"
+            className="mt-2 text-xs uppercase tracking-[0.3em] text-hero-text/80"
           >
             {venueLine}
           </motion.p>
@@ -119,7 +119,7 @@ export default function HeroSection({ groomName, brideName, coverImageUrl, dateL
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div className="h-9 w-px bg-gradient-to-b from-hero-text/45 to-transparent" />
-        <p className="text-xs uppercase tracking-[0.3em] text-hero-text/45">Scroll</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-hero-text/80">Scroll</p>
       </motion.div>
     </section>
   );

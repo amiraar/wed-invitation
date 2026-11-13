@@ -10,7 +10,7 @@ import type { AppSettings } from '@/lib/types';
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
     <div className="admin-card p-6">
-      <h2 className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>{title}</h2>
+      <h2 className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>{title}</h2>
       {description && <p className="mt-1 text-xs" style={{ color: 'var(--adm-text-muted)' }}>{description}</p>}
       <div className="mt-4">{children}</div>
     </div>
@@ -75,10 +75,10 @@ export default function SettingsPage() {
     <button
       onClick={() => setSettings((prev) => ({ ...prev, theme }))}
       aria-pressed={settings.theme === theme}
-      className="rounded-lg px-4 py-2 text-sm transition-all"
+      className="min-h-[44px] rounded-lg px-4 py-2 text-sm transition-all"
       style={
         settings.theme === theme
-          ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+          ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }
           : { border: '1px solid var(--adm-border)', color: 'var(--adm-text-muted)' }
       }
     >

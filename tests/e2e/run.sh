@@ -28,7 +28,7 @@ export BLOB_READ_WRITE_TOKEN=''
 
 SUITES=("$@")
 if [ ${#SUITES[@]} -eq 0 ]; then
-  SUITES=(guests.mjs admin-content.mjs invitation.mjs admin-sidebar.mjs cms-content.mjs uploads.mjs uploads-not-configured.mjs rate-limit.mjs api-robustness.mjs)
+  SUITES=(guests.mjs admin-content.mjs invitation.mjs admin-sidebar.mjs cms-content.mjs uploads.mjs uploads-not-configured.mjs rate-limit.mjs api-robustness.mjs ui-audit.mjs)
 fi
 mkdir -p "$OUT"
 

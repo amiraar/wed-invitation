@@ -88,13 +88,13 @@ export default function Navbar({ brand, sections }: Props) {
             <button
               key={section.id}
               onClick={() => handleNav(section.id)}
-              className={`relative text-xs uppercase tracking-[0.25em] transition-colors duration-300 ${
+              className={`relative py-1 text-xs uppercase tracking-[0.25em] transition-colors duration-300 ${
                 active === section.id ? 'text-[var(--accent)]' : linkColor
               }`}
             >
               {section.label}
               {active === section.id && (
-                <span className="absolute -bottom-1 left-0 h-px w-full bg-[var(--accent)]" />
+                <span className="absolute bottom-0 left-0 h-px w-full bg-[var(--accent)]" />
               )}
             </button>
           ))}
@@ -134,7 +134,7 @@ export default function Navbar({ brand, sections }: Props) {
             <button
               key={section.id}
               onClick={() => handleNav(section.id)}
-              className={`block w-full px-3 py-3 text-left text-xs uppercase tracking-[0.25em] transition-colors ${
+              className={`block min-h-[44px] w-full px-3 py-3 text-left text-xs uppercase tracking-[0.25em] transition-colors ${
                 active === section.id ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'
               }`}
             >

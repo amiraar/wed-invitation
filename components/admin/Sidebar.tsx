@@ -47,7 +47,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         }}
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-5">
-          <div className="font-display text-xl italic" style={{ color: '#C8DEC8' }}>
+          <div className="font-display text-xl italic" style={{ color: 'var(--adm-heading)' }}>
             Wedding CMS
           </div>
           <button
@@ -78,7 +78,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
                       aria-current={active ? 'page' : undefined}
                       className="flex min-h-[44px] items-center gap-3 rounded-r-lg px-3 py-2 text-sm transition-all"
                       style={{
-                        color: active ? '#C8DEC8' : 'var(--adm-text-muted)',
+                        color: active ? 'var(--adm-heading)' : 'var(--adm-text-muted)',
                         background: active ? 'rgba(120,160,120,0.1)' : 'transparent',
                         borderLeft: active ? '2px solid var(--adm-accent)' : '2px solid transparent'
                       }}
@@ -90,7 +90,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
                           data-testid={`badge-${item.badge}`}
                           title={`${count} ${BADGE_TEXT[item.badge]}`}
                           className="min-w-[1.5rem] shrink-0 rounded-full px-2 py-0.5 text-center text-[11px] font-medium leading-4"
-                          style={{ background: 'var(--adm-accent)', color: '#0f1a0f' }}
+                          style={{ background: 'var(--adm-accent)', color: 'var(--adm-bg-topbar)' }}
                         >
                           <span aria-hidden="true">{count > 99 ? '99+' : count}</span>
                           <span className="sr-only">

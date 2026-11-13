@@ -62,7 +62,7 @@ function LayoutPreview({ layout }: { layout: GalleryLayout }) {
 
 function choiceStyle(selected: boolean) {
   return selected
-    ? { border: '1px solid var(--adm-accent)', background: 'rgba(122,158,122,0.15)', color: '#C8DEC8' }
+    ? { border: '1px solid var(--adm-accent)', background: 'var(--adm-selected-bg)', color: 'var(--adm-heading)' }
     : { border: '1px solid var(--adm-border-strong)', color: 'var(--adm-text-muted)' };
 }
 
@@ -273,7 +273,7 @@ export default function GalleryPage() {
       <GalleryUpload onUpload={handleUpload} />
 
       <section className="admin-card p-4 sm:p-6" aria-labelledby="gallery-look">
-        <h2 id="gallery-look" className="font-display text-lg italic" style={{ color: '#C8DEC8' }}>
+        <h2 id="gallery-look" className="font-display text-lg italic" style={{ color: 'var(--adm-heading)' }}>
           How the gallery looks
         </h2>
         <p className="mt-1 text-xs" style={{ color: 'var(--adm-text-muted)' }}>

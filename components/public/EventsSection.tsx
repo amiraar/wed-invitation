@@ -89,8 +89,8 @@ export default function EventsSection({ events, imageUrl, hasDressCodeColors }: 
                         href={event.maps_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-block rounded-full px-7 py-3 text-xs uppercase tracking-[0.3em] transition-opacity hover:opacity-90"
-                        style={{ background: 'var(--accent)', color: 'var(--hero-text)' }}
+                        className="inline-flex min-h-[44px] items-center rounded-full px-7 py-3 text-xs uppercase tracking-[0.3em] transition-opacity hover:opacity-90"
+                        style={{ background: 'var(--accent)', color: 'var(--on-accent)' }}
                       >
                         View on Map
                       </a>

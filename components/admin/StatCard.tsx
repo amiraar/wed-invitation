@@ -9,7 +9,7 @@ export default function StatCard({ label, value }: Props) {
       <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: 'var(--adm-text-faint)' }}>
         {label}
       </p>
-      <p className="mt-2 font-display text-2xl" style={{ color: '#C8DEC8' }}>
+      <p className="mt-2 font-display text-2xl" style={{ color: 'var(--adm-heading)' }}>
         {value}
       </p>
     </div>
