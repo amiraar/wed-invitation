@@ -30,7 +30,7 @@ End-to-end tests use Playwright against a production build and a throwaway local
 - Some suites: `bash tests/e2e/run.sh guests.mjs uploads.mjs` (add `SKIP_BUILD=1` to reuse the last build)
 - Output, server logs and screenshots go to `test-results/`
 
-CI (`.github/workflows/ci.yml`) runs on every pull request and on `main`: type check, `npm audit` (fails on high/critical), and all e2e suites. Dependabot opens weekly dependency update PRs, which go through the same checks.
+CI (`.github/workflows/ci.yml`) runs on every pull request and on `main`: type check, `npm audit` (fails on high/critical), all e2e suites, and a gitleaks secret scan of the git history. Both jobs are required checks for merging into `main`. Dependabot opens weekly dependency update PRs, which go through the same checks.
 
 ## Login
 
