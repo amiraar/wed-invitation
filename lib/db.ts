@@ -1,4 +1,8 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, neonConfig } from '@neondatabase/serverless';
+
+// Tests only (docker-compose.test.yml): send queries to the local Neon HTTP proxy instead of Neon.
+// Never set on Vercel.
+if (process.env.NEON_FETCH_ENDPOINT) neonConfig.fetchEndpoint = process.env.NEON_FETCH_ENDPOINT;
 
 type SqlTag = <T = Record<string, unknown>>(
   strings: TemplateStringsArray,
